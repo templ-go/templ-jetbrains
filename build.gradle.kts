@@ -1,6 +1,8 @@
 import org.jetbrains.changelog.Changelog
 import org.jetbrains.changelog.markdownToHTML
 
+fun properties(key: String) = providers.gradleProperty(key)
+
 plugins {
     id("java")
     id("org.jetbrains.kotlin.jvm") version "1.9.0"
