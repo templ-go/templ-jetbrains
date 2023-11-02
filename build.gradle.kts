@@ -8,7 +8,7 @@ fun properties(key: String) = providers.gradleProperty(key)
 plugins {
     id("java")
     id("org.jetbrains.kotlin.jvm") version "1.9.0"
-    id("org.jetbrains.intellij") version "1.15.0"
+    id("org.jetbrains.intellij") version "1.16.0"
     id("org.jetbrains.changelog") version "2.2.0"
 }
 
@@ -20,7 +20,7 @@ repositories {
 }
 
 // Configure Gradle IntelliJ Plugin
-// Read more: https://plugins.jetbrains.com/docs/intellij/tools-gradle-intellij-plugin.html
+// Read more: https://plugins.jetbrains.com/docs/intellij/too[kkkkjkls-gradle-intellij-plugin.html
 intellij {
     version.set("2023.2.4")
     type.set("IU") // Target IDE Platform

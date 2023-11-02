@@ -5,7 +5,7 @@
 
     <vendor url="https://templ.guide/">Templ</vendor>
 
-    <description></description>
+    <description>Support for the Templ Programming Language</description>
 
     <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.modules.ultimate</depends>
