@@ -14,16 +14,9 @@ class TemplLspServerSupportProvider : LspServerSupportProvider {
         val templConfigService = TemplConfigService.getInstance(project)
         if (file.extension != "templ") return
         val executable =
-                templConfigService.templLspExecutablePath?.let { File(it) }?.takeIf { it.exists() } ?: detectTemplExecutable(
-                        project, templConfigService, true
-                ) ?: return
+                templConfigService.templLspExecutablePath?.let { File(it) }?.takeIf { it.exists() } ?: File("")
         serverStarter.ensureServerStarted(TemplLspServerDescriptor(project, executable))
-
     }
-}
-fun detectTemplExecutable(project: Project, templConfigService: TemplConfigService, lsp: Boolean): File? {
-    if (templConfigService.templLspExecutablePath != null) return File(templConfigService.templLspExecutablePath)
-   return null
 }
 private class TemplLspServerDescriptor(project: Project, val executable: File) : ProjectWideLspServerDescriptor(project, "templ") {
     override fun isSupportedFile(file: VirtualFile) = file.extension == "templ"
