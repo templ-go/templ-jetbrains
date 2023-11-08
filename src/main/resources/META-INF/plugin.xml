@@ -1,5 +1,5 @@
 <idea-plugin>
-    <id>com.templ.templ-jetbrains</id>
+    <id>com.templ.templjetbrains</id>
 
     <name>Templ</name>
 
@@ -9,13 +9,15 @@
 
     <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.modules.ultimate</depends>
+    <depends>org.jetbrains.plugins.textmate</depends>
     <extensions defaultExtensionNs="com.intellij">
         <fileType name="templ"
                   language="templ"
                   implementationClass="com.templ.templjetbrains.TemplFileType"
-                  extensions="prisma"
+                  extensions="templ"
                   fieldName="INSTANCE"/>
 
+        <editorHighlighterProvider filetype="templ" implementationClass="com.templ.templjetbrains.highlighting.TemplEditorHighlighterProvider"/>
         <projectService serviceImplementation="com.templ.templjetbrains.TemplSettings"/>
         <projectConfigurable groupId="tools" instance="com.templ.templjetbrains.TemplConfigurable"/>
         <platform.lsp.serverSupportProvider implementation="com.templ.templjetbrains.TemplLspServerSupportProvider"/>

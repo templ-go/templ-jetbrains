@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>contactEmailRot13</key>
+	<string>adrianhesketh@hushmail.com</string>
+	<key>contactName</key>
+	<string>Adrian Hesketh</string>
+	<key>description</key>
+	<string>A language for writing HTML user interfaces in Go.</string>
+	<key>name</key>
+	<string>templ</string>
+	<key>uuid</key>
+	<string>186a39a6-388e-4df9-8281-c24857774ba9</string>
+</dict>
+</plist>

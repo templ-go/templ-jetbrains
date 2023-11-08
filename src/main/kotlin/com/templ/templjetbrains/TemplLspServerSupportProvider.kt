@@ -14,7 +14,7 @@ class TemplLspServerSupportProvider : LspServerSupportProvider {
         val templConfigService = TemplConfigService.getInstance(project)
         if (file.extension != "templ") return
         val executable =
-                templConfigService.templLspExecutablePath?.let { File(it) }?.takeIf { it.exists() } ?: File("")
+                templConfigService.templLspExecutablePath?.let { File(it) }?.takeIf { it.exists() } ?: findGlobalTemplExecutable() ?: File("")
         serverStarter.ensureServerStarted(TemplLspServerDescriptor(project, executable))
     }
 }
