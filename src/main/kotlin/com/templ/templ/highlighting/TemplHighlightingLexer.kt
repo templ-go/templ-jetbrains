@@ -26,7 +26,6 @@ private fun deleteFile(file: File) {
 }
 @Throws(IOException::class)
 private fun extract(zip: ZipInputStream, target: File) {
-    println("EXTRACT")
     try {
         while (true) {
             val entry = zip.nextEntry ?: break
@@ -75,7 +74,7 @@ fun getTextMateLanguageDescriptor(): TextMateLanguageDescriptor {
         val interner = Interner.createWeakInterner<CharSequence>();
         val grammars = bundle.readGrammars()
         for (g in grammars) {
-            println("SYNTAX LOADED: "+syntax.loadSyntax(g.plist.value, interner));
+            syntax.loadSyntax(g.plist.value, interner);
         }
         return TextMateLanguageDescriptor("source.templ", syntax.getSyntax("source.templ"))
     } catch (ex: Exception) {

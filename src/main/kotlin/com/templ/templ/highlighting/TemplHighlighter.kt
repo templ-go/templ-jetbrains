@@ -21,7 +21,6 @@ class TemplHighlighter(lexer: TemplHighlightingLexer) : SyntaxHighlighterBase() 
     override fun getTokenHighlights(tokenType: IElementType): Array<out TextAttributesKey> {
         if (tokenType is TemplElementType) {
             val scope = tokenType.getScope().scopeName ?: "";
-            print("\nTOKEN: $scope")
 
             if (scope.startsWith("punctuation.definition.comment")) return COMMENT
             if (scope.startsWith("comment")) return COMMENT
@@ -40,7 +39,6 @@ class TemplHighlighter(lexer: TemplHighlightingLexer) : SyntaxHighlighterBase() 
 
 
             if (scope.startsWith("support.type.property-name")) return arrayOf(DefaultLanguageHighlighterColors.IDENTIFIER)
-            print(" NOT FOUND")
             return pack(null)
         }
         return pack(null)
@@ -48,5 +46,4 @@ class TemplHighlighter(lexer: TemplHighlightingLexer) : SyntaxHighlighterBase() 
     private val KEYWORD = arrayOf(DefaultLanguageHighlighterColors.KEYWORD)
     private val STRING = arrayOf(DefaultLanguageHighlighterColors.STRING)
     private val COMMENT = arrayOf(DefaultLanguageHighlighterColors.LINE_COMMENT)
-    private val MARKUP_TAG = arrayOf(DefaultLanguageHighlighterColors.MARKUP_TAG)
 }

@@ -21,7 +21,7 @@
         <projectService serviceImplementation="com.templ.templ.TemplSettings"/>
         <projectConfigurable groupId="tools" instance="com.templ.templ.TemplConfigurable"/>
         <platform.lsp.serverSupportProvider implementation="com.templ.templ.TemplLspServerSupportProvider"/>
-    </extensions>
-    <extensions defaultExtensionNs="com.intellij">
+        <spellchecker.support language="templ" />
+        <spellchecker.bundledDictionaryProvider implementation="com.templ.templ.spellchecker.TemplBundledDictionaryProvider"/>
     </extensions>
 </idea-plugin>
