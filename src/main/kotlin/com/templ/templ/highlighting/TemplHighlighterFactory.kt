@@ -1,4 +1,4 @@
-package com.templ.templjetbrains.highlighting
+package com.templ.templ.highlighting
 
 import com.intellij.openapi.fileTypes.SyntaxHighlighter
 import com.intellij.openapi.fileTypes.SyntaxHighlighterFactory

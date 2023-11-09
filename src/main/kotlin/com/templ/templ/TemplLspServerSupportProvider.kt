@@ -1,4 +1,4 @@
-package com.templ.templjetbrains
+package com.templ.templ
 
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.platform.lsp.api.LspServerSupportProvider

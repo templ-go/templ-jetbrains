@@ -1,7 +1,7 @@
-package com.templ.templjetbrains.highlighting
+package com.templ.templ.highlighting
 
 import com.intellij.psi.tree.IElementType
-import com.templ.templjetbrains.TemplLanguage
+import com.templ.templ.TemplLanguage
 import org.jetbrains.plugins.textmate.language.syntax.lexer.TextMateScope;
 
 class TemplElementType(private val scope: TextMateScope) : IElementType("TEMPL_TOKEN", TemplLanguage, false) {

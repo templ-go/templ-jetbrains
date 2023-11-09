@@ -1,4 +1,4 @@
-package com.templ.templjetbrains
+package com.templ.templ
 
 import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.components.Service

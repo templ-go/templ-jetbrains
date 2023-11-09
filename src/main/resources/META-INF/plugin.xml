@@ -1,9 +1,9 @@
 <idea-plugin>
-    <id>com.templ.templjetbrains</id>
+    <id>com.templ.templ</id>
 
     <name>Templ</name>
 
-    <vendor url="https://templ.guide/">Templ</vendor>
+    <vendor url="https://templ.guide/">templ</vendor>
 
     <description>Support for the Templ Programming Language</description>
 
@@ -13,14 +13,14 @@
     <extensions defaultExtensionNs="com.intellij">
         <fileType name="templ"
                   language="templ"
-                  implementationClass="com.templ.templjetbrains.TemplFileType"
+                  implementationClass="com.templ.templ.TemplFileType"
                   extensions="templ"
                   fieldName="INSTANCE"/>
 
-        <editorHighlighterProvider filetype="templ" implementationClass="com.templ.templjetbrains.highlighting.TemplEditorHighlighterProvider"/>
-        <projectService serviceImplementation="com.templ.templjetbrains.TemplSettings"/>
-        <projectConfigurable groupId="tools" instance="com.templ.templjetbrains.TemplConfigurable"/>
-        <platform.lsp.serverSupportProvider implementation="com.templ.templjetbrains.TemplLspServerSupportProvider"/>
+        <editorHighlighterProvider filetype="templ" implementationClass="com.templ.templ.highlighting.TemplEditorHighlighterProvider"/>
+        <projectService serviceImplementation="com.templ.templ.TemplSettings"/>
+        <projectConfigurable groupId="tools" instance="com.templ.templ.TemplConfigurable"/>
+        <platform.lsp.serverSupportProvider implementation="com.templ.templ.TemplLspServerSupportProvider"/>
     </extensions>
     <extensions defaultExtensionNs="com.intellij">
     </extensions>

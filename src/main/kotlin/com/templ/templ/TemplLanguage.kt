@@ -1,4 +1,4 @@
-package com.templ.templjetbrains
+package com.templ.templ
 
 import com.intellij.execution.configurations.PathEnvironmentVariableUtil
 import com.intellij.lang.Language

@@ -1,18 +1,14 @@
-package com.templ.templjetbrains.highlighting
+package com.templ.templ.highlighting
 
 import com.intellij.ide.plugins.PluginManagerCore
 import com.intellij.openapi.extensions.PluginId
 import com.intellij.util.containers.Interner
-import com.templ.templjetbrains.TemplFileType
-import org.jetbrains.plugins.textmate.bundles.readVSCBundle
+import com.templ.templ.TemplFileType
 import org.jetbrains.plugins.textmate.language.TextMateLanguageDescriptor
 import org.jetbrains.plugins.textmate.language.syntax.TextMateSyntaxTable
 import org.jetbrains.plugins.textmate.language.syntax.lexer.TextMateHighlightingLexer
-import org.jetbrains.plugins.textmate.plist.CompositePlistReader
 import java.io.*
-import java.nio.file.Files
 import java.nio.file.Path
-import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 import com.intellij.psi.tree.IElementType;
 import org.jetbrains.plugins.textmate.bundles.readTextMateBundle
@@ -57,7 +53,7 @@ private fun extract(zip: ZipInputStream, target: File) {
 }
 private fun getBundlePath(): Path {
     try {
-        val plugin = PluginManagerCore.getPlugin(PluginId.getId("com.templ.templjetbrains"))
+        val plugin = PluginManagerCore.getPlugin(PluginId.getId("com.templ.templ"))
         val version = plugin?.version ?: "devel"
         val bundleDirectory = File(plugin?.pluginPath.toString() + "/bundles/" + version)
         if (!bundleDirectory.exists()) {

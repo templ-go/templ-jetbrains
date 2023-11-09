@@ -1,22 +1,11 @@
-package com.templ.templjetbrains
+package com.templ.templ
 
-import com.intellij.codeInsight.template.impl.TemplateEditorUtil
-import com.intellij.json.JsonLanguage
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.editor.EditorFactory
-import com.intellij.openapi.editor.EditorSettings
-import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.options.Configurable
 import com.intellij.openapi.options.ConfigurationException
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.openapi.util.NlsContexts.ConfigurableName
-import com.intellij.openapi.util.io.FileUtil
-import com.intellij.psi.PsiDocumentManager
-import com.intellij.psi.PsiFileFactory
-import com.intellij.ui.components.JBCheckBox
 import com.intellij.util.ui.FormBuilder
-import com.intellij.util.ui.SwingHelper
 import java.awt.BorderLayout
 import javax.swing.JComponent
 import javax.swing.JPanel

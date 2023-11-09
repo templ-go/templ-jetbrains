@@ -1,11 +1,10 @@
-package com.templ.templjetbrains.highlighting
+package com.templ.templ.highlighting
 
 import com.intellij.lexer.Lexer
 import com.intellij.openapi.editor.DefaultLanguageHighlighterColors
 import com.intellij.openapi.editor.colors.TextAttributesKey
 import com.intellij.openapi.fileTypes.SyntaxHighlighterBase
 import com.intellij.psi.tree.IElementType
-import org.jetbrains.plugins.textmate.language.syntax.highlighting.TextMateTheme
 
 
 class TemplHighlighter(lexer: TemplHighlightingLexer) : SyntaxHighlighterBase() {

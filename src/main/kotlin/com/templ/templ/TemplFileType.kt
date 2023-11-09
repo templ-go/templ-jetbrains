@@ -1,4 +1,4 @@
-package com.templ.templjetbrains
+package com.templ.templ
 
 import com.intellij.openapi.fileTypes.LanguageFileType
 import com.intellij.openapi.fileTypes.PlainTextFileType
