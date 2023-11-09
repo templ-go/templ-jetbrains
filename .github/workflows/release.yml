@@ -26,7 +26,6 @@ jobs:
         with:
           distribution: zulu
           java-version: 17
-          cache: gradle
 
       # Setup Gradle
       - name: Setup Gradle
