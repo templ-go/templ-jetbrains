@@ -11,10 +11,9 @@ import java.io.File
 class TemplLspServerSupportProvider : LspServerSupportProvider {
     override fun fileOpened(project: Project, file: VirtualFile, serverStarter: LspServerStarter) {
 
-        val templConfigService = TemplConfigService.getInstance(project)
+        val templConfigService = TemplSettings.getService(project)
         if (file.extension != "templ") return
-        val executable =
-                templConfigService.templLspExecutablePath?.let { File(it) }?.takeIf { it.exists() } ?: findGlobalTemplExecutable() ?: File("")
+        val executable = File(templConfigService.getTemplLspPath())
         serverStarter.ensureServerStarted(TemplLspServerDescriptor(project, executable))
     }
 }
