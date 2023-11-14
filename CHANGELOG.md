@@ -3,6 +3,12 @@
 ## [Unreleased]
 
 ### Added
+- Generated file folding
+- File icon
+
+## [0.0.6]
+
+### Added
 - Fix config
 
 ## [0.0.5]
