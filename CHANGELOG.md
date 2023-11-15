@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Search in more places for templ lsp
+
 ## [0.0.7] - 2023-11-14
 
 ### Added
