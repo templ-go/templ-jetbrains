@@ -28,8 +28,7 @@ private class TemplLspServerDescriptor(project: Project, val executable: File) :
 }
 
 fun findGlobalTemplExecutable(): File? {
-    PathEnvironmentVariableUtil.findInPath("templ") { it != null }?.let { return it }
-    PathEnvironmentVariableUtil.findInPath("templ.exe") { it != null }?.let { return it }
+    PathEnvironmentVariableUtil.findExecutableInPathOnAnyOS("templ")?.let { return it }
     for (loc in templLocations)
         if (Files.exists(loc))
             return loc.toFile()
@@ -45,6 +44,8 @@ private val templLocations = arrayOf(
     Paths.get(System.getenv("GOROOT"), "bin", "templ.exe"),
     Paths.get(System.getenv("HOME"), "bin", "templ"),
     Paths.get(System.getenv("HOME"), "bin", "templ.exe"),
+    Paths.get(System.getenv("HOME"), "go", "bin", "templ"),
+    Paths.get(System.getenv("HOME"), "go", "bin", "templ.exe"),
     Paths.get("/usr/local/bin/templ"),
     Paths.get("/usr/bin/templ"),
     Paths.get("/usr/local/go/bin/templ"),
