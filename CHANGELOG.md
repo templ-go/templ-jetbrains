@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [0.0.8] - 2023-12-22
+
 ### Added
 
 - Search in more places for templ lsp
@@ -38,7 +40,8 @@
 - Changelog tracking
 - Syntax Highlights from textmate
 
-[Unreleased]: https://github.com/templ-go/templ-jetbrains/compare/v0.0.7...HEAD
+[Unreleased]: https://github.com/templ-go/templ-jetbrains/compare/v0.0.8...HEAD
+[0.0.8]: https://github.com/templ-go/templ-jetbrains/compare/v0.0.7...v0.0.8
 [0.0.7]: https://github.com/templ-go/templ-jetbrains/compare/v0.0.6...v0.0.7
 [0.0.6]: https://github.com/templ-go/templ-jetbrains/compare/v0.0.5...v0.0.6
 [0.0.5]: https://github.com/templ-go/templ-jetbrains/compare/v0.0.4...v0.0.5
