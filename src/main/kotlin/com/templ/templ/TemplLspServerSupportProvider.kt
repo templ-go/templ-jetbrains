@@ -17,6 +17,7 @@ class TemplLspServerSupportProvider : LspServerSupportProvider {
         val templConfigService = TemplSettings.getService(project)
         if (file.extension != "templ") return
         val executable = File(templConfigService.getTemplLspPath())
+        if (!executable.exists()) return
         serverStarter.ensureServerStarted(TemplLspServerDescriptor(project, executable))
     }
 }
@@ -36,19 +37,19 @@ fun findGlobalTemplExecutable(): File? {
 }
 
 private val templLocations = arrayOf(
-    Paths.get(System.getenv("GOBIN"), "templ"),
-    Paths.get(System.getenv("GOBIN"), "templ.exe"),
-    Paths.get(System.getenv("GOPATH"), "bin", "templ"),
-    Paths.get(System.getenv("GOPATH"), "bin", "templ.exe"),
-    Paths.get(System.getenv("GOROOT"), "bin", "templ"),
-    Paths.get(System.getenv("GOROOT"), "bin", "templ.exe"),
-    Paths.get(System.getenv("HOME"), "bin", "templ"),
-    Paths.get(System.getenv("HOME"), "bin", "templ.exe"),
-    Paths.get(System.getenv("HOME"), "go", "bin", "templ"),
-    Paths.get(System.getenv("HOME"), "go", "bin", "templ.exe"),
+    System.getenv("GOBIN")?.let { Paths.get(it, "templ") },
+    System.getenv("GOBIN")?.let { Paths.get(it, "templ.exe") },
+    System.getenv("GOPATH")?.let { Paths.get(it, "bin", "templ") },
+    System.getenv("GOPATH")?.let { Paths.get(it, "bin", "templ.exe") },
+    System.getenv("GOROOT")?.let { Paths.get(it, "bin", "templ") },
+    System.getenv("GOROOT")?.let { Paths.get(it, "bin", "templ.exe") },
+    System.getenv("HOME")?.let { Paths.get(it, "bin", "templ") },
+    System.getenv("HOME")?.let { Paths.get(it, "bin", "templ.exe") },
+    System.getenv("HOME")?.let { Paths.get(it, "go", "bin", "templ") },
+    System.getenv("HOME")?.let { Paths.get(it, "go", "bin", "templ.exe") },
     Paths.get("/usr/local/bin/templ"),
     Paths.get("/usr/bin/templ"),
     Paths.get("/usr/local/go/bin/templ"),
     Paths.get("/usr/local/share/go/bin/templ"),
     Paths.get("/usr/share/go/bin/templ"),
-)
+).filterNotNull()
