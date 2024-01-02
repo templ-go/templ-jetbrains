@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- @2huBrulee - fix: Handle missing env vars gracefully in templLocations
+
 ## [0.0.8] - 2023-12-22
 
 ### Added
