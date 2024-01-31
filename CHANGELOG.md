@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+### Added
+
+- updated syntax
+- Opened compatibility up for experimental releases
+
 ## [0.0.9] - 2024-01-02
 
 ### Added
