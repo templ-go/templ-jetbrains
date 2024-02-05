@@ -5,6 +5,8 @@
 
     <vendor url="https://templ.guide/">templ</vendor>
 
+    <idea-version since-build="232"/>
+
     <description>Support for the Templ Programming Language</description>
 
     <depends>com.intellij.modules.platform</depends>
