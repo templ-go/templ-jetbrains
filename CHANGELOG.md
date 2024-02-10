@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- js syntax
+
 ## [0.0.10] - 2024-01-31
 
 ### Added
