@@ -21,6 +21,9 @@ repositories {
     mavenCentral()
 }
 
+// Add Grammar Kit code generated sources to the main source set
+sourceSets["main"].java.srcDirs("src/main/gen")
+
 // Configure Gradle IntelliJ Plugin
 // Read more: https://plugins.jetbrains.com/docs/intellij/too[kkkkjkls-gradle-intellij-plugin.html
 intellij {
