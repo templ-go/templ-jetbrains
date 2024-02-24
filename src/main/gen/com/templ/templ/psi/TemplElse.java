@@ -7,7 +7,7 @@ import com.intellij.psi.PsiElement;
 
 public interface TemplElse extends PsiElement {
 
-  @NotNull
+  @Nullable
   TemplHtmlDeclBody getHtmlDeclBody();
 
 }

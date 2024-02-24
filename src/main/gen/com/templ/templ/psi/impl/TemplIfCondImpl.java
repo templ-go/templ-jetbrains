@@ -40,9 +40,9 @@ public class TemplIfCondImpl extends ASTWrapperPsiElement implements TemplIfCond
   }
 
   @Override
-  @NotNull
+  @Nullable
   public TemplHtmlDeclBody getHtmlDeclBody() {
-    return findNotNullChildByClass(TemplHtmlDeclBody.class);
+    return findChildByClass(TemplHtmlDeclBody.class);
   }
 
 }

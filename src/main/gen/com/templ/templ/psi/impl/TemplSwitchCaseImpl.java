@@ -28,9 +28,9 @@ public class TemplSwitchCaseImpl extends ASTWrapperPsiElement implements TemplSw
   }
 
   @Override
-  @NotNull
+  @Nullable
   public TemplHtmlDeclBody getHtmlDeclBody() {
-    return findNotNullChildByClass(TemplHtmlDeclBody.class);
+    return findChildByClass(TemplHtmlDeclBody.class);
   }
 
 }

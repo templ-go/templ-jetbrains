@@ -7,7 +7,7 @@ import com.intellij.psi.PsiElement;
 
 public interface TemplForLoop extends PsiElement {
 
-  @NotNull
+  @Nullable
   TemplHtmlDeclBody getHtmlDeclBody();
 
 }

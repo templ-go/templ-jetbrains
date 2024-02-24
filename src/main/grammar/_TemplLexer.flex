@@ -25,13 +25,20 @@ import static com.templ.templ.psi.TemplTypes.*;
 %unicode
 
 EOL=\R
-WHITE_SPACE=\s*
+WHITE_SPACE=\s+
+OPTIONAL_WHITE_SPACE=\s*
 
 COMMENT=("//".*|"/"\*[^]*?\*"/")
 
 %state IN_TEMPL_DECLARATION_START
 %state IN_TEMPL_DECLARATION_BODY
 %state IN_TEMPL_DECLARATION_END
+%state IN_CSS_DECLARATION_START
+%state IN_CSS_DECLARATION_BODY
+%state IN_CSS_DECLARATION_END
+%state IN_SCRIPT_DECLARATION_START
+%state IN_SCRIPT_DECLARATION_BODY
+%state IN_SCRIPT_DECLARATION_END
 %state IN_TEMPL_BLOCK_END
 %state IN_BOOL_EXPR
 %state IN_EXPR
@@ -51,6 +58,18 @@ COMMENT=("//".*|"/"\*[^]*?\*"/")
     ^ "templ" {
         yypushback(5); // reverse back to start of "templ"
         yybegin(IN_TEMPL_DECLARATION_START);
+        return GO_ROOT_FRAGMENT;
+    }
+
+    ^ "css" {
+        yypushback(3); // reverse back to start of "templ"
+        yybegin(IN_CSS_DECLARATION_START);
+        return GO_ROOT_FRAGMENT;
+    }
+
+    ^ "script" {
+        yypushback(6); // reverse back to start of "templ"
+        yybegin(IN_SCRIPT_DECLARATION_START);
         return GO_ROOT_FRAGMENT;
     }
 
@@ -79,49 +98,49 @@ COMMENT=("//".*|"/"\*[^]*?\*"/")
 }
 
 <IN_TEMPL_DECLARATION_BODY> {
-    ^ {WHITE_SPACE} "if" {
+    ^ {OPTIONAL_WHITE_SPACE} "if" {
         yypushback(2);
         yybegin(IN_IF_STMT);
         return HTML_FRAGMENT;
     }
 
-    "}" {WHITE_SPACE} "else if" {
+    "}" {OPTIONAL_WHITE_SPACE} "else if" {
         yypushback(yylength());
         yybegin(IN_ELSE_IF_STMT);
         return HTML_FRAGMENT;
     }
 
-    "}" {WHITE_SPACE} "else" {
+    "}" {OPTIONAL_WHITE_SPACE} "else" {
         yypushback(yylength());
         yybegin(IN_ELSE_STMT);
         return HTML_FRAGMENT;
     }
 
-    ^ {WHITE_SPACE} "switch" {
+    ^ {OPTIONAL_WHITE_SPACE} "switch" {
         yypushback(6);
         yybegin(IN_SWITCH_STMT);
         return HTML_FRAGMENT;
     }
 
-    ^ {WHITE_SPACE} "case" {
+    ^ {OPTIONAL_WHITE_SPACE} "case" {
         yypushback(4);
         yybegin(IN_CASE_STMT);
         return HTML_FRAGMENT;
     }
 
-    ^ {WHITE_SPACE} "default:" {
+    ^ {OPTIONAL_WHITE_SPACE} "default:" {
         yypushback(8);
         yybegin(IN_DEFAULT_STMT);
         return HTML_FRAGMENT;
     }
 
-    ^ {WHITE_SPACE} "for" {
+    ^ {OPTIONAL_WHITE_SPACE} "for" {
         yypushback(3);
         yybegin(IN_FOR_STMT);
         return HTML_FRAGMENT;
     }
 
-    ^ {WHITE_SPACE} "@" {
+    ^ {OPTIONAL_WHITE_SPACE} "@" {
         yypushback(1);
         yybegin(IN_INLINE_COMPONENT);
         return HTML_FRAGMENT;
@@ -162,7 +181,7 @@ COMMENT=("//".*|"/"\*[^]*?\*"/")
 }
 
 <IN_IF_STMT> {
-    "{" {WHITE_SPACE} $ {
+    "{" {OPTIONAL_WHITE_SPACE} $ {
         yybegin(IN_TEMPL_DECLARATION_BODY);
         return GO_IF_START_FRAGMENT;
     }
@@ -171,7 +190,7 @@ COMMENT=("//".*|"/"\*[^]*?\*"/")
 }
 
 <IN_ELSE_IF_STMT> {
-    "{" {WHITE_SPACE} $ {
+    "{" {OPTIONAL_WHITE_SPACE} $ {
         yybegin(IN_TEMPL_DECLARATION_BODY);
         return GO_ELSE_IF_START_FRAGMENT;
     }
@@ -180,7 +199,7 @@ COMMENT=("//".*|"/"\*[^]*?\*"/")
 }
 
 <IN_ELSE_STMT> {
-    "{" {WHITE_SPACE} $ {
+    "{" {OPTIONAL_WHITE_SPACE} $ {
         yybegin(IN_TEMPL_DECLARATION_BODY);
         return GO_ELSE_START_FRAGMENT;
     }
@@ -189,17 +208,17 @@ COMMENT=("//".*|"/"\*[^]*?\*"/")
 }
 
 <IN_SWITCH_STMT> {
-    "{" {WHITE_SPACE} $ {
+    "{" {OPTIONAL_WHITE_SPACE} $ {
         return GO_SWITCH_START_FRAGMENT;
     }
 
     // We exit IN_SWITCH_STMT state only when we see a case or default statement so that we don't emit HTML fragments.
-    ^ {WHITE_SPACE} "case" {
+    ^ {OPTIONAL_WHITE_SPACE} "case" {
         yypushback(4);
         yybegin(IN_CASE_STMT);
     }
 
-    ^ {WHITE_SPACE} "default:" {
+    ^ {OPTIONAL_WHITE_SPACE} "default:" {
         yypushback(8);
         yybegin(IN_DEFAULT_STMT);
     }
@@ -208,7 +227,7 @@ COMMENT=("//".*|"/"\*[^]*?\*"/")
 }
 
 <IN_CASE_STMT> {
-    ":" {WHITE_SPACE} $ {
+    ":" {OPTIONAL_WHITE_SPACE} $ {
         yybegin(IN_TEMPL_DECLARATION_BODY);
         return GO_CASE_FRAGMENT;
     }
@@ -217,7 +236,7 @@ COMMENT=("//".*|"/"\*[^]*?\*"/")
 }
 
 <IN_DEFAULT_STMT> {
-    "default:" {WHITE_SPACE} $ {
+    "default:" {OPTIONAL_WHITE_SPACE} $ {
         yybegin(IN_TEMPL_DECLARATION_BODY);
         return GO_DEFAULT_FRAGMENT;
     }
@@ -226,7 +245,7 @@ COMMENT=("//".*|"/"\*[^]*?\*"/")
 }
 
 <IN_FOR_STMT> {
-    "{" {WHITE_SPACE} $ {
+    "{" {OPTIONAL_WHITE_SPACE} $ {
         yybegin(IN_TEMPL_DECLARATION_BODY);
         return GO_FOR_START_FRAGMENT;
     }
@@ -297,6 +316,70 @@ COMMENT=("//".*|"/"\*[^]*?\*"/")
 <IN_END_RBRACE> {
     "}" {
         yybegin(IN_TEMPL_DECLARATION_BODY);
+        return RBRACE;
+    }
+}
+
+<IN_CSS_DECLARATION_START> {
+    ^ "css" { return CSS_DECL_START; }
+
+    "(" { return LPARENTH; }
+
+    ")" { return RPARENTH; }
+
+    \w+ { return CSS_CLASS_ID; }
+
+    "{" $ {
+        yybegin(IN_CSS_DECLARATION_BODY);
+        return LBRACE;
+    }
+
+    {WHITE_SPACE} {
+        return WHITE_SPACE;
+    }
+}
+
+<IN_CSS_DECLARATION_BODY> {
+    ^ "}" {
+        yypushback(1);
+        yybegin(IN_CSS_DECLARATION_END);
+        return CSS_PROPERTIES;
+    }
+
+    [^] { /* capture characters until we emit a token */ }
+}
+
+<IN_CSS_DECLARATION_END> {
+    "}" {
+        yybegin(YYINITIAL);
+        return RBRACE;
+    }
+}
+
+<IN_SCRIPT_DECLARATION_START> {
+    ^ "script" { return SCRIPT_DECL_START; }
+
+    "{" $ {
+        yybegin(IN_SCRIPT_DECLARATION_BODY);
+        return SCRIPT_FUNCTION_DECL;
+    }
+
+    [^] { /* capture characters until we emit a token */ }
+}
+
+<IN_SCRIPT_DECLARATION_BODY> {
+    ^ "}" {
+        yypushback(1);
+        yybegin(IN_SCRIPT_DECLARATION_END);
+        return SCRIPT_BODY;
+    }
+
+    [^] { /* capture characters until we emit a token */ }
+}
+
+<IN_SCRIPT_DECLARATION_END> {
+    "}" {
+        yybegin(YYINITIAL);
         return RBRACE;
     }
 }

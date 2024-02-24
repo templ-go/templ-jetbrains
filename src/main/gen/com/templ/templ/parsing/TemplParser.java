@@ -40,12 +40,13 @@ public class TemplParser implements PsiParser, LightPsiParser {
   public static boolean component(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "component")) return false;
     if (!nextTokenIs(b, INLINE_COMPONENT_START)) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = consumeTokens(b, 0, INLINE_COMPONENT_START, GO_INLINE_COMPONENT);
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, COMPONENT, null);
+    r = consumeTokens(b, 1, INLINE_COMPONENT_START, GO_INLINE_COMPONENT);
+    p = r; // pin = 1
     r = r && component_2(b, l + 1);
-    exit_section_(b, m, COMPONENT, r);
-    return r;
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
   }
 
   // component_children?
@@ -60,13 +61,27 @@ public class TemplParser implements PsiParser, LightPsiParser {
   public static boolean component_children(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "component_children")) return false;
     if (!nextTokenIs(b, LBRACE)) return false;
-    boolean r;
-    Marker m = enter_section_(b);
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, COMPONENT_CHILDREN, null);
     r = consumeToken(b, LBRACE);
-    r = r && html_decl_body(b, l + 1);
-    r = r && consumeToken(b, RBRACE);
-    exit_section_(b, m, COMPONENT_CHILDREN, r);
-    return r;
+    p = r; // pin = 1
+    r = r && report_error_(b, html_decl_body(b, l + 1));
+    r = p && consumeToken(b, RBRACE) && r;
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
+  }
+
+  /* ********************************************************** */
+  // CSS_DECL_START CSS_CLASS_ID LPARENTH RPARENTH LBRACE CSS_PROPERTIES RBRACE
+  public static boolean css_decl(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "css_decl")) return false;
+    if (!nextTokenIs(b, CSS_DECL_START)) return false;
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, CSS_DECL, null);
+    r = consumeTokens(b, 1, CSS_DECL_START, CSS_CLASS_ID, LPARENTH, RPARENTH, LBRACE, CSS_PROPERTIES, RBRACE);
+    p = r; // pin = 1
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
   }
 
   /* ********************************************************** */
@@ -74,12 +89,13 @@ public class TemplParser implements PsiParser, LightPsiParser {
   public static boolean else_$(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "else_$")) return false;
     if (!nextTokenIs(b, GO_ELSE_START_FRAGMENT)) return false;
-    boolean r;
-    Marker m = enter_section_(b);
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, ELSE, null);
     r = consumeToken(b, GO_ELSE_START_FRAGMENT);
+    p = r; // pin = 1
     r = r && html_decl_body(b, l + 1);
-    exit_section_(b, m, ELSE, r);
-    return r;
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
   }
 
   /* ********************************************************** */
@@ -87,12 +103,13 @@ public class TemplParser implements PsiParser, LightPsiParser {
   public static boolean else_if(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "else_if")) return false;
     if (!nextTokenIs(b, GO_ELSE_IF_START_FRAGMENT)) return false;
-    boolean r;
-    Marker m = enter_section_(b);
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, ELSE_IF, null);
     r = consumeToken(b, GO_ELSE_IF_START_FRAGMENT);
+    p = r; // pin = 1
     r = r && html_decl_body(b, l + 1);
-    exit_section_(b, m, ELSE_IF, r);
-    return r;
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
   }
 
   /* ********************************************************** */
@@ -100,12 +117,13 @@ public class TemplParser implements PsiParser, LightPsiParser {
   public static boolean expr(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "expr")) return false;
     if (!nextTokenIs(b, "<expr>", BOOL_EXPR_START, LBRACE)) return false;
-    boolean r;
+    boolean r, p;
     Marker m = enter_section_(b, l, _NONE_, EXPR, "<expr>");
     r = expr_0(b, l + 1);
-    r = r && consumeTokens(b, 0, LBRACE, GO_EXPR, RBRACE);
-    exit_section_(b, l, m, r, false, null);
-    return r;
+    r = r && consumeTokens(b, 1, LBRACE, GO_EXPR, RBRACE);
+    p = r; // pin = 2
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
   }
 
   // BOOL_EXPR_START?
@@ -120,13 +138,14 @@ public class TemplParser implements PsiParser, LightPsiParser {
   public static boolean for_loop(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "for_loop")) return false;
     if (!nextTokenIs(b, GO_FOR_START_FRAGMENT)) return false;
-    boolean r;
-    Marker m = enter_section_(b);
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, FOR_LOOP, null);
     r = consumeToken(b, GO_FOR_START_FRAGMENT);
-    r = r && html_decl_body(b, l + 1);
-    r = r && consumeToken(b, RBRACE);
-    exit_section_(b, m, FOR_LOOP, r);
-    return r;
+    p = r; // pin = 1
+    r = r && report_error_(b, html_decl_body(b, l + 1));
+    r = p && consumeToken(b, RBRACE) && r;
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
   }
 
   /* ********************************************************** */
@@ -146,13 +165,14 @@ public class TemplParser implements PsiParser, LightPsiParser {
   public static boolean html_decl(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "html_decl")) return false;
     if (!nextTokenIs(b, HTML_DECL_START)) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = consumeTokens(b, 0, HTML_DECL_START, DECL_GO_TOKEN);
-    r = r && html_decl_body(b, l + 1);
-    r = r && consumeToken(b, RBRACE);
-    exit_section_(b, m, HTML_DECL, r);
-    return r;
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, HTML_DECL, null);
+    r = consumeTokens(b, 1, HTML_DECL_START, DECL_GO_TOKEN);
+    p = r; // pin = 1
+    r = r && report_error_(b, html_decl_body(b, l + 1));
+    r = p && consumeToken(b, RBRACE) && r;
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
   }
 
   /* ********************************************************** */
@@ -187,15 +207,16 @@ public class TemplParser implements PsiParser, LightPsiParser {
   public static boolean if_cond(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "if_cond")) return false;
     if (!nextTokenIs(b, GO_IF_START_FRAGMENT)) return false;
-    boolean r;
-    Marker m = enter_section_(b);
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, IF_COND, null);
     r = consumeToken(b, GO_IF_START_FRAGMENT);
-    r = r && html_decl_body(b, l + 1);
-    r = r && if_cond_2(b, l + 1);
-    r = r && if_cond_3(b, l + 1);
-    r = r && consumeToken(b, RBRACE);
-    exit_section_(b, m, IF_COND, r);
-    return r;
+    p = r; // pin = 1
+    r = r && report_error_(b, html_decl_body(b, l + 1));
+    r = p && report_error_(b, if_cond_2(b, l + 1)) && r;
+    r = p && report_error_(b, if_cond_3(b, l + 1)) && r;
+    r = p && consumeToken(b, RBRACE) && r;
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
   }
 
   // else_if*
@@ -217,7 +238,29 @@ public class TemplParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // go_root (go_root | html_decl)*
+  // !(HTML_DECL_START | CSS_DECL_START | SCRIPT_DECL_START | GO_ROOT_FRAGMENT)
+  static boolean recover(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "recover")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NOT_);
+    r = !recover_0(b, l + 1);
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  // HTML_DECL_START | CSS_DECL_START | SCRIPT_DECL_START | GO_ROOT_FRAGMENT
+  private static boolean recover_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "recover_0")) return false;
+    boolean r;
+    r = consumeToken(b, HTML_DECL_START);
+    if (!r) r = consumeToken(b, CSS_DECL_START);
+    if (!r) r = consumeToken(b, SCRIPT_DECL_START);
+    if (!r) r = consumeToken(b, GO_ROOT_FRAGMENT);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // go_root (root_item)*
   static boolean root(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "root")) return false;
     if (!nextTokenIs(b, GO_ROOT_FRAGMENT)) return false;
@@ -229,7 +272,7 @@ public class TemplParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // (go_root | html_decl)*
+  // (root_item)*
   private static boolean root_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "root_1")) return false;
     while (true) {
@@ -240,13 +283,41 @@ public class TemplParser implements PsiParser, LightPsiParser {
     return true;
   }
 
-  // go_root | html_decl
+  // (root_item)
   private static boolean root_1_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "root_1_0")) return false;
     boolean r;
+    Marker m = enter_section_(b);
+    r = root_item(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // go_root | html_decl | css_decl | script_decl
+  static boolean root_item(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "root_item")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_);
     r = go_root(b, l + 1);
     if (!r) r = html_decl(b, l + 1);
+    if (!r) r = css_decl(b, l + 1);
+    if (!r) r = script_decl(b, l + 1);
+    exit_section_(b, l, m, r, false, TemplParser::recover);
     return r;
+  }
+
+  /* ********************************************************** */
+  // SCRIPT_DECL_START SCRIPT_FUNCTION_DECL SCRIPT_BODY RBRACE
+  public static boolean script_decl(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "script_decl")) return false;
+    if (!nextTokenIs(b, SCRIPT_DECL_START)) return false;
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, SCRIPT_DECL, null);
+    r = consumeTokens(b, 1, SCRIPT_DECL_START, SCRIPT_FUNCTION_DECL, SCRIPT_BODY, RBRACE);
+    p = r; // pin = 1
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
   }
 
   /* ********************************************************** */
@@ -254,12 +325,13 @@ public class TemplParser implements PsiParser, LightPsiParser {
   public static boolean switch_case(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "switch_case")) return false;
     if (!nextTokenIs(b, GO_CASE_FRAGMENT)) return false;
-    boolean r;
-    Marker m = enter_section_(b);
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, SWITCH_CASE, null);
     r = consumeToken(b, GO_CASE_FRAGMENT);
+    p = r; // pin = 1
     r = r && html_decl_body(b, l + 1);
-    exit_section_(b, m, SWITCH_CASE, r);
-    return r;
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
   }
 
   /* ********************************************************** */
@@ -267,12 +339,13 @@ public class TemplParser implements PsiParser, LightPsiParser {
   public static boolean switch_default(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "switch_default")) return false;
     if (!nextTokenIs(b, GO_DEFAULT_FRAGMENT)) return false;
-    boolean r;
-    Marker m = enter_section_(b);
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, SWITCH_DEFAULT, null);
     r = consumeToken(b, GO_DEFAULT_FRAGMENT);
+    p = r; // pin = 1
     r = r && html_decl_body(b, l + 1);
-    exit_section_(b, m, SWITCH_DEFAULT, r);
-    return r;
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
   }
 
   /* ********************************************************** */
@@ -280,14 +353,15 @@ public class TemplParser implements PsiParser, LightPsiParser {
   public static boolean switch_stmt(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "switch_stmt")) return false;
     if (!nextTokenIs(b, GO_SWITCH_START_FRAGMENT)) return false;
-    boolean r;
-    Marker m = enter_section_(b);
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, SWITCH_STMT, null);
     r = consumeToken(b, GO_SWITCH_START_FRAGMENT);
-    r = r && switch_stmt_1(b, l + 1);
-    r = r && switch_stmt_2(b, l + 1);
-    r = r && consumeToken(b, RBRACE);
-    exit_section_(b, m, SWITCH_STMT, r);
-    return r;
+    p = r; // pin = 1
+    r = r && report_error_(b, switch_stmt_1(b, l + 1));
+    r = p && report_error_(b, switch_stmt_2(b, l + 1)) && r;
+    r = p && consumeToken(b, RBRACE) && r;
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
   }
 
   // switch_case*

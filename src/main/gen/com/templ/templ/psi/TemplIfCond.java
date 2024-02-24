@@ -13,7 +13,7 @@ public interface TemplIfCond extends PsiElement {
   @NotNull
   List<TemplElseIf> getElseIfList();
 
-  @NotNull
+  @Nullable
   TemplHtmlDeclBody getHtmlDeclBody();
 
 }

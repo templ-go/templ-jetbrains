@@ -11,26 +11,20 @@ import static com.templ.templ.psi.TemplTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.templ.templ.psi.*;
 
-public class TemplHtmlDeclImpl extends ASTWrapperPsiElement implements TemplHtmlDecl {
+public class TemplCssDeclImpl extends ASTWrapperPsiElement implements TemplCssDecl {
 
-  public TemplHtmlDeclImpl(@NotNull ASTNode node) {
+  public TemplCssDeclImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull TemplVisitor visitor) {
-    visitor.visitHtmlDecl(this);
+    visitor.visitCssDecl(this);
   }
 
   @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof TemplVisitor) accept((TemplVisitor)visitor);
     else super.accept(visitor);
-  }
-
-  @Override
-  @Nullable
-  public TemplHtmlDeclBody getHtmlDeclBody() {
-    return findChildByClass(TemplHtmlDeclBody.class);
   }
 
 }

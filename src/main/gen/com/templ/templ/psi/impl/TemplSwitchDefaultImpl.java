@@ -28,9 +28,9 @@ public class TemplSwitchDefaultImpl extends ASTWrapperPsiElement implements Temp
   }
 
   @Override
-  @NotNull
+  @Nullable
   public TemplHtmlDeclBody getHtmlDeclBody() {
-    return findNotNullChildByClass(TemplHtmlDeclBody.class);
+    return findChildByClass(TemplHtmlDeclBody.class);
   }
 
 }

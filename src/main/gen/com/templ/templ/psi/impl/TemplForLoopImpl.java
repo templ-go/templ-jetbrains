@@ -28,9 +28,9 @@ public class TemplForLoopImpl extends ASTWrapperPsiElement implements TemplForLo
   }
 
   @Override
-  @NotNull
+  @Nullable
   public TemplHtmlDeclBody getHtmlDeclBody() {
-    return findNotNullChildByClass(TemplHtmlDeclBody.class);
+    return findChildByClass(TemplHtmlDeclBody.class);
   }
 
 }

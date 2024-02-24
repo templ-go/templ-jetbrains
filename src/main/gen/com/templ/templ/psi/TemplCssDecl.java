@@ -5,9 +5,6 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface TemplElseIf extends PsiElement {
-
-  @Nullable
-  TemplHtmlDeclBody getHtmlDeclBody();
+public interface TemplCssDecl extends PsiElement {
 
 }

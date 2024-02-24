@@ -15,6 +15,10 @@ public class TemplVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitCssDecl(@NotNull TemplCssDecl o) {
+    visitPsiElement(o);
+  }
+
   public void visitElse(@NotNull TemplElse o) {
     visitPsiElement(o);
   }
@@ -44,6 +48,10 @@ public class TemplVisitor extends PsiElementVisitor {
   }
 
   public void visitIfCond(@NotNull TemplIfCond o) {
+    visitPsiElement(o);
+  }
+
+  public void visitScriptDecl(@NotNull TemplScriptDecl o) {
     visitPsiElement(o);
   }
 

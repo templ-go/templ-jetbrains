@@ -28,9 +28,9 @@ public class TemplComponentChildrenImpl extends ASTWrapperPsiElement implements 
   }
 
   @Override
-  @NotNull
+  @Nullable
   public TemplHtmlDeclBody getHtmlDeclBody() {
-    return findNotNullChildByClass(TemplHtmlDeclBody.class);
+    return findChildByClass(TemplHtmlDeclBody.class);
   }
 
 }
