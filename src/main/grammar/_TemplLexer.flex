@@ -9,12 +9,12 @@ import static com.templ.templ.psi.TemplTypes.*;
 %%
 
 %{
-  private boolean atEndOfFile = false;
-  private int braceNestingLevel = 0;
+    private boolean atEndOfFile = false;
+    private int braceNestingLevel = 0;
 
-  public _TemplLexer() {
-    this((java.io.Reader)null);
-  }
+    public _TemplLexer() {
+        this((java.io.Reader)null);
+    }
 %}
 
 %public
@@ -48,111 +48,110 @@ COMMENT=("//".*|"/"\*[^]*?\*"/")
 
 %%
 <YYINITIAL> {
-  ^ "templ" {
-    yypushback(5); // reverse back to start of "templ"
-    yybegin(IN_TEMPL_DECLARATION_START);
-    return GO_ROOT_FRAGMENT;
-  }
+    ^ "templ" {
+        yypushback(5); // reverse back to start of "templ"
+        yybegin(IN_TEMPL_DECLARATION_START);
+        return GO_ROOT_FRAGMENT;
+    }
 
-  // Emit the remaining tokens as Go code.
-  <<EOF>> {
-     // Without this atEndFile, we get an infinite loop that leads to OOM.
-     if (this.atEndOfFile) {
-       return null;
-     } else {
-       this.atEndOfFile = true;
-       return GO_ROOT_FRAGMENT;
-     }
-  }
+    <<EOF>> {
+        // Without this atEndFile, we get an infinite loop that leads to OOM.
+        if (this.atEndOfFile) {
+            return null;
+        } else {
+            this.atEndOfFile = true;
+            return GO_ROOT_FRAGMENT;
+        }
+    }
 
-  [^] { /* capture characters until we emit a token */ }
+    [^] { /* capture characters until we emit a token */ }
 }
 
 <IN_TEMPL_DECLARATION_START> {
-  ^ "templ" { return HTML_DECL_START; }
+    ^ "templ" { return HTML_DECL_START; }
 
-  "{" $ {
-    yybegin(IN_TEMPL_DECLARATION_BODY);
-    return DECL_GO_TOKEN;
-  }
+    "{" $ {
+        yybegin(IN_TEMPL_DECLARATION_BODY);
+        return DECL_GO_TOKEN;
+    }
 
-  [^] { /* capture characters until we emit a token */ }
+    [^] { /* capture characters until we emit a token */ }
 }
 
 <IN_TEMPL_DECLARATION_BODY> {
-  ^ {WHITE_SPACE} "if" {
-    yypushback(2);
-    yybegin(IN_IF_STMT);
-    return HTML_FRAGMENT;
-  }
+    ^ {WHITE_SPACE} "if" {
+        yypushback(2);
+        yybegin(IN_IF_STMT);
+        return HTML_FRAGMENT;
+    }
 
-  "}" {WHITE_SPACE} "else if" {
-    yypushback(yylength());
-    yybegin(IN_ELSE_IF_STMT);
-    return HTML_FRAGMENT;
-  }
+    "}" {WHITE_SPACE} "else if" {
+        yypushback(yylength());
+        yybegin(IN_ELSE_IF_STMT);
+        return HTML_FRAGMENT;
+    }
 
-  "}" {WHITE_SPACE} "else" {
-    yypushback(yylength());
-    yybegin(IN_ELSE_STMT);
-    return HTML_FRAGMENT;
-  }
+    "}" {WHITE_SPACE} "else" {
+        yypushback(yylength());
+        yybegin(IN_ELSE_STMT);
+        return HTML_FRAGMENT;
+    }
 
-  ^ {WHITE_SPACE} "switch" {
-    yypushback(6);
-    yybegin(IN_SWITCH_STMT);
-    return HTML_FRAGMENT;
-  }
+    ^ {WHITE_SPACE} "switch" {
+        yypushback(6);
+        yybegin(IN_SWITCH_STMT);
+        return HTML_FRAGMENT;
+    }
 
-  ^ {WHITE_SPACE} "case" {
-    yypushback(4);
-    yybegin(IN_CASE_STMT);
-    return HTML_FRAGMENT;
-  }
+    ^ {WHITE_SPACE} "case" {
+        yypushback(4);
+        yybegin(IN_CASE_STMT);
+        return HTML_FRAGMENT;
+    }
 
-  ^ {WHITE_SPACE} "default:" {
-    yypushback(8);
-    yybegin(IN_DEFAULT_STMT);
-    return HTML_FRAGMENT;
-  }
+    ^ {WHITE_SPACE} "default:" {
+        yypushback(8);
+        yybegin(IN_DEFAULT_STMT);
+        return HTML_FRAGMENT;
+    }
 
-  ^ {WHITE_SPACE} "for" {
-    yypushback(3);
-    yybegin(IN_FOR_STMT);
-    return HTML_FRAGMENT;
-  }
+    ^ {WHITE_SPACE} "for" {
+        yypushback(3);
+        yybegin(IN_FOR_STMT);
+        return HTML_FRAGMENT;
+    }
 
-  ^ {WHITE_SPACE} "@" {
-    yypushback(1);
-    yybegin(IN_INLINE_COMPONENT);
-    return HTML_FRAGMENT;
-  }
+    ^ {WHITE_SPACE} "@" {
+        yypushback(1);
+        yybegin(IN_INLINE_COMPONENT);
+        return HTML_FRAGMENT;
+    }
 
-  "?={" {
-    yypushback(3);
-    yybegin(IN_BOOL_EXPR);
-    return HTML_FRAGMENT;
-  }
+    "?={" {
+        yypushback(3);
+        yybegin(IN_BOOL_EXPR);
+        return HTML_FRAGMENT;
+    }
 
-  "{" {
-    yypushback(1);
-    yybegin(IN_EXPR);
-    return HTML_FRAGMENT;
-  }
+    "{" {
+        yypushback(1);
+        yybegin(IN_EXPR);
+        return HTML_FRAGMENT;
+    }
 
-  ^ "}" {
-    yypushback(1);
-    yybegin(IN_TEMPL_DECLARATION_END);
-    return HTML_FRAGMENT;
-  }
+    ^ "}" {
+        yypushback(1);
+        yybegin(IN_TEMPL_DECLARATION_END);
+        return HTML_FRAGMENT;
+    }
 
-  "}" {
-      yypushback(1);
-      yybegin(IN_TEMPL_BLOCK_END);
-      return HTML_FRAGMENT;
-  }
+    "}" {
+        yypushback(1);
+        yybegin(IN_TEMPL_BLOCK_END);
+        return HTML_FRAGMENT;
+    }
 
-  [^] { /* capture characters until we emit a token */ }
+    [^] { /* capture characters until we emit a token */ }
 }
 
 <IN_TEMPL_BLOCK_END> {
@@ -167,6 +166,7 @@ COMMENT=("//".*|"/"\*[^]*?\*"/")
         yybegin(IN_TEMPL_DECLARATION_BODY);
         return GO_IF_START_FRAGMENT;
     }
+
     [^] { /* capture characters until we emit a token */ }
 }
 
@@ -175,6 +175,7 @@ COMMENT=("//".*|"/"\*[^]*?\*"/")
         yybegin(IN_TEMPL_DECLARATION_BODY);
         return GO_ELSE_IF_START_FRAGMENT;
     }
+
     [^] { /* capture characters until we emit a token */ }
 }
 
@@ -183,6 +184,7 @@ COMMENT=("//".*|"/"\*[^]*?\*"/")
         yybegin(IN_TEMPL_DECLARATION_BODY);
         return GO_ELSE_START_FRAGMENT;
     }
+
     [^] { /* capture characters until we emit a token */ }
 }
 
@@ -193,12 +195,13 @@ COMMENT=("//".*|"/"\*[^]*?\*"/")
 
     // We exit IN_SWITCH_STMT state only when we see a case or default statement so that we don't emit HTML fragments.
     ^ {WHITE_SPACE} "case" {
-      yypushback(4);
-      yybegin(IN_CASE_STMT);
+        yypushback(4);
+        yybegin(IN_CASE_STMT);
     }
+
     ^ {WHITE_SPACE} "default:" {
-      yypushback(8);
-      yybegin(IN_DEFAULT_STMT);
+        yypushback(8);
+        yybegin(IN_DEFAULT_STMT);
     }
 
     [^] { /* capture characters until we emit a token */ }
@@ -209,6 +212,7 @@ COMMENT=("//".*|"/"\*[^]*?\*"/")
         yybegin(IN_TEMPL_DECLARATION_BODY);
         return GO_CASE_FRAGMENT;
     }
+
     [^] { /* capture characters until we emit a token */ }
 }
 
@@ -217,6 +221,7 @@ COMMENT=("//".*|"/"\*[^]*?\*"/")
         yybegin(IN_TEMPL_DECLARATION_BODY);
         return GO_DEFAULT_FRAGMENT;
     }
+
     [^] { /* capture characters until we emit a token */ }
 }
 
@@ -225,6 +230,7 @@ COMMENT=("//".*|"/"\*[^]*?\*"/")
         yybegin(IN_TEMPL_DECLARATION_BODY);
         return GO_FOR_START_FRAGMENT;
     }
+
     [^] { /* capture characters until we emit a token */ }
 }
 
@@ -255,42 +261,44 @@ COMMENT=("//".*|"/"\*[^]*?\*"/")
 }
 
 <IN_TEMPL_DECLARATION_END> {
-  "}" {
-    yybegin(YYINITIAL);
-    return RBRACE;
-  }
+    "}" {
+        yybegin(YYINITIAL);
+        return RBRACE;
+    }
 }
 
 <IN_BOOL_EXPR> {
-  "?=" {
-      yybegin(IN_EXPR);
-      return BOOL_EXPR_START;
-  }
+    "?=" {
+        yybegin(IN_EXPR);
+        return BOOL_EXPR_START;
+    }
 }
 
 <IN_EXPR> {
-  "{" {
-      braceNestingLevel++;
-      if (braceNestingLevel == 1) {
-        return LBRACE;
-      }
-  }
-  "}" {
-      braceNestingLevel--;
-      if (braceNestingLevel == 0) {
-          yypushback(1);
-          yybegin(IN_END_RBRACE);
-          return GO_EXPR;
-      }
+    "{" {
+        braceNestingLevel++;
+        if (braceNestingLevel == 1) {
+            return LBRACE;
+        }
     }
-  [^] { /* capture characters until we emit a token */ }
+
+  "}" {
+        braceNestingLevel--;
+        if (braceNestingLevel == 0) {
+            yypushback(1);
+            yybegin(IN_END_RBRACE);
+            return GO_EXPR;
+        }
+    }
+
+    [^] { /* capture characters until we emit a token */ }
 }
 
 <IN_END_RBRACE> {
-  "}" {
-    yybegin(IN_TEMPL_DECLARATION_BODY);
-    return RBRACE;
-  }
+    "}" {
+        yybegin(IN_TEMPL_DECLARATION_BODY);
+        return RBRACE;
+    }
 }
 
 . { return BAD_CHARACTER; }
