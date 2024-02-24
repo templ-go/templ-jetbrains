@@ -22,6 +22,7 @@ public interface TemplTypes {
   IElementType SWITCH_DEFAULT = new TemplElementType("SWITCH_DEFAULT");
   IElementType SWITCH_STMT = new TemplElementType("SWITCH_STMT");
 
+  IElementType BOOL_EXPR_START = new TemplTokenType("BOOL_EXPR_START");
   IElementType COMMENT = new TemplTokenType("COMMENT");
   IElementType CSS_DECL_START = new TemplTokenType("css");
   IElementType DECL_GO_TOKEN = new TemplTokenType("DECL_GO_TOKEN");

@@ -32,6 +32,7 @@ COMMENT=("//".*|"/"\*[^]*?\*"/")
 %state IN_TEMPL_DECLARATION_BODY
 %state IN_TEMPL_DECLARATION_END
 %state IN_TEMPL_BLOCK_END
+%state IN_BOOL_EXPR
 %state IN_EXPR
 %state IN_IF_STMT
 %state IN_ELSE_IF_STMT
@@ -123,6 +124,12 @@ COMMENT=("//".*|"/"\*[^]*?\*"/")
   ^ {WHITE_SPACE} "@" {
     yypushback(1);
     yybegin(IN_INLINE_COMPONENT);
+    return HTML_FRAGMENT;
+  }
+
+  "?={" {
+    yypushback(3);
+    yybegin(IN_BOOL_EXPR);
     return HTML_FRAGMENT;
   }
 
@@ -250,6 +257,13 @@ COMMENT=("//".*|"/"\*[^]*?\*"/")
   "}" {
     yybegin(YYINITIAL);
     return RBRACE;
+  }
+}
+
+<IN_BOOL_EXPR> {
+  "?=" {
+      yybegin(IN_EXPR);
+      return BOOL_EXPR_START;
   }
 }
 

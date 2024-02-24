@@ -32,7 +32,7 @@ html_decl ::= HTML_DECL_START DECL_GO_TOKEN html_decl_body RBRACE
 html_decl_body ::= (HTML_FRAGMENT | expr | if_cond | switch_stmt | for_loop | component)*
 
 // https://templ.guide/syntax-and-usage/expressions and https://templ.guide/syntax-and-usage/template-composition
-expr ::= LBRACE GO_EXPR RBRACE
+expr ::= BOOL_EXPR_START? LBRACE GO_EXPR RBRACE
 
 // https://templ.guide/syntax-and-usage/if-else
 if_cond ::= GO_IF_START_FRAGMENT html_decl_body else_if* else? RBRACE

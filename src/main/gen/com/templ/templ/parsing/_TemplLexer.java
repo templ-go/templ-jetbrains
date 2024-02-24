@@ -24,17 +24,18 @@ public class _TemplLexer implements FlexLexer {
   public static final int IN_TEMPL_DECLARATION_BODY = 4;
   public static final int IN_TEMPL_DECLARATION_END = 6;
   public static final int IN_TEMPL_BLOCK_END = 8;
-  public static final int IN_EXPR = 10;
-  public static final int IN_IF_STMT = 12;
-  public static final int IN_ELSE_IF_STMT = 14;
-  public static final int IN_ELSE_STMT = 16;
-  public static final int IN_SWITCH_STMT = 18;
-  public static final int IN_CASE_STMT = 20;
-  public static final int IN_DEFAULT_STMT = 22;
-  public static final int IN_FOR_STMT = 24;
-  public static final int IN_INLINE_COMPONENT = 26;
-  public static final int IN_CHILDREN_BLOCK_START = 28;
-  public static final int IN_END_RBRACE = 30;
+  public static final int IN_BOOL_EXPR = 10;
+  public static final int IN_EXPR = 12;
+  public static final int IN_IF_STMT = 14;
+  public static final int IN_ELSE_IF_STMT = 16;
+  public static final int IN_ELSE_STMT = 18;
+  public static final int IN_SWITCH_STMT = 20;
+  public static final int IN_CASE_STMT = 22;
+  public static final int IN_DEFAULT_STMT = 24;
+  public static final int IN_FOR_STMT = 26;
+  public static final int IN_INLINE_COMPONENT = 28;
+  public static final int IN_CHILDREN_BLOCK_START = 30;
+  public static final int IN_END_RBRACE = 32;
 
   /**
    * ZZ_LEXSTATE[l] is the state in the DFA for the lexical state l
@@ -44,7 +45,8 @@ public class _TemplLexer implements FlexLexer {
    */
   private static final int ZZ_LEXSTATE[] = {
      0,  1,  2,  3,  4,  5,  6,  6,  7,  7,  8,  8,  9,  9, 10, 10, 
-    11, 11, 12, 13, 14, 14, 15, 15, 16, 16, 17, 17, 18, 18, 19, 19
+    11, 11, 12, 12, 13, 14, 15, 15, 16, 16, 17, 17, 18, 18, 19, 19, 
+    20, 20
   };
 
   /**
@@ -83,12 +85,13 @@ public class _TemplLexer implements FlexLexer {
 
   private static final String ZZ_CMAP_BLOCKS_PACKED_0 =
     "\11\0\1\1\1\2\2\3\1\4\22\0\1\5\31\0"+
-    "\1\6\5\0\1\7\40\0\1\10\1\0\1\11\1\12"+
-    "\1\13\1\14\1\0\1\15\1\16\2\0\1\17\1\20"+
-    "\1\0\1\21\1\22\1\0\1\23\1\24\1\25\1\26"+
-    "\1\0\1\27\3\0\1\30\1\0\1\31\7\0\1\3"+
-    "\32\0\1\1\u01df\0\1\1\177\0\13\1\35\0\2\3"+
-    "\5\0\1\1\57\0\1\1\240\0\1\1\377\0\u0100\32";
+    "\1\6\2\0\1\7\1\0\1\10\1\11\40\0\1\12"+
+    "\1\0\1\13\1\14\1\15\1\16\1\0\1\17\1\20"+
+    "\2\0\1\21\1\22\1\0\1\23\1\24\1\0\1\25"+
+    "\1\26\1\27\1\30\1\0\1\31\3\0\1\32\1\0"+
+    "\1\33\7\0\1\3\32\0\1\1\u01df\0\1\1\177\0"+
+    "\13\1\35\0\2\3\5\0\1\1\57\0\1\1\240\0"+
+    "\1\1\377\0\u0100\34";
 
   private static int [] zzUnpackcmap_blocks() {
     int [] result = new int[1536];
@@ -115,17 +118,18 @@ public class _TemplLexer implements FlexLexer {
   private static final int [] ZZ_ACTION = zzUnpackAction();
 
   private static final String ZZ_ACTION_PACKED_0 =
-    "\24\0\4\1\1\2\1\3\1\1\1\4\5\1\1\5"+
-    "\1\6\1\7\1\10\1\11\1\12\12\1\1\13\1\14"+
-    "\1\15\1\16\1\17\1\0\2\20\14\0\1\21\2\0"+
-    "\2\22\1\0\2\23\1\0\2\24\1\0\2\25\6\0"+
-    "\2\26\2\0\2\27\5\0\1\30\1\0\1\31\1\32"+
-    "\1\33\1\34\2\0\1\35\1\0\1\36\3\0\1\37"+
-    "\2\0\1\40\2\0\1\41\1\42\1\43\6\0\1\44"+
-    "\6\0\1\45\1\46\1\47\1\0\2\50\1\51";
+    "\25\0\5\1\1\2\1\3\1\1\1\4\5\1\1\5"+
+    "\1\6\1\7\1\10\1\6\1\11\1\12\12\1\1\13"+
+    "\1\14\1\15\1\16\1\17\1\0\2\20\15\0\1\21"+
+    "\1\0\1\22\1\0\2\23\1\0\2\24\1\0\2\25"+
+    "\1\0\2\26\6\0\2\27\2\0\2\30\2\0\1\31"+
+    "\3\0\1\32\1\0\1\33\1\34\1\35\1\36\2\0"+
+    "\1\37\1\0\1\40\3\0\1\41\2\0\1\42\2\0"+
+    "\1\43\1\44\1\45\6\0\1\46\6\0\1\47\1\50"+
+    "\1\51\1\0\2\52\1\53";
 
   private static int [] zzUnpackAction() {
-    int [] result = new int[143];
+    int [] result = new int[149];
     int offset = 0;
     offset = zzUnpackAction(ZZ_ACTION_PACKED_0, offset, result);
     return result;
@@ -150,27 +154,28 @@ public class _TemplLexer implements FlexLexer {
   private static final int [] ZZ_ROWMAP = zzUnpackRowMap();
 
   private static final String ZZ_ROWMAP_PACKED_0 =
-    "\0\0\0\33\0\66\0\121\0\154\0\207\0\242\0\275"+
-    "\0\330\0\363\0\u010e\0\u0129\0\u0144\0\u015f\0\u017a\0\u0195"+
-    "\0\u01b0\0\u01cb\0\u01e6\0\u0201\0\u021c\0\u0237\0\u0252\0\u026d"+
-    "\0\u021c\0\u0288\0\u02a3\0\u021c\0\u02be\0\u02d9\0\u02f4\0\u030f"+
-    "\0\u032a\0\u0288\0\u021c\0\u021c\0\u021c\0\u021c\0\u021c\0\u0345"+
-    "\0\u0360\0\u037b\0\u0396\0\u03b1\0\u03cc\0\u03e7\0\u0402\0\u041d"+
-    "\0\u0438\0\u021c\0\u021c\0\u021c\0\u021c\0\u021c\0\u0453\0\u021c"+
-    "\0\u046e\0\u0489\0\u0288\0\u04a4\0\u02a3\0\u02be\0\u02d9\0\u02f4"+
-    "\0\u030f\0\u032a\0\u04bf\0\u04da\0\u04f5\0\u021c\0\u0510\0\u0345"+
-    "\0\u0345\0\u052b\0\u0360\0\u0360\0\u0546\0\u037b\0\u037b\0\u0561"+
-    "\0\u0396\0\u0396\0\u057c\0\u03b1\0\u03cc\0\u03e7\0\u0597\0\u05b2"+
-    "\0\u0402\0\u0402\0\u05cd\0\u05e8\0\u0438\0\u0438\0\u0603\0\u061e"+
-    "\0\u0639\0\u0654\0\u066f\0\u068a\0\u021c\0\u06a5\0\u0345\0\u0360"+
-    "\0\u037b\0\u0396\0\u06c0\0\u06db\0\u0402\0\u06f6\0\u0438\0\u0711"+
-    "\0\u072c\0\u0747\0\u021c\0\u0762\0\u077d\0\u021c\0\u0798\0\u07b3"+
-    "\0\u021c\0\u021c\0\u07ce\0\u07e9\0\u0804\0\u081f\0\u083a\0\u0855"+
-    "\0\u0870\0\u021c\0\u088b\0\u08a6\0\u08c1\0\u08dc\0\u08f7\0\u0912"+
-    "\0\u021c\0\u021c\0\u021c\0\u092d\0\u092d\0\u0948\0\u092d";
+    "\0\0\0\35\0\72\0\127\0\164\0\221\0\256\0\313"+
+    "\0\350\0\u0105\0\u0122\0\u013f\0\u015c\0\u0179\0\u0196\0\u01b3"+
+    "\0\u01d0\0\u01ed\0\u020a\0\u0227\0\u0244\0\u0261\0\u027e\0\u029b"+
+    "\0\u02b8\0\u02d5\0\u0261\0\u02f2\0\u030f\0\u0261\0\u032c\0\u0349"+
+    "\0\u0366\0\u0383\0\u03a0\0\u02f2\0\u0261\0\u0261\0\u0261\0\u03bd"+
+    "\0\u0261\0\u0261\0\u03da\0\u03f7\0\u0414\0\u0431\0\u044e\0\u046b"+
+    "\0\u0488\0\u04a5\0\u04c2\0\u04df\0\u0261\0\u0261\0\u0261\0\u0261"+
+    "\0\u0261\0\u04fc\0\u0261\0\u0519\0\u0536\0\u0553\0\u02f2\0\u0570"+
+    "\0\u030f\0\u032c\0\u0349\0\u0366\0\u0383\0\u03a0\0\u058d\0\u05aa"+
+    "\0\u05c7\0\u0261\0\u05e4\0\u0261\0\u03da\0\u03da\0\u0601\0\u03f7"+
+    "\0\u03f7\0\u061e\0\u0414\0\u0414\0\u063b\0\u0431\0\u0431\0\u0658"+
+    "\0\u044e\0\u046b\0\u0488\0\u0675\0\u0692\0\u04a5\0\u04a5\0\u06af"+
+    "\0\u06cc\0\u04df\0\u04df\0\u06e9\0\u0706\0\u0723\0\u0261\0\u0740"+
+    "\0\u075d\0\u077a\0\u0261\0\u0797\0\u03da\0\u03f7\0\u0414\0\u0431"+
+    "\0\u07b4\0\u07d1\0\u04a5\0\u07ee\0\u04df\0\u080b\0\u0828\0\u0845"+
+    "\0\u0261\0\u0862\0\u087f\0\u0261\0\u089c\0\u08b9\0\u0261\0\u0261"+
+    "\0\u08d6\0\u08f3\0\u0910\0\u092d\0\u094a\0\u0967\0\u0984\0\u0261"+
+    "\0\u09a1\0\u09be\0\u09db\0\u09f8\0\u0a15\0\u0a32\0\u0261\0\u0261"+
+    "\0\u0261\0\u0a4f\0\u0a4f\0\u0a6c\0\u0a4f";
 
   private static int [] zzUnpackRowMap() {
-    int [] result = new int[143];
+    int [] result = new int[149];
     int offset = 0;
     offset = zzUnpackRowMap(ZZ_ROWMAP_PACKED_0, offset, result);
     return result;
@@ -193,45 +198,47 @@ public class _TemplLexer implements FlexLexer {
   private static final int [] ZZ_TRANS = zzUnpacktrans();
 
   private static final String ZZ_TRANS_PACKED_0 =
-    "\60\25\1\26\35\25\1\27\27\25\1\30\2\25\1\27"+
-    "\32\25\1\31\1\32\2\25\5\33\1\25\1\34\1\25"+
-    "\1\35\1\36\1\25\1\37\1\25\1\40\5\25\1\41"+
-    "\3\25\1\31\1\42\1\25\2\43\3\0\24\43\1\44"+
-    "\1\0\2\43\3\0\24\43\1\45\1\0\30\25\1\46"+
-    "\1\47\31\25\1\50\32\25\1\51\32\25\1\52\32\25"+
-    "\1\53\3\25\5\54\3\25\1\55\1\56\15\25\1\53"+
-    "\10\25\1\57\36\25\1\60\50\25\1\61\4\25\1\62"+
-    "\4\25\1\63\20\25\1\64\2\25\2\43\3\0\23\43"+
-    "\1\65\1\43\1\0\2\43\3\0\24\43\1\66\47\0"+
-    "\1\67\21\0\2\70\1\71\41\0\1\72\20\0\5\73"+
-    "\5\0\1\74\20\0\5\75\1\0\1\34\1\0\1\76"+
-    "\1\77\1\0\1\100\1\0\1\101\5\0\1\102\16\0"+
-    "\1\103\35\0\1\104\40\0\1\105\25\0\1\106\45\0"+
-    "\1\107\4\0\1\110\2\111\1\112\1\110\26\0\1\113"+
-    "\2\114\1\115\1\113\26\0\1\116\2\117\1\120\1\116"+
-    "\26\0\1\121\2\122\1\123\1\121\26\0\5\124\3\0"+
-    "\1\125\1\126\30\0\1\127\35\0\1\130\20\0\1\131"+
-    "\2\132\1\133\1\131\40\0\1\134\20\0\1\135\2\136"+
-    "\1\137\1\135\45\0\1\140\14\0\1\70\50\0\1\141"+
-    "\31\0\1\142\37\0\1\143\22\0\1\144\41\0\1\145"+
-    "\25\0\1\146\15\0\1\110\1\147\1\111\1\112\1\110"+
-    "\26\0\1\113\1\150\1\114\1\115\1\113\26\0\1\116"+
-    "\1\151\1\117\1\120\1\116\26\0\1\121\1\152\1\122"+
-    "\1\123\1\121\51\0\1\153\22\0\1\154\17\0\1\131"+
-    "\1\155\1\132\1\133\1\131\41\0\1\156\17\0\1\135"+
-    "\1\157\1\136\1\137\1\135\47\0\1\160\32\0\1\161"+
-    "\34\0\1\162\21\0\1\163\27\0\1\164\47\0\1\165"+
-    "\20\0\1\166\27\0\1\167\32\0\1\170\41\0\1\171"+
-    "\32\0\1\172\26\0\1\173\45\0\1\174\15\0\1\175"+
-    "\47\0\1\176\32\0\1\177\11\0\1\200\44\0\1\201"+
-    "\30\0\1\202\34\0\1\203\32\0\1\204\31\0\1\205"+
-    "\41\0\1\206\32\0\1\207\32\0\1\210\21\0\1\211"+
-    "\24\0\1\212\32\0\1\213\32\0\1\214\25\0\1\214"+
-    "\2\215\1\216\1\214\26\0\1\214\1\217\1\215\1\216"+
-    "\1\214\25\0";
+    "\64\26\1\27\37\26\1\30\31\26\1\31\2\26\1\30"+
+    "\12\26\1\32\21\26\1\33\1\34\2\26\5\35\2\26"+
+    "\1\32\1\36\1\26\1\37\1\40\1\26\1\41\1\26"+
+    "\1\42\5\26\1\43\3\26\1\33\1\44\1\26\2\45"+
+    "\3\0\26\45\1\46\1\0\2\45\3\0\26\45\1\47"+
+    "\1\0\2\45\3\0\3\45\1\50\23\45\1\0\32\26"+
+    "\1\51\1\52\33\26\1\53\34\26\1\54\34\26\1\55"+
+    "\34\26\1\56\3\26\5\57\5\26\1\60\1\61\15\26"+
+    "\1\56\10\26\1\62\42\26\1\63\52\26\1\64\4\26"+
+    "\1\65\6\26\1\66\20\26\1\67\2\26\2\45\3\0"+
+    "\25\45\1\70\1\45\1\0\2\45\3\0\26\45\1\71"+
+    "\53\0\1\72\21\0\2\73\1\74\45\0\1\75\26\0"+
+    "\1\76\26\0\5\77\7\0\1\100\20\0\5\101\3\0"+
+    "\1\36\1\0\1\102\1\103\1\0\1\104\1\0\1\105"+
+    "\5\0\1\106\20\0\1\107\37\0\1\110\42\0\1\111"+
+    "\27\0\1\112\47\0\1\113\12\0\1\114\26\0\1\115"+
+    "\2\116\1\117\1\115\30\0\1\120\2\121\1\122\1\120"+
+    "\30\0\1\123\2\124\1\125\1\123\30\0\1\126\2\127"+
+    "\1\130\1\126\30\0\5\131\5\0\1\132\1\133\32\0"+
+    "\1\134\37\0\1\135\20\0\1\136\2\137\1\140\1\136"+
+    "\44\0\1\141\20\0\1\142\2\143\1\144\1\142\51\0"+
+    "\1\145\14\0\1\73\54\0\1\146\44\0\1\147\23\0"+
+    "\1\150\41\0\1\151\24\0\1\152\43\0\1\153\27\0"+
+    "\1\154\15\0\1\115\1\155\1\116\1\117\1\115\30\0"+
+    "\1\120\1\156\1\121\1\122\1\120\30\0\1\123\1\157"+
+    "\1\124\1\125\1\123\30\0\1\126\1\160\1\127\1\130"+
+    "\1\126\55\0\1\161\24\0\1\162\17\0\1\136\1\163"+
+    "\1\137\1\140\1\136\45\0\1\164\17\0\1\142\1\165"+
+    "\1\143\1\144\1\142\53\0\1\166\34\0\1\167\36\0"+
+    "\1\170\23\0\1\171\31\0\1\172\51\0\1\173\22\0"+
+    "\1\174\31\0\1\175\34\0\1\176\43\0\1\177\34\0"+
+    "\1\200\30\0\1\201\47\0\1\202\17\0\1\203\51\0"+
+    "\1\204\34\0\1\205\11\0\1\206\50\0\1\207\32\0"+
+    "\1\210\36\0\1\211\34\0\1\212\33\0\1\213\43\0"+
+    "\1\214\34\0\1\215\34\0\1\216\23\0\1\217\24\0"+
+    "\1\220\34\0\1\221\34\0\1\222\27\0\1\222\2\223"+
+    "\1\224\1\222\30\0\1\222\1\225\1\223\1\224\1\222"+
+    "\27\0";
 
   private static int [] zzUnpacktrans() {
-    int [] result = new int[2403];
+    int [] result = new int[2697];
     int offset = 0;
     offset = zzUnpacktrans(ZZ_TRANS_PACKED_0, offset, result);
     return result;
@@ -269,15 +276,16 @@ public class _TemplLexer implements FlexLexer {
   private static final int [] ZZ_ATTRIBUTE = zzUnpackAttribute();
 
   private static final String ZZ_ATTRIBUTE_PACKED_0 =
-    "\24\0\1\11\3\1\1\11\2\1\1\11\6\1\5\11"+
-    "\12\1\5\11\1\0\1\11\1\1\14\0\1\11\2\0"+
-    "\2\1\1\0\2\1\1\0\2\1\1\0\2\1\6\0"+
-    "\2\1\2\0\2\1\5\0\1\11\1\0\4\1\2\0"+
-    "\1\1\1\0\1\1\3\0\1\11\2\0\1\11\2\0"+
-    "\2\11\1\1\6\0\1\11\6\0\3\11\1\0\3\1";
+    "\25\0\1\11\4\1\1\11\2\1\1\11\6\1\3\11"+
+    "\1\1\2\11\12\1\5\11\1\0\1\11\1\1\15\0"+
+    "\1\11\1\0\1\11\1\0\2\1\1\0\2\1\1\0"+
+    "\2\1\1\0\2\1\6\0\2\1\2\0\2\1\2\0"+
+    "\1\11\3\0\1\11\1\0\4\1\2\0\1\1\1\0"+
+    "\1\1\3\0\1\11\2\0\1\11\2\0\2\11\1\1"+
+    "\6\0\1\11\6\0\3\11\1\0\3\1";
 
   private static int [] zzUnpackAttribute() {
-    int [] result = new int[143];
+    int [] result = new int[149];
     int offset = 0;
     offset = zzUnpackAttribute(ZZ_ATTRIBUTE_PACKED_0, offset, result);
     return result;
@@ -631,7 +639,7 @@ public class _TemplLexer implements FlexLexer {
        return GO_ROOT_FRAGMENT;
      }
             }  // fall though
-            case 144: break;
+            case 150: break;
             default:
         return null;
         }
@@ -642,94 +650,94 @@ public class _TemplLexer implements FlexLexer {
             { /* capture characters until we emit a token */
             }
           // fall through
-          case 42: break;
+          case 44: break;
           case 2:
             { yypushback(1);
     yybegin(IN_EXPR);
     return HTML_FRAGMENT;
             }
           // fall through
-          case 43: break;
+          case 45: break;
           case 3:
             { yypushback(1);
       yybegin(IN_TEMPL_BLOCK_END);
       return HTML_FRAGMENT;
             }
           // fall through
-          case 44: break;
+          case 46: break;
           case 4:
             { yypushback(1);
     yybegin(IN_INLINE_COMPONENT);
     return HTML_FRAGMENT;
             }
           // fall through
-          case 45: break;
+          case 47: break;
           case 5:
             { yypushback(1);
     yybegin(IN_TEMPL_DECLARATION_END);
     return HTML_FRAGMENT;
             }
           // fall through
-          case 46: break;
+          case 48: break;
           case 6:
             { return BAD_CHARACTER;
             }
           // fall through
-          case 47: break;
+          case 49: break;
           case 7:
             { yybegin(YYINITIAL);
     return RBRACE;
             }
           // fall through
-          case 48: break;
+          case 50: break;
           case 8:
             { yybegin(IN_TEMPL_DECLARATION_BODY);
         return RBRACE;
             }
           // fall through
-          case 49: break;
+          case 51: break;
           case 9:
             { return LBRACE;
             }
           // fall through
-          case 50: break;
+          case 52: break;
           case 10:
             { yypushback(1);
       yybegin(IN_END_RBRACE);
       return GO_EXPR;
             }
           // fall through
-          case 51: break;
+          case 53: break;
           case 11:
             { yybegin(IN_TEMPL_DECLARATION_BODY);
         return GO_INLINE_COMPONENT;
             }
           // fall through
-          case 52: break;
+          case 54: break;
           case 12:
             { return INLINE_COMPONENT_START;
             }
           // fall through
-          case 53: break;
+          case 55: break;
           case 13:
             { yypushback(1);
         yybegin(IN_CHILDREN_BLOCK_START);
         return GO_INLINE_COMPONENT;
             }
           // fall through
-          case 54: break;
+          case 56: break;
           case 14:
             { yybegin(IN_TEMPL_DECLARATION_BODY);
         return LBRACE;
             }
           // fall through
-          case 55: break;
+          case 57: break;
           case 15:
             { yybegin(IN_TEMPL_DECLARATION_BODY);
     return RBRACE;
             }
           // fall through
-          case 56: break;
+          case 58: break;
           case 16:
             // lookahead expression with fixed base length
             zzMarkedPos = Character.offsetByCodePoints
@@ -738,33 +746,39 @@ public class _TemplLexer implements FlexLexer {
     return DECL_GO_TOKEN;
             }
           // fall through
-          case 57: break;
+          case 59: break;
           case 17:
             { yypushback(2);
     yybegin(IN_IF_STMT);
     return HTML_FRAGMENT;
             }
           // fall through
-          case 58: break;
+          case 60: break;
           case 18:
-            // lookahead expression with fixed lookahead length
-            zzMarkedPos = Character.offsetByCodePoints
-                (zzBufferL, zzMarkedPos, -1);
-            { yybegin(IN_TEMPL_DECLARATION_BODY);
-        return GO_IF_START_FRAGMENT;
+            { yybegin(IN_EXPR);
+      return BOOL_EXPR_START;
             }
           // fall through
-          case 59: break;
+          case 61: break;
           case 19:
             // lookahead expression with fixed lookahead length
             zzMarkedPos = Character.offsetByCodePoints
                 (zzBufferL, zzMarkedPos, -1);
             { yybegin(IN_TEMPL_DECLARATION_BODY);
+        return GO_IF_START_FRAGMENT;
+            }
+          // fall through
+          case 62: break;
+          case 20:
+            // lookahead expression with fixed lookahead length
+            zzMarkedPos = Character.offsetByCodePoints
+                (zzBufferL, zzMarkedPos, -1);
+            { yybegin(IN_TEMPL_DECLARATION_BODY);
         return GO_ELSE_IF_START_FRAGMENT;
             }
           // fall through
-          case 60: break;
-          case 20:
+          case 63: break;
+          case 21:
             // lookahead expression with fixed lookahead length
             zzMarkedPos = Character.offsetByCodePoints
                 (zzBufferL, zzMarkedPos, -1);
@@ -772,16 +786,16 @@ public class _TemplLexer implements FlexLexer {
         return GO_ELSE_START_FRAGMENT;
             }
           // fall through
-          case 61: break;
-          case 21:
+          case 64: break;
+          case 22:
             // lookahead expression with fixed lookahead length
             zzMarkedPos = Character.offsetByCodePoints
                 (zzBufferL, zzMarkedPos, -1);
             { return GO_SWITCH_START_FRAGMENT;
             }
           // fall through
-          case 62: break;
-          case 22:
+          case 65: break;
+          case 23:
             // lookahead expression with fixed lookahead length
             zzMarkedPos = Character.offsetByCodePoints
                 (zzBufferL, zzMarkedPos, -1);
@@ -789,8 +803,8 @@ public class _TemplLexer implements FlexLexer {
         return GO_CASE_FRAGMENT;
             }
           // fall through
-          case 63: break;
-          case 23:
+          case 66: break;
+          case 24:
             // lookahead expression with fixed lookahead length
             zzMarkedPos = Character.offsetByCodePoints
                 (zzBufferL, zzMarkedPos, -1);
@@ -798,15 +812,22 @@ public class _TemplLexer implements FlexLexer {
         return GO_FOR_START_FRAGMENT;
             }
           // fall through
-          case 64: break;
-          case 24:
+          case 67: break;
+          case 25:
+            { yypushback(3);
+    yybegin(IN_BOOL_EXPR);
+    return HTML_FRAGMENT;
+            }
+          // fall through
+          case 68: break;
+          case 26:
             { yypushback(3);
     yybegin(IN_FOR_STMT);
     return HTML_FRAGMENT;
             }
           // fall through
-          case 65: break;
-          case 25:
+          case 69: break;
+          case 27:
             // lookahead expression with fixed lookahead length
             zzMarkedPos = Character.offsetByCodePoints
                 (zzBufferL, zzMarkedPos, -2);
@@ -814,8 +835,8 @@ public class _TemplLexer implements FlexLexer {
         return GO_IF_START_FRAGMENT;
             }
           // fall through
-          case 66: break;
-          case 26:
+          case 70: break;
+          case 28:
             // lookahead expression with fixed lookahead length
             zzMarkedPos = Character.offsetByCodePoints
                 (zzBufferL, zzMarkedPos, -2);
@@ -823,8 +844,8 @@ public class _TemplLexer implements FlexLexer {
         return GO_ELSE_IF_START_FRAGMENT;
             }
           // fall through
-          case 67: break;
-          case 27:
+          case 71: break;
+          case 29:
             // lookahead expression with fixed lookahead length
             zzMarkedPos = Character.offsetByCodePoints
                 (zzBufferL, zzMarkedPos, -2);
@@ -832,16 +853,16 @@ public class _TemplLexer implements FlexLexer {
         return GO_ELSE_START_FRAGMENT;
             }
           // fall through
-          case 68: break;
-          case 28:
+          case 72: break;
+          case 30:
             // lookahead expression with fixed lookahead length
             zzMarkedPos = Character.offsetByCodePoints
                 (zzBufferL, zzMarkedPos, -2);
             { return GO_SWITCH_START_FRAGMENT;
             }
           // fall through
-          case 69: break;
-          case 29:
+          case 73: break;
+          case 31:
             // lookahead expression with fixed lookahead length
             zzMarkedPos = Character.offsetByCodePoints
                 (zzBufferL, zzMarkedPos, -2);
@@ -849,8 +870,8 @@ public class _TemplLexer implements FlexLexer {
         return GO_CASE_FRAGMENT;
             }
           // fall through
-          case 70: break;
-          case 30:
+          case 74: break;
+          case 32:
             // lookahead expression with fixed lookahead length
             zzMarkedPos = Character.offsetByCodePoints
                 (zzBufferL, zzMarkedPos, -2);
@@ -858,67 +879,67 @@ public class _TemplLexer implements FlexLexer {
         return GO_FOR_START_FRAGMENT;
             }
           // fall through
-          case 71: break;
-          case 31:
+          case 75: break;
+          case 33:
             { yypushback(4);
     yybegin(IN_CASE_STMT);
     return HTML_FRAGMENT;
             }
           // fall through
-          case 72: break;
-          case 32:
+          case 76: break;
+          case 34:
             { yypushback(4);
       yybegin(IN_CASE_STMT);
             }
           // fall through
-          case 73: break;
-          case 33:
+          case 77: break;
+          case 35:
             { yypushback(5); // reverse back to start of "templ"
     yybegin(IN_TEMPL_DECLARATION_START);
     return GO_ROOT_FRAGMENT;
             }
           // fall through
-          case 74: break;
-          case 34:
+          case 78: break;
+          case 36:
             { return HTML_DECL_START;
             }
           // fall through
-          case 75: break;
-          case 35:
+          case 79: break;
+          case 37:
             { yypushback(yylength());
     yybegin(IN_ELSE_STMT);
     return HTML_FRAGMENT;
             }
           // fall through
-          case 76: break;
-          case 36:
+          case 80: break;
+          case 38:
             { yypushback(6);
     yybegin(IN_SWITCH_STMT);
     return HTML_FRAGMENT;
             }
           // fall through
-          case 77: break;
-          case 37:
+          case 81: break;
+          case 39:
             { yypushback(yylength());
     yybegin(IN_ELSE_IF_STMT);
     return HTML_FRAGMENT;
             }
           // fall through
-          case 78: break;
-          case 38:
+          case 82: break;
+          case 40:
             { yypushback(8);
     yybegin(IN_DEFAULT_STMT);
     return HTML_FRAGMENT;
             }
           // fall through
-          case 79: break;
-          case 39:
+          case 83: break;
+          case 41:
             { yypushback(8);
       yybegin(IN_DEFAULT_STMT);
             }
           // fall through
-          case 80: break;
-          case 40:
+          case 84: break;
+          case 42:
             // lookahead expression with fixed lookahead length
             zzMarkedPos = Character.offsetByCodePoints
                 (zzBufferL, zzMarkedPos, -1);
@@ -926,8 +947,8 @@ public class _TemplLexer implements FlexLexer {
         return GO_DEFAULT_FRAGMENT;
             }
           // fall through
-          case 81: break;
-          case 41:
+          case 85: break;
+          case 43:
             // lookahead expression with fixed lookahead length
             zzMarkedPos = Character.offsetByCodePoints
                 (zzBufferL, zzMarkedPos, -2);
@@ -935,7 +956,7 @@ public class _TemplLexer implements FlexLexer {
         return GO_DEFAULT_FRAGMENT;
             }
           // fall through
-          case 82: break;
+          case 86: break;
           default:
             zzScanError(ZZ_NO_MATCH);
           }

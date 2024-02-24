@@ -96,15 +96,23 @@ public class TemplParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // LBRACE GO_EXPR RBRACE
+  // BOOL_EXPR_START? LBRACE GO_EXPR RBRACE
   public static boolean expr(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "expr")) return false;
-    if (!nextTokenIs(b, LBRACE)) return false;
+    if (!nextTokenIs(b, "<expr>", BOOL_EXPR_START, LBRACE)) return false;
     boolean r;
-    Marker m = enter_section_(b);
-    r = consumeTokens(b, 0, LBRACE, GO_EXPR, RBRACE);
-    exit_section_(b, m, EXPR, r);
+    Marker m = enter_section_(b, l, _NONE_, EXPR, "<expr>");
+    r = expr_0(b, l + 1);
+    r = r && consumeTokens(b, 0, LBRACE, GO_EXPR, RBRACE);
+    exit_section_(b, l, m, r, false, null);
     return r;
+  }
+
+  // BOOL_EXPR_START?
+  private static boolean expr_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "expr_0")) return false;
+    consumeToken(b, BOOL_EXPR_START);
+    return true;
   }
 
   /* ********************************************************** */
