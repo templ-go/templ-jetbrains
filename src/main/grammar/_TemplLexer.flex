@@ -67,7 +67,7 @@ COMMENT=("//".*|"/"\*[^]*?\*"/")
 }
 
 <IN_TEMPL_DECLARATION_START> {
-  "templ" { return HTML_DECL_START; }
+  ^ "templ" { return HTML_DECL_START; }
 
   "{" $ {
     yybegin(IN_TEMPL_DECLARATION_BODY);
