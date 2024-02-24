@@ -353,6 +353,7 @@ public class _TemplLexer implements FlexLexer {
 
   /* user code: */
   private boolean atEndOfFile = false;
+  private int braceNestingLevel = 0;
 
   public _TemplLexer() {
     this((java.io.Reader)null);
@@ -697,14 +698,20 @@ public class _TemplLexer implements FlexLexer {
           // fall through
           case 51: break;
           case 9:
-            { return LBRACE;
+            { braceNestingLevel++;
+      if (braceNestingLevel == 1) {
+        return LBRACE;
+      }
             }
           // fall through
           case 52: break;
           case 10:
-            { yypushback(1);
-      yybegin(IN_END_RBRACE);
-      return GO_EXPR;
+            { braceNestingLevel--;
+      if (braceNestingLevel == 0) {
+          yypushback(1);
+          yybegin(IN_END_RBRACE);
+          return GO_EXPR;
+      }
             }
           // fall through
           case 53: break;

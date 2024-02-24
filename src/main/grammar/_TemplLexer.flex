@@ -10,6 +10,7 @@ import static com.templ.templ.psi.TemplTypes.*;
 
 %{
   private boolean atEndOfFile = false;
+  private int braceNestingLevel = 0;
 
   public _TemplLexer() {
     this((java.io.Reader)null);
@@ -268,11 +269,19 @@ COMMENT=("//".*|"/"\*[^]*?\*"/")
 }
 
 <IN_EXPR> {
-  "{" { return LBRACE; }
+  "{" {
+      braceNestingLevel++;
+      if (braceNestingLevel == 1) {
+        return LBRACE;
+      }
+  }
   "}" {
-      yypushback(1);
-      yybegin(IN_END_RBRACE);
-      return GO_EXPR;
+      braceNestingLevel--;
+      if (braceNestingLevel == 0) {
+          yypushback(1);
+          yybegin(IN_END_RBRACE);
+          return GO_EXPR;
+      }
     }
   [^] { /* capture characters until we emit a token */ }
 }
