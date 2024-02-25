@@ -12,8 +12,6 @@ import com.intellij.psi.tree.IFileElementType
 import com.intellij.psi.tree.TokenSet
 import com.templ.templ.TemplLanguage
 import com.templ.templ.file.TemplFile
-import com.templ.templ.psi.TemplTokenSets
-import com.templ.templ.psi.TemplTokenType
 import com.templ.templ.psi.TemplTypes
 
 class TemplParserDefinition: ParserDefinition {
