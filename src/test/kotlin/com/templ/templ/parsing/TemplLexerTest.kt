@@ -331,4 +331,45 @@ class TemplLexerTest : LexerTestCase() {
             """.trimIndent()
         )
     }
+
+    fun testCss() {
+        doTest(
+            """
+            package main
+            
+            css cssComponentGreen() {
+                color: { red };
+            }
+            
+            css loading(percent int) {
+                width: { fmt.Sprintf("%d%%", percent) };
+            }
+            """.trimIndent(),
+            """
+            TemplTokenType.GO_ROOT_FRAGMENT ('package main\n\n')
+            TemplTokenType.css ('css')
+            WHITE_SPACE (' ')
+            TemplTokenType.CSS_CLASS_ID ('cssComponentGreen')
+            TemplTokenType.( ('(')
+            TemplTokenType.GO_CSS_DECL_PARAMS ('')
+            TemplTokenType.) (')')
+            WHITE_SPACE (' ')
+            TemplTokenType.{ ('{')
+            TemplTokenType.CSS_PROPERTIES ('\n    color: { red };\n')
+            TemplTokenType.} ('}')
+            TemplTokenType.GO_ROOT_FRAGMENT ('\n\n')
+            TemplTokenType.css ('css')
+            WHITE_SPACE (' ')
+            TemplTokenType.CSS_CLASS_ID ('loading')
+            TemplTokenType.( ('(')
+            TemplTokenType.GO_CSS_DECL_PARAMS ('percent int')
+            TemplTokenType.) (')')
+            WHITE_SPACE (' ')
+            TemplTokenType.{ ('{')
+            TemplTokenType.CSS_PROPERTIES ('\n    width: { fmt.Sprintf("%d%%", percent) };\n')
+            TemplTokenType.} ('}')
+            TemplTokenType.GO_ROOT_FRAGMENT ('')
+            """.trimIndent()
+        )
+    }
 }

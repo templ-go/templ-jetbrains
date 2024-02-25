@@ -100,16 +100,39 @@ public class TemplParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // CSS_DECL_START CSS_CLASS_ID LPARENTH RPARENTH LBRACE CSS_PROPERTIES RBRACE
+  // CSS_DECL_START CSS_CLASS_ID css_params LBRACE CSS_PROPERTIES RBRACE
   public static boolean css_decl(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "css_decl")) return false;
     if (!nextTokenIs(b, CSS_DECL_START)) return false;
     boolean r, p;
     Marker m = enter_section_(b, l, _NONE_, CSS_DECL, null);
-    r = consumeTokens(b, 1, CSS_DECL_START, CSS_CLASS_ID, LPARENTH, RPARENTH, LBRACE, CSS_PROPERTIES, RBRACE);
+    r = consumeTokens(b, 1, CSS_DECL_START, CSS_CLASS_ID);
     p = r; // pin = 1
+    r = r && report_error_(b, css_params(b, l + 1));
+    r = p && report_error_(b, consumeTokens(b, -1, LBRACE, CSS_PROPERTIES, RBRACE)) && r;
     exit_section_(b, l, m, r, p, null);
     return r || p;
+  }
+
+  /* ********************************************************** */
+  // LPARENTH GO_CSS_DECL_PARAMS? RPARENTH
+  static boolean css_params(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "css_params")) return false;
+    if (!nextTokenIs(b, LPARENTH)) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, LPARENTH);
+    r = r && css_params_1(b, l + 1);
+    r = r && consumeToken(b, RPARENTH);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // GO_CSS_DECL_PARAMS?
+  private static boolean css_params_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "css_params_1")) return false;
+    consumeToken(b, GO_CSS_DECL_PARAMS);
+    return true;
   }
 
   /* ********************************************************** */

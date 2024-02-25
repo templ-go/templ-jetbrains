@@ -57,7 +57,8 @@ component_params ::= LPARENTH GO_COMPONENT_IMPORT_PARAMS? RPARENTH
 component_children ::= LBRACE html_decl_body RBRACE {pin=1}
 
 // https://templ.guide/syntax-and-usage/css-style-management#css-components
-css_decl ::= CSS_DECL_START CSS_CLASS_ID LPARENTH RPARENTH LBRACE CSS_PROPERTIES RBRACE {pin=1}
+css_decl ::= CSS_DECL_START CSS_CLASS_ID css_params LBRACE CSS_PROPERTIES RBRACE {pin=1}
+private css_params ::= LPARENTH GO_CSS_DECL_PARAMS? RPARENTH
 
 // https://templ.guide/syntax-and-usage/script-templates#script-templates
 script_decl ::= SCRIPT_DECL_START SCRIPT_FUNCTION_DECL SCRIPT_BODY RBRACE {pin=1}

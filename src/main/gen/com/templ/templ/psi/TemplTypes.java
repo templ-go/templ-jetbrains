@@ -34,6 +34,7 @@ public interface TemplTypes {
   IElementType DECL_GO_TOKEN = new TemplTokenType("DECL_GO_TOKEN");
   IElementType GO_CASE_FRAGMENT = new TemplTokenType("GO_CASE_FRAGMENT");
   IElementType GO_COMPONENT_IMPORT_PARAMS = new TemplTokenType("GO_COMPONENT_IMPORT_PARAMS");
+  IElementType GO_CSS_DECL_PARAMS = new TemplTokenType("GO_CSS_DECL_PARAMS");
   IElementType GO_DEFAULT_FRAGMENT = new TemplTokenType("GO_DEFAULT_FRAGMENT");
   IElementType GO_ELSE_IF_START_FRAGMENT = new TemplTokenType("GO_ELSE_IF_START_FRAGMENT");
   IElementType GO_ELSE_START_FRAGMENT = new TemplTokenType("GO_ELSE_START_FRAGMENT");

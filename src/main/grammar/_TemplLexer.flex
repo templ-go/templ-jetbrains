@@ -1,7 +1,7 @@
 package com.templ.templ.parsing;
 
 import com.intellij.lexer.FlexLexer;
-import com.intellij.psi.tree.IElementType;
+import com.intellij.psi.tree.IElementType;import q.H.H.I;
 
 import static com.intellij.psi.TokenType.*;
 import static com.templ.templ.psi.TemplTypes.*;
@@ -32,6 +32,7 @@ OPTIONAL_WHITE_SPACE=\s*
 %state IN_TEMPL_DECLARATION_BODY
 %state IN_TEMPL_DECLARATION_END
 %state IN_CSS_DECLARATION_START
+%state IN_CSS_DECLARATION_PARAMS
 %state IN_CSS_DECLARATION_BODY
 %state IN_CSS_DECLARATION_END
 %state IN_SCRIPT_DECLARATION_START
@@ -141,16 +142,16 @@ OPTIONAL_WHITE_SPACE=\s*
     }
 
     ^ {OPTIONAL_WHITE_SPACE} "@" {
-            yypushback(1);
-            yybegin(IN_COMPONENT_IMPORT);
-            return HTML_FRAGMENT;
-        }
+        yypushback(1);
+        yybegin(IN_COMPONENT_IMPORT);
+        return HTML_FRAGMENT;
+    }
 
     ">" {OPTIONAL_WHITE_SPACE} "@" {
-            yypushback(1);
-            yybegin(IN_COMPONENT_IMPORT);
-            return HTML_FRAGMENT;
-        }
+        yypushback(1);
+        yybegin(IN_COMPONENT_IMPORT);
+        return HTML_FRAGMENT;
+    }
 
     "?={" {
         yypushback(3);
@@ -265,10 +266,10 @@ OPTIONAL_WHITE_SPACE=\s*
     }
 
     [\w\.]+ "(" {
-            yypushback(1);
-            yybegin(IN_COMPONENT_IMPORT_PARAMS);
-            return COMPONENT_REFERENCE;
-        }
+        yypushback(1);
+        yybegin(IN_COMPONENT_IMPORT_PARAMS);
+        return COMPONENT_REFERENCE;
+    }
 
     [\w\.]+ {
         yybegin(IN_TEMPL_DECLARATION_BODY);
@@ -285,22 +286,22 @@ OPTIONAL_WHITE_SPACE=\s*
     }
 
     ")" {OPTIONAL_WHITE_SPACE} "{" {
-            parensNestingLevel--;
-            if (parensNestingLevel == 0) {
-                yypushback(yylength());
-                yybegin(IN_COMPONENT_IMPORT_CHILDREN_BLOCK_START);
-                return GO_COMPONENT_IMPORT_PARAMS;
-            }
+        parensNestingLevel--;
+        if (parensNestingLevel == 0) {
+            yypushback(yylength());
+            yybegin(IN_COMPONENT_IMPORT_CHILDREN_BLOCK_START);
+            return GO_COMPONENT_IMPORT_PARAMS;
         }
+    }
 
     ")" {
-            parensNestingLevel--;
-            if (parensNestingLevel == 0) {
-                yypushback(1);
-                yybegin(IN_COMPONENT_IMPORT_PARAMS_END_WITHOUT_CHILDREN);
-                return GO_COMPONENT_IMPORT_PARAMS;
-            }
+        parensNestingLevel--;
+        if (parensNestingLevel == 0) {
+            yypushback(1);
+            yybegin(IN_COMPONENT_IMPORT_PARAMS_END_WITHOUT_CHILDREN);
+            return GO_COMPONENT_IMPORT_PARAMS;
         }
+    }
 
     [^] { /* capture characters until we emit a token */ }
 }
@@ -371,9 +372,14 @@ OPTIONAL_WHITE_SPACE=\s*
 <IN_CSS_DECLARATION_START> {
     ^ "css" { return CSS_DECL_START; }
 
-    "(" { return LPARENTH; }
+    "(" {
+        yypushback(1);
+        yybegin(IN_CSS_DECLARATION_PARAMS);
+    }
 
-    ")" { return RPARENTH; }
+    ")" {
+        return RPARENTH;
+    }
 
     \w+ { return CSS_CLASS_ID; }
 
@@ -385,6 +391,26 @@ OPTIONAL_WHITE_SPACE=\s*
     {WHITE_SPACE} {
         return WHITE_SPACE;
     }
+}
+
+<IN_CSS_DECLARATION_PARAMS> {
+    "(" {
+        parensNestingLevel++;
+        if (parensNestingLevel == 1) {
+            return LPARENTH;
+        }
+    }
+
+    ")" {
+        parensNestingLevel--;
+        if (parensNestingLevel == 0) {
+            yypushback(1);
+            yybegin(IN_CSS_DECLARATION_START);
+            return GO_CSS_DECL_PARAMS;
+        }
+    }
+
+    [^] { /* capture characters until we emit a token */ }
 }
 
 <IN_CSS_DECLARATION_BODY> {
