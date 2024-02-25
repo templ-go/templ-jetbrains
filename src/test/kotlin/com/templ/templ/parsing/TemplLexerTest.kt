@@ -10,22 +10,6 @@ class TemplLexerTest : LexerTestCase() {
     override fun createLexer() = TemplLexer()
     override fun getTestName(lowercaseFirstLetter: Boolean) = "TemplLexerTest"
 
-    fun testComment() {
-        doTest(
-            """
-            // comment 
-            /*
-             * comment
-             */
-            """.trimIndent(),
-            """
-            TemplTokenType.COMMENT ('// comment ')
-            WHITE_SPACE ('\n')
-            TemplTokenType.COMMENT ('/*\n * comment\n */')
-            """.trimIndent()
-        )
-    }
-
     fun testSimple() {
         doTest(
             """
@@ -51,9 +35,34 @@ class TemplLexerTest : LexerTestCase() {
             }
             """.trimIndent(),
             """
-            TemplTokenType.COMMENT ('// comment ')
-            WHITE_SPACE ('\n')
-            TemplTokenType.COMMENT ('/*\n * comment\n */')
+            TemplTokenType.GO_ROOT_FRAGMENT ('package main\n\n')
+            TemplTokenType.templ ('templ')
+            TemplTokenType.DECL_GO_TOKEN (' hello() {')
+            TemplTokenType.HTML_FRAGMENT ('\n   <h1>Hello, world!</h1>\n')
+            TemplTokenType.} ('}')
+            TemplTokenType.GO_ROOT_FRAGMENT ('\n\n')
+            TemplTokenType.templ ('templ')
+            TemplTokenType.DECL_GO_TOKEN (' test() {')
+            TemplTokenType.HTML_FRAGMENT ('\n    <div>')
+            TemplTokenType.{ ('{')
+            TemplTokenType.GO_EXPR (' "test" ')
+            TemplTokenType.} ('}')
+            TemplTokenType.HTML_FRAGMENT ('</div>\n')
+            TemplTokenType.} ('}')
+            TemplTokenType.GO_ROOT_FRAGMENT ('\n\n')
+            TemplTokenType.templ ('templ')
+            TemplTokenType.DECL_GO_TOKEN (' test2(enabled bool) {')
+            TemplTokenType.HTML_FRAGMENT ('\n    ')
+            TemplTokenType.GO_IF_START_FRAGMENT ('if enabled {')
+            TemplTokenType.HTML_FRAGMENT ('\n        <div>enabled</div>\n    ')
+            TemplTokenType.} ('}')
+            TemplTokenType.HTML_FRAGMENT ('\n    <div>')
+            TemplTokenType.{ ('{')
+            TemplTokenType.GO_EXPR (' "test" ')
+            TemplTokenType.} ('}')
+            TemplTokenType.HTML_FRAGMENT ('</div>\n')
+            TemplTokenType.} ('}')
+            TemplTokenType.GO_ROOT_FRAGMENT ('\n\nfunc test() bool {\n   return true\n}')
             """.trimIndent()
         )
     }
@@ -74,9 +83,20 @@ class TemplLexerTest : LexerTestCase() {
             }
             """.trimIndent(),
             """
-            TemplTokenType.COMMENT ('// comment ')
-            WHITE_SPACE ('\n')
-            TemplTokenType.COMMENT ('/*\n * comment\n */')
+            TemplTokenType.GO_ROOT_FRAGMENT ('package main\n\n')
+            TemplTokenType.templ ('templ')
+            TemplTokenType.DECL_GO_TOKEN (' hello() {')
+            TemplTokenType.HTML_FRAGMENT ('\n   ')
+            TemplTokenType.GO_IF_START_FRAGMENT ('if true {')
+            TemplTokenType.HTML_FRAGMENT ('\n       <h1>if</h1>\n   ')
+            TemplTokenType.GO_ELSE_IF_START_FRAGMENT ('} else if false {')
+            TemplTokenType.HTML_FRAGMENT ('\n       <h1>else if</h1>\n   ')
+            TemplTokenType.GO_ELSE_START_FRAGMENT ('} else {')
+            TemplTokenType.HTML_FRAGMENT ('\n       <h1>else</h1>\n   ')
+            TemplTokenType.} ('}')
+            TemplTokenType.HTML_FRAGMENT ('\n')
+            TemplTokenType.} ('}')
+            TemplTokenType.GO_ROOT_FRAGMENT ('')
             """.trimIndent()
         )
     }
@@ -99,9 +119,23 @@ class TemplLexerTest : LexerTestCase() {
             }
             """.trimIndent(),
             """
-            TemplTokenType.COMMENT ('// comment ')
-            WHITE_SPACE ('\n')
-            TemplTokenType.COMMENT ('/*\n * comment\n */')
+            TemplTokenType.GO_ROOT_FRAGMENT ('package main\n\n')
+            TemplTokenType.templ ('templ')
+            TemplTokenType.DECL_GO_TOKEN (' hello(type string) {')
+            TemplTokenType.HTML_FRAGMENT ('\n    ')
+            TemplTokenType.GO_SWITCH_START_FRAGMENT ('switch type {')
+            TemplTokenType.GO_CASE_FRAGMENT ('\n        case "case1":')
+            TemplTokenType.HTML_FRAGMENT ('\n             <h1>case 1</h1>\n        ')
+            TemplTokenType.GO_CASE_FRAGMENT ('case "case2":')
+            TemplTokenType.HTML_FRAGMENT ('\n             <h1>case 2</h1>\n        ')
+            TemplTokenType.GO_DEFAULT_FRAGMENT ('default:')
+            TemplTokenType.HTML_FRAGMENT ('\n             <h1>default</h1>\n        ')
+            TemplTokenType.} ('}')
+            TemplTokenType.HTML_FRAGMENT ('\n    ')
+            TemplTokenType.} ('}')
+            TemplTokenType.HTML_FRAGMENT ('\n')
+            TemplTokenType.} ('}')
+            TemplTokenType.GO_ROOT_FRAGMENT ('')
             """.trimIndent()
         )
     }
@@ -120,9 +154,20 @@ class TemplLexerTest : LexerTestCase() {
             }
             """.trimIndent(),
             """
-            TemplTokenType.COMMENT ('// comment ')
-            WHITE_SPACE ('\n')
-            TemplTokenType.COMMENT ('/*\n * comment\n */')
+            TemplTokenType.GO_ROOT_FRAGMENT ('package main\n\n')
+            TemplTokenType.templ ('templ')
+            TemplTokenType.DECL_GO_TOKEN (' nameList(items []Item) {')
+            TemplTokenType.HTML_FRAGMENT ('\n  <ul>\n  ')
+            TemplTokenType.GO_FOR_START_FRAGMENT ('for _, item := range items {')
+            TemplTokenType.HTML_FRAGMENT ('\n    <li>')
+            TemplTokenType.{ ('{')
+            TemplTokenType.GO_EXPR (' item.Name ')
+            TemplTokenType.} ('}')
+            TemplTokenType.HTML_FRAGMENT ('</li>\n  ')
+            TemplTokenType.} ('}')
+            TemplTokenType.HTML_FRAGMENT ('\n  </ul>\n')
+            TemplTokenType.} ('}')
+            TemplTokenType.GO_ROOT_FRAGMENT ('')
             """.trimIndent()
         )
     }
@@ -139,9 +184,22 @@ class TemplLexerTest : LexerTestCase() {
             }
             """.trimIndent(),
             """
-            TemplTokenType.COMMENT ('// comment ')
-            WHITE_SPACE ('\n')
-            TemplTokenType.COMMENT ('/*\n * comment\n */')
+            TemplTokenType.GO_ROOT_FRAGMENT ('package main\n\n')
+            TemplTokenType.templ ('templ')
+            TemplTokenType.DECL_GO_TOKEN (' test4() {')
+            TemplTokenType.HTML_FRAGMENT ('\n    ')
+            TemplTokenType.COMPONENT_IMPORT_START ('@')
+            TemplTokenType.COMPONENT_REFERENCE ('test3')
+            TemplTokenType.( ('(')
+            TemplTokenType.GO_COMPONENT_IMPORT_PARAMS ('"hello"')
+            TemplTokenType.) (')')
+            WHITE_SPACE (' ')
+            TemplTokenType.{ ('{')
+            TemplTokenType.HTML_FRAGMENT ('\n        <span>hello</span> \n    ')
+            TemplTokenType.} ('}')
+            TemplTokenType.HTML_FRAGMENT ('\n')
+            TemplTokenType.} ('}')
+            TemplTokenType.GO_ROOT_FRAGMENT ('')
             """.trimIndent()
         )
     }
@@ -162,9 +220,28 @@ class TemplLexerTest : LexerTestCase() {
             }
             """.trimIndent(),
             """
-            TemplTokenType.COMMENT ('// comment ')
-            WHITE_SPACE ('\n')
-            TemplTokenType.COMMENT ('/*\n * comment\n */')
+            TemplTokenType.GO_ROOT_FRAGMENT ('package main\n\n')
+            TemplTokenType.templ ('templ')
+            TemplTokenType.DECL_GO_TOKEN (' test3() {')
+            TemplTokenType.HTML_FRAGMENT ('\n    <h1>asdf</h1>\n    ')
+            TemplTokenType.COMPONENT_IMPORT_START ('@')
+            TemplTokenType.COMPONENT_REFERENCE ('hello')
+            TemplTokenType.( ('(')
+            TemplTokenType.GO_COMPONENT_IMPORT_PARAMS ('"case2"')
+            TemplTokenType.) (')')
+            TemplTokenType.HTML_FRAGMENT ('\n    ')
+            TemplTokenType.COMPONENT_IMPORT_START ('@')
+            TemplTokenType.COMPONENT_REFERENCE ('test2')
+            TemplTokenType.( ('(')
+            TemplTokenType.GO_COMPONENT_IMPORT_PARAMS ('')
+            TemplTokenType.) (')')
+            WHITE_SPACE (' ')
+            TemplTokenType.{ ('{')
+            TemplTokenType.HTML_FRAGMENT ('\n        <button>\n            Click me\n        </button>\n    ')
+            TemplTokenType.} ('}')
+            TemplTokenType.HTML_FRAGMENT ('\n')
+            TemplTokenType.} ('}')
+            TemplTokenType.GO_ROOT_FRAGMENT ('')
             """.trimIndent()
         )
     }
@@ -196,9 +273,61 @@ class TemplLexerTest : LexerTestCase() {
             }
             """.trimIndent(),
             """
-            TemplTokenType.COMMENT ('// comment ')
-            WHITE_SPACE ('\n')
-            TemplTokenType.COMMENT ('/*\n * comment\n */')
+            TemplTokenType.GO_ROOT_FRAGMENT ('package main\n\nimport fmt\n\n')
+            TemplTokenType.templ ('templ')
+            TemplTokenType.DECL_GO_TOKEN (' wrapper(index int) {')
+            TemplTokenType.HTML_FRAGMENT ('\n    <div id=')
+            TemplTokenType.{ ('{')
+            TemplTokenType.GO_EXPR (' fmt.Sprint(index) ')
+            TemplTokenType.} ('}')
+            TemplTokenType.HTML_FRAGMENT ('>\n        ')
+            TemplTokenType.{ ('{')
+            TemplTokenType.GO_EXPR (' children... ')
+            TemplTokenType.} ('}')
+            TemplTokenType.HTML_FRAGMENT ('\n    </div>\n')
+            TemplTokenType.} ('}')
+            TemplTokenType.GO_ROOT_FRAGMENT ('\n\n')
+            TemplTokenType.templ ('templ')
+            TemplTokenType.DECL_GO_TOKEN (' template() {')
+            TemplTokenType.HTML_FRAGMENT ('\n    ')
+            TemplTokenType.COMPONENT_IMPORT_START ('@')
+            TemplTokenType.COMPONENT_REFERENCE ('wrapper')
+            TemplTokenType.( ('(')
+            TemplTokenType.GO_COMPONENT_IMPORT_PARAMS ('1')
+            TemplTokenType.) (')')
+            WHITE_SPACE (' ')
+            TemplTokenType.{ ('{')
+            TemplTokenType.HTML_FRAGMENT ('\n        <div>hello</div>\n        ')
+            TemplTokenType.COMPONENT_IMPORT_START ('@')
+            TemplTokenType.COMPONENT_REFERENCE ('wrapper')
+            TemplTokenType.( ('(')
+            TemplTokenType.GO_COMPONENT_IMPORT_PARAMS ('2')
+            TemplTokenType.) (')')
+            WHITE_SPACE (' ')
+            TemplTokenType.{ ('{')
+            TemplTokenType.HTML_FRAGMENT ('\n\n             ')
+            TemplTokenType.COMPONENT_IMPORT_START ('@')
+            TemplTokenType.COMPONENT_REFERENCE ('wrapper')
+            TemplTokenType.( ('(')
+            TemplTokenType.GO_COMPONENT_IMPORT_PARAMS ('3')
+            TemplTokenType.) (')')
+            WHITE_SPACE (' ')
+            TemplTokenType.{ ('{')
+            TemplTokenType.HTML_FRAGMENT ('\n                 child3\n                 ')
+            TemplTokenType.COMPONENT_IMPORT_START ('@')
+            TemplTokenType.COMPONENT_REFERENCE ('wrapper')
+            TemplTokenType.( ('(')
+            TemplTokenType.GO_COMPONENT_IMPORT_PARAMS ('4')
+            TemplTokenType.) (')')
+            TemplTokenType.HTML_FRAGMENT ('\n             ')
+            TemplTokenType.} ('}')
+            TemplTokenType.HTML_FRAGMENT ('\n        ')
+            TemplTokenType.} ('}')
+            TemplTokenType.HTML_FRAGMENT ('\n    ')
+            TemplTokenType.} ('}')
+            TemplTokenType.HTML_FRAGMENT ('\n')
+            TemplTokenType.} ('}')
+            TemplTokenType.GO_ROOT_FRAGMENT ('')
             """.trimIndent()
         )
     }
