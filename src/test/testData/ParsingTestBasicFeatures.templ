@@ -1,0 +1,11 @@
+package main
+
+templ Hello(name string) {
+  <div>Hello, { name }</div>
+}
+
+templ Greeting(person Person) {
+  <div class="greeting">
+    @Hello(person.Name)
+  </div>
+}
