@@ -15,7 +15,7 @@ import com.templ.templ.file.TemplFile
 import com.templ.templ.psi.TemplTypes
 
 class TemplParserDefinition: ParserDefinition {
-    val FILE = IFileElementType(TemplLanguage);
+    private val iFileElementType = IFileElementType(TemplLanguage)
 
     override fun createLexer(project: Project?): Lexer {
         return TemplLexer()
@@ -26,7 +26,7 @@ class TemplParserDefinition: ParserDefinition {
     }
 
     override fun getFileNodeType(): IFileElementType {
-        return FILE
+        return iFileElementType
     }
 
     override fun getCommentTokens(): TokenSet {

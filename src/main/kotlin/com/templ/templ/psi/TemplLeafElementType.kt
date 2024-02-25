@@ -8,6 +8,6 @@ import com.templ.templ.TemplLanguage
 
 class TemplLeafElementType(debugName: String): IElementType(debugName, TemplLanguage), ILeafElementType {
     override fun createLeafNode(charSequence: CharSequence): ASTNode {
-        return OuterLanguageElementImpl(this, charSequence);
+        return OuterLanguageElementImpl(this, charSequence)
     }
 }

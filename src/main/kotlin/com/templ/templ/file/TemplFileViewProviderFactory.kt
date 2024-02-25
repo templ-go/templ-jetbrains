@@ -10,6 +10,6 @@ import com.templ.templ.TemplLanguage
 class TemplFileViewProviderFactory: FileViewProviderFactory {
     override fun createFileViewProvider(virtualFile: VirtualFile, language: Language?, psiManager: PsiManager, eventSystemEnabled: Boolean): FileViewProvider {
         assert(language!!.isKindOf(TemplLanguage))
-        return TemplFileViewProvider(psiManager, virtualFile, eventSystemEnabled);
+        return TemplFileViewProvider(psiManager, virtualFile, eventSystemEnabled)
     }
 }

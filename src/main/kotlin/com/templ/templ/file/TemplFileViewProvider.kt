@@ -19,14 +19,14 @@ import com.templ.templ.psi.TemplTypes
 class TemplFileViewProvider(manager: PsiManager, virtualFile: VirtualFile, eventSystemEnabled: Boolean) :
     MultiplePsiFilesPerDocumentFileViewProvider(manager, virtualFile, eventSystemEnabled), TemplateLanguageFileViewProvider {
 
-    val htmlElementType = object : TemplateDataElementType("HTML inside Templ", HTMLLanguage.INSTANCE, TemplTypes.HTML_FRAGMENT, TemplLeafElementType("TEMPL_NOT_HTML")) {
+    private val htmlElementType = object : TemplateDataElementType("HTML inside Templ", HTMLLanguage.INSTANCE, TemplTypes.HTML_FRAGMENT, TemplLeafElementType("TEMPL_NOT_HTML")) {
         override fun appendCurrentTemplateToken(tokenEndOffset: Int, tokenText: CharSequence): TemplateDataModifications {
             // Detect if were inside an attribute value and if so, insert fake quotes to make the HTML parser happy.
             if (StringUtil.endsWithChar(tokenText, '=')) {
-                return TemplateDataModifications.fromRangeToRemove(tokenEndOffset, "\"\"");
+                return TemplateDataModifications.fromRangeToRemove(tokenEndOffset, "\"\"")
             }
 
-            return super.appendCurrentTemplateToken(tokenEndOffset, tokenText);
+            return super.appendCurrentTemplateToken(tokenEndOffset, tokenText)
         }
     }
 
@@ -35,7 +35,7 @@ class TemplFileViewProvider(manager: PsiManager, virtualFile: VirtualFile, event
     }
 
     override fun getLanguages(): Set<Language> {
-        return setOf(getBaseLanguage(), HTMLLanguage.INSTANCE)
+        return setOf(baseLanguage, HTMLLanguage.INSTANCE)
     }
 
     override fun getTemplateDataLanguage(): Language {
@@ -47,7 +47,7 @@ class TemplFileViewProvider(manager: PsiManager, virtualFile: VirtualFile, event
             val file = LanguageParserDefinitions.INSTANCE.forLanguage(lang).createFile(this) as PsiFileImpl
             file.contentElementType = htmlElementType
             return file
-        } else if (lang === getBaseLanguage()) {
+        } else if (lang === baseLanguage) {
             return LanguageParserDefinitions.INSTANCE.forLanguage(lang).createFile(this) as PsiFileImpl
         } else {
             return null

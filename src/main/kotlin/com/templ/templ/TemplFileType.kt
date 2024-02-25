@@ -1,7 +1,6 @@
 package com.templ.templ
 
 import com.intellij.openapi.fileTypes.LanguageFileType
-import com.intellij.openapi.fileTypes.PlainTextFileType
 import com.intellij.openapi.util.IconLoader
 import javax.swing.Icon
 

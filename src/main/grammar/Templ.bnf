@@ -21,8 +21,7 @@
       HTML_DECL_START='templ'
       SCRIPT_DECL_START='script'
       CSS_DECL_START='css'
-      INLINE_COMPONENT_START='@'
-      COMMENT='regexp:(//.*|/\*(.|\n)*?\*/)'
+      COMPONENT_IMPORT_START='@'
   ]
 }
 

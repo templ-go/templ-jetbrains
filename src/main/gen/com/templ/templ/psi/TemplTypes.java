@@ -26,8 +26,7 @@ public interface TemplTypes {
   IElementType SWITCH_STMT = new TemplElementType("SWITCH_STMT");
 
   IElementType BOOL_EXPR_START = new TemplTokenType("BOOL_EXPR_START");
-  IElementType COMMENT = new TemplTokenType("COMMENT");
-  IElementType COMPONENT_IMPORT_START = new TemplTokenType("COMPONENT_IMPORT_START");
+  IElementType COMPONENT_IMPORT_START = new TemplTokenType("@");
   IElementType COMPONENT_REFERENCE = new TemplTokenType("COMPONENT_REFERENCE");
   IElementType CSS_CLASS_ID = new TemplTokenType("CSS_CLASS_ID");
   IElementType CSS_DECL_START = new TemplTokenType("css");
@@ -45,7 +44,6 @@ public interface TemplTypes {
   IElementType GO_SWITCH_START_FRAGMENT = new TemplTokenType("GO_SWITCH_START_FRAGMENT");
   IElementType HTML_DECL_START = new TemplTokenType("templ");
   IElementType HTML_FRAGMENT = new TemplTokenType("HTML_FRAGMENT");
-  IElementType INLINE_COMPONENT_START = new TemplTokenType("@");
   IElementType LBRACE = new TemplTokenType("{");
   IElementType LPARENTH = new TemplTokenType("(");
   IElementType RBRACE = new TemplTokenType("}");
