@@ -52,7 +52,9 @@ switch_default ::= GO_DEFAULT_FRAGMENT html_decl_body {pin=1}
 for_loop ::= GO_FOR_START_FRAGMENT html_decl_body RBRACE {pin=1}
 
 // https://templ.guide/syntax-and-usage/template-composition
-component ::= INLINE_COMPONENT_START GO_INLINE_COMPONENT component_children? {pin=1}
+component ::= COMPONENT_IMPORT_START COMPONENT_REFERENCE component_params? component_children? {pin=1; recoverWhile=recover_component}
+private recover_component ::= !(COMPONENT_IMPORT_START | HTML_FRAGMENT | RBRACE | RPARENTH)
+component_params ::= LPARENTH GO_COMPONENT_IMPORT_PARAMS? RPARENTH
 component_children ::= LBRACE html_decl_body RBRACE {pin=1}
 
 // https://templ.guide/syntax-and-usage/css-style-management#css-components

@@ -36,22 +36,29 @@ public class TemplParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // INLINE_COMPONENT_START GO_INLINE_COMPONENT component_children?
+  // COMPONENT_IMPORT_START COMPONENT_REFERENCE component_params? component_children?
   public static boolean component(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "component")) return false;
-    if (!nextTokenIs(b, INLINE_COMPONENT_START)) return false;
     boolean r, p;
-    Marker m = enter_section_(b, l, _NONE_, COMPONENT, null);
-    r = consumeTokens(b, 1, INLINE_COMPONENT_START, GO_INLINE_COMPONENT);
+    Marker m = enter_section_(b, l, _NONE_, COMPONENT, "<component>");
+    r = consumeTokens(b, 1, COMPONENT_IMPORT_START, COMPONENT_REFERENCE);
     p = r; // pin = 1
-    r = r && component_2(b, l + 1);
-    exit_section_(b, l, m, r, p, null);
+    r = r && report_error_(b, component_2(b, l + 1));
+    r = p && component_3(b, l + 1) && r;
+    exit_section_(b, l, m, r, p, TemplParser::recover_component);
     return r || p;
   }
 
-  // component_children?
+  // component_params?
   private static boolean component_2(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "component_2")) return false;
+    component_params(b, l + 1);
+    return true;
+  }
+
+  // component_children?
+  private static boolean component_3(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "component_3")) return false;
     component_children(b, l + 1);
     return true;
   }
@@ -69,6 +76,27 @@ public class TemplParser implements PsiParser, LightPsiParser {
     r = p && consumeToken(b, RBRACE) && r;
     exit_section_(b, l, m, r, p, null);
     return r || p;
+  }
+
+  /* ********************************************************** */
+  // LPARENTH GO_COMPONENT_IMPORT_PARAMS? RPARENTH
+  public static boolean component_params(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "component_params")) return false;
+    if (!nextTokenIs(b, LPARENTH)) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, LPARENTH);
+    r = r && component_params_1(b, l + 1);
+    r = r && consumeToken(b, RPARENTH);
+    exit_section_(b, m, COMPONENT_PARAMS, r);
+    return r;
+  }
+
+  // GO_COMPONENT_IMPORT_PARAMS?
+  private static boolean component_params_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "component_params_1")) return false;
+    consumeToken(b, GO_COMPONENT_IMPORT_PARAMS);
+    return true;
   }
 
   /* ********************************************************** */
@@ -193,12 +221,14 @@ public class TemplParser implements PsiParser, LightPsiParser {
   private static boolean html_decl_body_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "html_decl_body_0")) return false;
     boolean r;
+    Marker m = enter_section_(b);
     r = consumeToken(b, HTML_FRAGMENT);
     if (!r) r = expr(b, l + 1);
     if (!r) r = if_cond(b, l + 1);
     if (!r) r = switch_stmt(b, l + 1);
     if (!r) r = for_loop(b, l + 1);
     if (!r) r = component(b, l + 1);
+    exit_section_(b, m, null, r);
     return r;
   }
 
@@ -256,6 +286,28 @@ public class TemplParser implements PsiParser, LightPsiParser {
     if (!r) r = consumeToken(b, CSS_DECL_START);
     if (!r) r = consumeToken(b, SCRIPT_DECL_START);
     if (!r) r = consumeToken(b, GO_ROOT_FRAGMENT);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // !(COMPONENT_IMPORT_START | HTML_FRAGMENT | RBRACE | RPARENTH)
+  static boolean recover_component(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "recover_component")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NOT_);
+    r = !recover_component_0(b, l + 1);
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  // COMPONENT_IMPORT_START | HTML_FRAGMENT | RBRACE | RPARENTH
+  private static boolean recover_component_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "recover_component_0")) return false;
+    boolean r;
+    r = consumeToken(b, COMPONENT_IMPORT_START);
+    if (!r) r = consumeToken(b, HTML_FRAGMENT);
+    if (!r) r = consumeToken(b, RBRACE);
+    if (!r) r = consumeToken(b, RPARENTH);
     return r;
   }
 

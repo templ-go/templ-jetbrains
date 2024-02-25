@@ -168,4 +168,38 @@ class TemplLexerTest : LexerTestCase() {
             """.trimIndent()
         )
     }
+
+    fun testNesting() {
+        doTest(
+            """
+            package main
+            
+            import fmt
+
+            templ wrapper(index int) {
+                <div id={ fmt.Sprint(index) }>
+                    { children... }
+                </div>
+            }
+
+            templ template() {
+                @wrapper(1) {
+                    <div>hello</div>
+                    @wrapper(2) {
+
+                         @wrapper(3) {
+                             child3
+                             @wrapper(4)
+                         }
+                    }
+                }
+            }
+            """.trimIndent(),
+            """
+            TemplTokenType.COMMENT ('// comment ')
+            WHITE_SPACE ('\n')
+            TemplTokenType.COMMENT ('/*\n * comment\n */')
+            """.trimIndent()
+        )
+    }
 }

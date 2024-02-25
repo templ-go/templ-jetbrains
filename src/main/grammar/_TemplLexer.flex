@@ -11,6 +11,7 @@ import static com.templ.templ.psi.TemplTypes.*;
 %{
     private boolean atEndOfFile = false;
     private int braceNestingLevel = 0;
+    private int parensNestingLevel = 0;
 
     public _TemplLexer() {
         this((java.io.Reader)null);
@@ -24,11 +25,8 @@ import static com.templ.templ.psi.TemplTypes.*;
 %type IElementType
 %unicode
 
-EOL=\R
 WHITE_SPACE=\s+
 OPTIONAL_WHITE_SPACE=\s*
-
-COMMENT=("//".*|"/"\*[^]*?\*"/")
 
 %state IN_TEMPL_DECLARATION_START
 %state IN_TEMPL_DECLARATION_BODY
@@ -49,8 +47,10 @@ COMMENT=("//".*|"/"\*[^]*?\*"/")
 %state IN_CASE_STMT
 %state IN_DEFAULT_STMT
 %state IN_FOR_STMT
-%state IN_INLINE_COMPONENT
-%state IN_CHILDREN_BLOCK_START
+%state IN_COMPONENT_IMPORT
+%state IN_COMPONENT_IMPORT_PARAMS
+%state IN_COMPONENT_IMPORT_PARAMS_END_WITHOUT_CHILDREN
+%state IN_COMPONENT_IMPORT_CHILDREN_BLOCK_START
 %state IN_END_RBRACE
 
 %%
@@ -141,10 +141,16 @@ COMMENT=("//".*|"/"\*[^]*?\*"/")
     }
 
     ^ {OPTIONAL_WHITE_SPACE} "@" {
-        yypushback(1);
-        yybegin(IN_INLINE_COMPONENT);
-        return HTML_FRAGMENT;
-    }
+            yypushback(1);
+            yybegin(IN_COMPONENT_IMPORT);
+            return HTML_FRAGMENT;
+        }
+
+    ">" {OPTIONAL_WHITE_SPACE} "@" {
+            yypushback(1);
+            yybegin(IN_COMPONENT_IMPORT);
+            return HTML_FRAGMENT;
+        }
 
     "?={" {
         yypushback(3);
@@ -253,26 +259,68 @@ COMMENT=("//".*|"/"\*[^]*?\*"/")
     [^] { /* capture characters until we emit a token */ }
 }
 
-<IN_INLINE_COMPONENT> {
+<IN_COMPONENT_IMPORT> {
     "@" {
-        return INLINE_COMPONENT_START;
+        return COMPONENT_IMPORT_START;
     }
 
-    "{" {OPTIONAL_WHITE_SPACE} $ {
-        yypushback(1);
-        yybegin(IN_CHILDREN_BLOCK_START);
-        return GO_INLINE_COMPONENT;
-    }
+    [\w\.]+ "(" {
+            yypushback(1);
+            yybegin(IN_COMPONENT_IMPORT_PARAMS);
+            return COMPONENT_REFERENCE;
+        }
 
-    \n {
+    [\w\.]+ {
         yybegin(IN_TEMPL_DECLARATION_BODY);
-        return GO_INLINE_COMPONENT;
+        return COMPONENT_REFERENCE;
     }
+}
+
+<IN_COMPONENT_IMPORT_PARAMS> {
+    "(" {
+        parensNestingLevel++;
+        if (parensNestingLevel == 1) {
+            return LPARENTH;
+        }
+    }
+
+    ")" {OPTIONAL_WHITE_SPACE} "{" {
+            parensNestingLevel--;
+            if (parensNestingLevel == 0) {
+                yypushback(yylength());
+                yybegin(IN_COMPONENT_IMPORT_CHILDREN_BLOCK_START);
+                return GO_COMPONENT_IMPORT_PARAMS;
+            }
+        }
+
+    ")" {
+            parensNestingLevel--;
+            if (parensNestingLevel == 0) {
+                yypushback(1);
+                yybegin(IN_COMPONENT_IMPORT_PARAMS_END_WITHOUT_CHILDREN);
+                return GO_COMPONENT_IMPORT_PARAMS;
+            }
+        }
 
     [^] { /* capture characters until we emit a token */ }
 }
 
-<IN_CHILDREN_BLOCK_START> {
+<IN_COMPONENT_IMPORT_PARAMS_END_WITHOUT_CHILDREN> {
+    ")" {
+        yybegin(IN_TEMPL_DECLARATION_BODY);
+        return RPARENTH;
+    }
+}
+
+<IN_COMPONENT_IMPORT_CHILDREN_BLOCK_START> {
+    ")" {
+        return RPARENTH;
+    }
+
+    {WHITE_SPACE} {
+        return WHITE_SPACE;
+    }
+
     "{" {
         yybegin(IN_TEMPL_DECLARATION_BODY);
         return LBRACE;
@@ -301,7 +349,7 @@ COMMENT=("//".*|"/"\*[^]*?\*"/")
         }
     }
 
-  "}" {
+    "}" {
         braceNestingLevel--;
         if (braceNestingLevel == 0) {
             yypushback(1);

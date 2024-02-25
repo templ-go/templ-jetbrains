@@ -10,6 +10,7 @@ public interface TemplTypes {
 
   IElementType COMPONENT = new TemplElementType("COMPONENT");
   IElementType COMPONENT_CHILDREN = new TemplElementType("COMPONENT_CHILDREN");
+  IElementType COMPONENT_PARAMS = new TemplElementType("COMPONENT_PARAMS");
   IElementType CSS_DECL = new TemplElementType("CSS_DECL");
   IElementType ELSE = new TemplElementType("ELSE");
   IElementType ELSE_IF = new TemplElementType("ELSE_IF");
@@ -26,18 +27,20 @@ public interface TemplTypes {
 
   IElementType BOOL_EXPR_START = new TemplTokenType("BOOL_EXPR_START");
   IElementType COMMENT = new TemplTokenType("COMMENT");
+  IElementType COMPONENT_IMPORT_START = new TemplTokenType("COMPONENT_IMPORT_START");
+  IElementType COMPONENT_REFERENCE = new TemplTokenType("COMPONENT_REFERENCE");
   IElementType CSS_CLASS_ID = new TemplTokenType("CSS_CLASS_ID");
   IElementType CSS_DECL_START = new TemplTokenType("css");
   IElementType CSS_PROPERTIES = new TemplTokenType("CSS_PROPERTIES");
   IElementType DECL_GO_TOKEN = new TemplTokenType("DECL_GO_TOKEN");
   IElementType GO_CASE_FRAGMENT = new TemplTokenType("GO_CASE_FRAGMENT");
+  IElementType GO_COMPONENT_IMPORT_PARAMS = new TemplTokenType("GO_COMPONENT_IMPORT_PARAMS");
   IElementType GO_DEFAULT_FRAGMENT = new TemplTokenType("GO_DEFAULT_FRAGMENT");
   IElementType GO_ELSE_IF_START_FRAGMENT = new TemplTokenType("GO_ELSE_IF_START_FRAGMENT");
   IElementType GO_ELSE_START_FRAGMENT = new TemplTokenType("GO_ELSE_START_FRAGMENT");
   IElementType GO_EXPR = new TemplTokenType("GO_EXPR");
   IElementType GO_FOR_START_FRAGMENT = new TemplTokenType("GO_FOR_START_FRAGMENT");
   IElementType GO_IF_START_FRAGMENT = new TemplTokenType("GO_IF_START_FRAGMENT");
-  IElementType GO_INLINE_COMPONENT = new TemplTokenType("GO_INLINE_COMPONENT");
   IElementType GO_ROOT_FRAGMENT = new TemplTokenType("GO_ROOT_FRAGMENT");
   IElementType GO_SWITCH_START_FRAGMENT = new TemplTokenType("GO_SWITCH_START_FRAGMENT");
   IElementType HTML_DECL_START = new TemplTokenType("templ");
@@ -59,6 +62,9 @@ public interface TemplTypes {
       }
       else if (type == COMPONENT_CHILDREN) {
         return new TemplComponentChildrenImpl(node);
+      }
+      else if (type == COMPONENT_PARAMS) {
+        return new TemplComponentParamsImpl(node);
       }
       else if (type == CSS_DECL) {
         return new TemplCssDeclImpl(node);

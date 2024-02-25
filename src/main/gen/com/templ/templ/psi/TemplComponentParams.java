@@ -5,12 +5,6 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface TemplComponent extends PsiElement {
-
-  @Nullable
-  TemplComponentChildren getComponentChildren();
-
-  @Nullable
-  TemplComponentParams getComponentParams();
+public interface TemplComponentParams extends PsiElement {
 
 }
