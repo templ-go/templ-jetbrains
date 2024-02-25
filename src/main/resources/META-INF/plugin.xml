@@ -12,24 +12,16 @@
     <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.modules.ultimate</depends>
     <depends>org.jetbrains.plugins.textmate</depends>
-    <depends>org.jetbrains.plugins.go</depends>
     <extensions defaultExtensionNs="com.intellij">
         <fileType name="templ"
                   language="templ"
                   implementationClass="com.templ.templ.TemplFileType"
                   extensions="templ"
                   fieldName="INSTANCE"/>
-
         <lang.parserDefinition
                 language="templ"
                 implementationClass="com.templ.templ.parsing.TemplParserDefinition"/>
-
-<!--
-        <multiHostInjector implementation="com.templ.templ.languageinjection.TemplInjector" />
--->
-
         <lang.fileViewProviderFactory language="templ" implementationClass="com.templ.templ.file.TemplFileViewProviderFactory"/>
-
         <editorHighlighterProvider filetype="templ" implementationClass="com.templ.templ.highlighting.TemplEditorHighlighterProvider"/>
         <projectService serviceImplementation="com.templ.templ.TemplSettings"/>
         <projectConfigurable groupId="tools" instance="com.templ.templ.TemplConfigurable"/>
