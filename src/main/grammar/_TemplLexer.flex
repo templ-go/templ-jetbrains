@@ -258,7 +258,7 @@ COMMENT=("//".*|"/"\*[^]*?\*"/")
         return INLINE_COMPONENT_START;
     }
 
-    "{" {
+    "{" {OPTIONAL_WHITE_SPACE} $ {
         yypushback(1);
         yybegin(IN_CHILDREN_BLOCK_START);
         return GO_INLINE_COMPONENT;
