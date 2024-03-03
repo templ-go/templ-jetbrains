@@ -79,7 +79,7 @@ public class TemplParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // LPARENTH GO_COMPONENT_IMPORT_PARAMS? RPARENTH
+  // LPARENTH GO_COMPONENT_IMPORT_PARAMS* RPARENTH
   public static boolean component_params(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "component_params")) return false;
     if (!nextTokenIs(b, LPARENTH)) return false;
@@ -92,15 +92,19 @@ public class TemplParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // GO_COMPONENT_IMPORT_PARAMS?
+  // GO_COMPONENT_IMPORT_PARAMS*
   private static boolean component_params_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "component_params_1")) return false;
-    consumeToken(b, GO_COMPONENT_IMPORT_PARAMS);
+    while (true) {
+      int c = current_position_(b);
+      if (!consumeToken(b, GO_COMPONENT_IMPORT_PARAMS)) break;
+      if (!empty_element_parsed_guard_(b, "component_params_1", c)) break;
+    }
     return true;
   }
 
   /* ********************************************************** */
-  // CSS_DECL_START CSS_CLASS_ID css_params LBRACE CSS_PROPERTIES RBRACE
+  // CSS_DECL_START CSS_CLASS_ID css_params LBRACE CSS_PROPERTIES* RBRACE
   public static boolean css_decl(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "css_decl")) return false;
     if (!nextTokenIs(b, CSS_DECL_START)) return false;
@@ -109,13 +113,26 @@ public class TemplParser implements PsiParser, LightPsiParser {
     r = consumeTokens(b, 1, CSS_DECL_START, CSS_CLASS_ID);
     p = r; // pin = 1
     r = r && report_error_(b, css_params(b, l + 1));
-    r = p && report_error_(b, consumeTokens(b, -1, LBRACE, CSS_PROPERTIES, RBRACE)) && r;
+    r = p && report_error_(b, consumeToken(b, LBRACE)) && r;
+    r = p && report_error_(b, css_decl_4(b, l + 1)) && r;
+    r = p && consumeToken(b, RBRACE) && r;
     exit_section_(b, l, m, r, p, null);
     return r || p;
   }
 
+  // CSS_PROPERTIES*
+  private static boolean css_decl_4(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "css_decl_4")) return false;
+    while (true) {
+      int c = current_position_(b);
+      if (!consumeToken(b, CSS_PROPERTIES)) break;
+      if (!empty_element_parsed_guard_(b, "css_decl_4", c)) break;
+    }
+    return true;
+  }
+
   /* ********************************************************** */
-  // LPARENTH GO_CSS_DECL_PARAMS? RPARENTH
+  // LPARENTH GO_CSS_DECL_PARAMS* RPARENTH
   static boolean css_params(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "css_params")) return false;
     if (!nextTokenIs(b, LPARENTH)) return false;
@@ -128,10 +145,14 @@ public class TemplParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // GO_CSS_DECL_PARAMS?
+  // GO_CSS_DECL_PARAMS*
   private static boolean css_params_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "css_params_1")) return false;
-    consumeToken(b, GO_CSS_DECL_PARAMS);
+    while (true) {
+      int c = current_position_(b);
+      if (!consumeToken(b, GO_CSS_DECL_PARAMS)) break;
+      if (!empty_element_parsed_guard_(b, "css_params_1", c)) break;
+    }
     return true;
   }
 
@@ -409,16 +430,41 @@ public class TemplParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // SCRIPT_DECL_START SCRIPT_FUNCTION_DECL SCRIPT_BODY RBRACE
+  // SCRIPT_DECL_START SCRIPT_FUNCTION_DECL* SCRIPT_BODY* RBRACE
   public static boolean script_decl(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "script_decl")) return false;
     if (!nextTokenIs(b, SCRIPT_DECL_START)) return false;
     boolean r, p;
     Marker m = enter_section_(b, l, _NONE_, SCRIPT_DECL, null);
-    r = consumeTokens(b, 1, SCRIPT_DECL_START, SCRIPT_FUNCTION_DECL, SCRIPT_BODY, RBRACE);
+    r = consumeToken(b, SCRIPT_DECL_START);
     p = r; // pin = 1
+    r = r && report_error_(b, script_decl_1(b, l + 1));
+    r = p && report_error_(b, script_decl_2(b, l + 1)) && r;
+    r = p && consumeToken(b, RBRACE) && r;
     exit_section_(b, l, m, r, p, null);
     return r || p;
+  }
+
+  // SCRIPT_FUNCTION_DECL*
+  private static boolean script_decl_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "script_decl_1")) return false;
+    while (true) {
+      int c = current_position_(b);
+      if (!consumeToken(b, SCRIPT_FUNCTION_DECL)) break;
+      if (!empty_element_parsed_guard_(b, "script_decl_1", c)) break;
+    }
+    return true;
+  }
+
+  // SCRIPT_BODY*
+  private static boolean script_decl_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "script_decl_2")) return false;
+    while (true) {
+      int c = current_position_(b);
+      if (!consumeToken(b, SCRIPT_BODY)) break;
+      if (!empty_element_parsed_guard_(b, "script_decl_2", c)) break;
+    }
+    return true;
   }
 
   /* ********************************************************** */
