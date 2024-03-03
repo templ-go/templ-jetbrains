@@ -15,6 +15,7 @@ templ ComplexAttributes() {
 	<div x-data="{ count: 0 }">
 		<button
 			@click="count++"
+			disabled?={true}
 		>Increment</button>
 		<span x-text="count"></span>
 	</div>

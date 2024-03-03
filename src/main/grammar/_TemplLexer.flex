@@ -73,7 +73,6 @@ OPTIONAL_WHITE_SPACE=\s*
 %state IN_CSS_DECLARATION_BODY
 %state IN_SCRIPT_DECLARATION_START
 %state IN_SCRIPT_DECLARATION_BODY
-%state IN_BOOL_EXPR
 %state IN_EXPR
 %state IN_COMPONENT_IMPORT
 %state IN_COMPONENT_IMPORT_PARAMS
@@ -228,7 +227,7 @@ OPTIONAL_WHITE_SPACE=\s*
 
     "?={" {
         yypushback(1); // IN_EXPR handles brace nesting
-        yyPushState(IN_BOOL_EXPR);
+        yyPushState(IN_EXPR);
         return BOOL_EXPR_START;
     }
 
