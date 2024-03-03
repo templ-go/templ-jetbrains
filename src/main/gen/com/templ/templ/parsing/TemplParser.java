@@ -212,13 +212,13 @@ public class TemplParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // HTML_DECL_START DECL_GO_TOKEN html_decl_body RBRACE
+  // HTML_DECL_START DECL_GO_TOKEN LBRACE html_decl_body RBRACE
   public static boolean html_decl(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "html_decl")) return false;
     if (!nextTokenIs(b, HTML_DECL_START)) return false;
     boolean r, p;
     Marker m = enter_section_(b, l, _NONE_, HTML_DECL, null);
-    r = consumeTokens(b, 1, HTML_DECL_START, DECL_GO_TOKEN);
+    r = consumeTokens(b, 1, HTML_DECL_START, DECL_GO_TOKEN, LBRACE);
     p = r; // pin = 1
     r = r && report_error_(b, html_decl_body(b, l + 1));
     r = p && consumeToken(b, RBRACE) && r;

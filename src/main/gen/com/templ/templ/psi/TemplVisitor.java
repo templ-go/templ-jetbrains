@@ -7,6 +7,10 @@ import com.intellij.psi.PsiElement;
 
 public class TemplVisitor extends PsiElementVisitor {
 
+  public void visitBlockComment(@NotNull TemplBlockComment o) {
+    visitPsiElement(o);
+  }
+
   public void visitComponent(@NotNull TemplComponent o) {
     visitPsiElement(o);
   }
@@ -52,6 +56,10 @@ public class TemplVisitor extends PsiElementVisitor {
   }
 
   public void visitIfCond(@NotNull TemplIfCond o) {
+    visitPsiElement(o);
+  }
+
+  public void visitLineComment(@NotNull TemplLineComment o) {
     visitPsiElement(o);
   }
 

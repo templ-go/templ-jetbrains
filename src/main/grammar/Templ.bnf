@@ -31,7 +31,7 @@ private recover ::= !(HTML_DECL_START | CSS_DECL_START | SCRIPT_DECL_START | GO_
 
 go_root ::= GO_ROOT_FRAGMENT
 
-html_decl ::= HTML_DECL_START DECL_GO_TOKEN html_decl_body RBRACE {pin=1}
+html_decl ::= HTML_DECL_START DECL_GO_TOKEN LBRACE html_decl_body RBRACE {pin=1}
 html_decl_body ::= (HTML_FRAGMENT | expr | if_cond | switch_stmt | for_loop | component)*
 
 // https://templ.guide/syntax-and-usage/expressions and https://templ.guide/syntax-and-usage/template-composition
@@ -62,3 +62,6 @@ private css_params ::= LPARENTH GO_CSS_DECL_PARAMS? RPARENTH
 
 // https://templ.guide/syntax-and-usage/script-templates#script-templates
 script_decl ::= SCRIPT_DECL_START SCRIPT_FUNCTION_DECL SCRIPT_BODY RBRACE {pin=1}
+
+fake line_comment ::= LINE_COMMENT
+fake block_comment ::= BLOCK_COMMENT
