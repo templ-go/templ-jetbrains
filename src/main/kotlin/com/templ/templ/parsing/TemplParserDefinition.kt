@@ -30,7 +30,7 @@ class TemplParserDefinition: ParserDefinition {
     }
 
     override fun getCommentTokens(): TokenSet {
-        return TokenSet.EMPTY
+        return TokenSet.create(TemplTypes.LINE_COMMENT, TemplTypes.BLOCK_COMMENT)
     }
 
     override fun getStringLiteralElements(): TokenSet {

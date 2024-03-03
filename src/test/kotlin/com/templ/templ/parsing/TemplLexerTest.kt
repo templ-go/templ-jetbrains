@@ -373,4 +373,43 @@ class TemplLexerTest : LexerTestCase() {
             """.trimIndent()
         )
     }
+
+    fun testComments() {
+        doTest(
+            """
+            package main
+            // line comment
+            /*
+            /* block comment
+             */
+            var str = "/* comment */ // \" ignored"
+            var rawStr = `
+            // line comment
+            /* block comment */
+            `
+            templ test() {
+                <!-- html comment -->
+                // line comment
+                /* block comment */
+                <div>normal html</div>
+            }
+            """.trimIndent(),
+            """
+            TemplTokenType.GO_ROOT_FRAGMENT ('package main\n')
+            TemplTokenType.LINE_COMMENT ('// line comment')
+            TemplTokenType.GO_ROOT_FRAGMENT ('\n')
+            TemplTokenType.BLOCK_COMMENT ('/*\n/* block comment\n */')
+            TemplTokenType.GO_ROOT_FRAGMENT ('\nvar str = "/* comment */ // \" ignored"\nvar rawStr = `\n// line comment\n/* block comment */\n`\n')
+            TemplTokenType.templ ('templ')
+            TemplTokenType.DECL_GO_TOKEN (' test() ')
+            TemplTokenType.{ ('{')
+            TemplTokenType.HTML_FRAGMENT ('\n    <!-- html comment -->\n    ')
+            TemplTokenType.LINE_COMMENT ('// line comment')
+            TemplTokenType.HTML_FRAGMENT ('\n    ')
+            TemplTokenType.BLOCK_COMMENT ('/* block comment */')
+            TemplTokenType.HTML_FRAGMENT ('\n    <div>normal html</div>\n')
+            TemplTokenType.} ('}')
+            """.trimIndent()
+        )
+    }
 }

@@ -22,6 +22,8 @@
       SCRIPT_DECL_START='script'
       CSS_DECL_START='css'
       COMPONENT_IMPORT_START='@'
+      LINE_COMMENT='LINE_COMMENT'
+      BLOCK_COMMENT='BLOCK_COMMENT'
   ]
 }
 
@@ -62,6 +64,3 @@ private css_params ::= LPARENTH GO_CSS_DECL_PARAMS? RPARENTH
 
 // https://templ.guide/syntax-and-usage/script-templates#script-templates
 script_decl ::= SCRIPT_DECL_START SCRIPT_FUNCTION_DECL SCRIPT_BODY RBRACE {pin=1}
-
-fake line_comment ::= LINE_COMMENT
-fake block_comment ::= BLOCK_COMMENT
