@@ -19,12 +19,23 @@ import static com.templ.templ.psi.TemplTypes.*;
         yybegin(newState);
     }
 
-    public void yyPopState() { // We only remember one level of state.
-        if (previousState == -1) {
+    public void yyPopState() {
+        if (previousState == -1) { // We only remember one level of state.
           throw new IllegalStateException("No previous state to pop");
         }
         yybegin(previousState);
         previousState = -1;
+    }
+
+    // Resolves the default token for given state, e.g., GO_ROOT_FRAGMENT for YYNITIAL.
+    public IElementType resolveStateDefaultToken(int state) {
+        switch (state) {
+            case YYINITIAL: return GO_ROOT_FRAGMENT;
+            case IN_EXPR: return GO_EXPR;
+            case IN_COMPONENT_IMPORT_PARAMS: return GO_COMPONENT_IMPORT_PARAMS;
+            case IN_TEMPL_DECLARATION_START: return DECL_GO_TOKEN;
+            default: throw new IllegalStateException("Unknown default token for state: " + state);
+        }
     }
 
     public boolean isCommentEnabled() {
@@ -59,6 +70,7 @@ OPTIONAL_WHITE_SPACE=\s*
 %state IN_GO_STRING
 %state IN_GO_RAW_STRING
 %state IN_HTML_COMMENT
+%state IN_HTML_TAG_OPENER
 
 %%
 
@@ -92,29 +104,42 @@ OPTIONAL_WHITE_SPACE=\s*
 <YYINITIAL, IN_EXPR, IN_COMPONENT_IMPORT_PARAMS, IN_TEMPL_DECLARATION_START> {
     "\"" {
         yyPushState(IN_GO_STRING);
+        return resolveStateDefaultToken(previousState);
     }
 
     "`" {
         yyPushState(IN_GO_RAW_STRING);
+        return resolveStateDefaultToken(previousState);
     }
 }
 
 <IN_GO_STRING> {
-    "\\\"" { /* ignore escaped quotes */ }
+    "\\\"" {
+        // Ignore escaped quotes.
+        return resolveStateDefaultToken(previousState);
+    }
 
     "\"" {
         yyPopState();
+        return resolveStateDefaultToken(yystate());
     }
 
-   . { /* consume characters until string is terminated */ }
+    // Consume characters until string is terminated or newline is reached.
+    . {
+        return resolveStateDefaultToken(previousState);
+    }
 }
 
 <IN_GO_RAW_STRING> {
     "`" {
         yyPopState();
+        return resolveStateDefaultToken(yystate());
     }
 
-   [^] { /* consume characters until string is terminated */ }
+    // Consume characters until raw string is terminated.
+    [^] {
+        return resolveStateDefaultToken(previousState);
+    }
 }
 
 <YYINITIAL> {
@@ -149,12 +174,7 @@ OPTIONAL_WHITE_SPACE=\s*
     }
 }
 
-<IN_TEMPL_DECLARATION_BODY> {
-    "<!--" {
-        yyPushState(IN_HTML_COMMENT);
-        return HTML_FRAGMENT;
-    }
-
+<IN_TEMPL_DECLARATION_BODY, IN_HTML_TAG_OPENER> {
     ^ {OPTIONAL_WHITE_SPACE} "if" ~"{" $ {
         return GO_IF_START_FRAGMENT;
     }
@@ -165,6 +185,54 @@ OPTIONAL_WHITE_SPACE=\s*
 
     "}" {OPTIONAL_WHITE_SPACE} "else" {OPTIONAL_WHITE_SPACE} "{" {OPTIONAL_WHITE_SPACE} $ {
         return GO_ELSE_START_FRAGMENT;
+    }
+
+    "{" {
+        yypushback(1); // IN_EXPR handles brace nesting
+        yyPushState(IN_EXPR);
+    }
+
+    ^ "}" {
+        yyPushState(YYINITIAL);
+        return RBRACE;
+    }
+
+    "}" {
+        return RBRACE;
+    }
+}
+
+<IN_HTML_TAG_OPENER> {
+    ">" {
+        yybegin(IN_TEMPL_DECLARATION_BODY);
+        yypushback(1); // So that we can detect component imports "@" straight after ">".
+    }
+
+    "=\"" ~"\"" {
+        // Skip over attribute value so that we don't detect keywords in it.
+        return HTML_FRAGMENT;
+    }
+
+    "?={" {
+        yypushback(1); // IN_EXPR handles brace nesting
+        yyPushState(IN_BOOL_EXPR);
+        return BOOL_EXPR_START;
+    }
+
+    [^] {
+        return HTML_FRAGMENT;
+    }
+}
+
+<IN_TEMPL_DECLARATION_BODY> {
+    "<!--" {
+        yyPushState(IN_HTML_COMMENT);
+        return HTML_FRAGMENT;
+    }
+
+    "<" {
+        yyPushState(IN_HTML_TAG_OPENER);
+        return HTML_FRAGMENT;
     }
 
     ^ {OPTIONAL_WHITE_SPACE} "switch" {WHITE_SPACE} ~"{\n" {
@@ -193,27 +261,6 @@ OPTIONAL_WHITE_SPACE=\s*
         yypushback(1);
         yyPushState(IN_COMPONENT_IMPORT);
         return HTML_FRAGMENT;
-    }
-
-    "?={" {
-        yypushback(1); // IN_EXPR handles brace nesting
-        yyPushState(IN_BOOL_EXPR);
-        return BOOL_EXPR_START;
-    }
-
-    "{" {
-        yypushback(1); // IN_EXPR handles brace nesting
-        yyPushState(IN_EXPR);
-    }
-
-    ^ "}" {
-        yyPushState(YYINITIAL);
-        return RBRACE;
-    }
-
-
-    "}" {
-        return RBRACE;
     }
 
     [^] {
