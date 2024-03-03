@@ -3,6 +3,7 @@ package com.templ.templ.parsing;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.lexer.FlexLexer;
 import org.bouncycastle.util.Arrays;
+import com.intellij.util.containers.Stack;
 
 import static com.intellij.psi.TokenType.*;
 import static com.templ.templ.psi.TemplTypes.*;
@@ -12,19 +13,31 @@ import static com.templ.templ.psi.TemplTypes.*;
 %{
     private int braceNestingLevel = 0;
     private int parensNestingLevel = 0;
-    private int previousState = -1;
+    private Stack<Integer> stateStack = new Stack<>();
 
     public void yyPushState(int newState) {
-        previousState = yystate();
+        stateStack.push(yystate());
+        yybegin(newState);
+    }
+
+    public void yyReplaceState(int newState) {
+        // Since the top of the stack is the previous state we want to pop to when replacing
+        // the current state, we don't need to do any stack manipulation here.
+        yybegin(newState);
+    }
+
+    public void yyResetState(int newState) {
+        stateStack.clear();
+        stateStack.push(yystate());
         yybegin(newState);
     }
 
     public void yyPopState() {
-        if (previousState == -1) { // We only remember one level of state.
-          throw new IllegalStateException("No previous state to pop");
-        }
-        yybegin(previousState);
-        previousState = -1;
+        yybegin(stateStack.pop());
+    }
+
+    public int peekPreviousState() {
+        return stateStack.peek();
     }
 
     // Resolves the default token for given state, e.g., GO_ROOT_FRAGMENT for YYNITIAL.
@@ -104,19 +117,19 @@ OPTIONAL_WHITE_SPACE=\s*
 <YYINITIAL, IN_EXPR, IN_COMPONENT_IMPORT_PARAMS, IN_TEMPL_DECLARATION_START> {
     "\"" {
         yyPushState(IN_GO_STRING);
-        return resolveStateDefaultToken(previousState);
+        return resolveStateDefaultToken(peekPreviousState());
     }
 
     "`" {
         yyPushState(IN_GO_RAW_STRING);
-        return resolveStateDefaultToken(previousState);
+        return resolveStateDefaultToken(peekPreviousState());
     }
 }
 
 <IN_GO_STRING> {
     "\\\"" {
         // Ignore escaped quotes.
-        return resolveStateDefaultToken(previousState);
+        return resolveStateDefaultToken(peekPreviousState());
     }
 
     "\"" {
@@ -126,7 +139,7 @@ OPTIONAL_WHITE_SPACE=\s*
 
     // Consume characters until string is terminated or newline is reached.
     . {
-        return resolveStateDefaultToken(previousState);
+        return resolveStateDefaultToken(peekPreviousState());
     }
 }
 
@@ -138,7 +151,7 @@ OPTIONAL_WHITE_SPACE=\s*
 
     // Consume characters until raw string is terminated.
     [^] {
-        return resolveStateDefaultToken(previousState);
+        return resolveStateDefaultToken(peekPreviousState());
     }
 }
 
@@ -165,7 +178,7 @@ OPTIONAL_WHITE_SPACE=\s*
 
 <IN_TEMPL_DECLARATION_START> {
     "{" $ {
-        yyPushState(IN_TEMPL_DECLARATION_BODY);
+        yyReplaceState(IN_TEMPL_DECLARATION_BODY);
         return LBRACE;
     }
 
@@ -193,7 +206,7 @@ OPTIONAL_WHITE_SPACE=\s*
     }
 
     ^ "}" {
-        yyPushState(YYINITIAL);
+        yyResetState(YYINITIAL);
         return RBRACE;
     }
 
@@ -204,7 +217,7 @@ OPTIONAL_WHITE_SPACE=\s*
 
 <IN_HTML_TAG_OPENER> {
     ">" {
-        yybegin(IN_TEMPL_DECLARATION_BODY);
+        yyPopState();
         yypushback(1); // So that we can detect component imports "@" straight after ">".
     }
 
@@ -286,12 +299,12 @@ OPTIONAL_WHITE_SPACE=\s*
 
     [\w\.]+ "(" {
         yypushback(1);
-        yyPushState(IN_COMPONENT_IMPORT_PARAMS);
+        yyReplaceState(IN_COMPONENT_IMPORT_PARAMS);
         return COMPONENT_REFERENCE;
     }
 
     [\w\.]+ {
-        yyPushState(IN_TEMPL_DECLARATION_BODY);
+        yyPopState(); // IN_TEMPL_DECLARATION_BODY or IN_HTML_TAG_OPENER
         return COMPONENT_REFERENCE;
     }
 }
@@ -308,7 +321,7 @@ OPTIONAL_WHITE_SPACE=\s*
         parensNestingLevel--;
         if (parensNestingLevel == 0) {
             yypushback(yylength());
-            yyPushState(IN_COMPONENT_IMPORT_CHILDREN_BLOCK_START);
+            yybegin(IN_COMPONENT_IMPORT_CHILDREN_BLOCK_START);
         }
     }
 
@@ -316,7 +329,7 @@ OPTIONAL_WHITE_SPACE=\s*
         parensNestingLevel--;
         if (parensNestingLevel == 0) {
             yypushback(1);
-            yyPushState(IN_COMPONENT_IMPORT_PARAMS_END_WITHOUT_CHILDREN);
+            yybegin(IN_COMPONENT_IMPORT_PARAMS_END_WITHOUT_CHILDREN);
         }
     }
 
@@ -327,7 +340,7 @@ OPTIONAL_WHITE_SPACE=\s*
 
 <IN_COMPONENT_IMPORT_PARAMS_END_WITHOUT_CHILDREN> {
     ")" {
-        yyPushState(IN_TEMPL_DECLARATION_BODY);
+        yyPopState(); // IN_TEMPL_DECLARATION_BODY
         return RPARENTH;
     }
 }
@@ -342,7 +355,7 @@ OPTIONAL_WHITE_SPACE=\s*
     }
 
     "{" {
-        yyPushState(IN_TEMPL_DECLARATION_BODY);
+        yyPopState(); // IN_TEMPL_DECLARATION_BODY
         return LBRACE;
     }
 }
@@ -358,7 +371,7 @@ OPTIONAL_WHITE_SPACE=\s*
     "}" {
         braceNestingLevel--;
         if (braceNestingLevel == 0) {
-            yyPushState(IN_TEMPL_DECLARATION_BODY);
+            yyPopState(); // IN_TEMPL_DECLARATION_BODY or IN_HTML_TAG_OPENER
             return RBRACE;
         }
     }
@@ -397,7 +410,7 @@ OPTIONAL_WHITE_SPACE=\s*
     ")" {
         parensNestingLevel--;
         if (parensNestingLevel == 0) {
-            yyPushState(IN_CSS_DECLARATION_START);
+            yyPopState(); // IN_CSS_DECLARATION_START
             return RPARENTH;
         }
     }
@@ -409,7 +422,7 @@ OPTIONAL_WHITE_SPACE=\s*
 
 <IN_CSS_DECLARATION_BODY> {
     ^ "}" {
-        yyPushState(YYINITIAL);
+        yyResetState(YYINITIAL);
         return RBRACE;
     }
 
@@ -420,7 +433,7 @@ OPTIONAL_WHITE_SPACE=\s*
 
 <IN_SCRIPT_DECLARATION_START> {
     "{" $ {
-        yyPushState(IN_SCRIPT_DECLARATION_BODY);
+        yyReplaceState(IN_SCRIPT_DECLARATION_BODY);
         return SCRIPT_FUNCTION_DECL;
     }
 
@@ -432,7 +445,7 @@ OPTIONAL_WHITE_SPACE=\s*
 <IN_SCRIPT_DECLARATION_BODY> {
     ^ "}" {
         yypushback(1);
-        yyPushState(YYINITIAL);
+        yyResetState(YYINITIAL);
         return RBRACE;
     }
 
@@ -442,7 +455,7 @@ OPTIONAL_WHITE_SPACE=\s*
 }
 
 [^] {
-    yybegin(YYINITIAL);
+    yyResetState(YYINITIAL);
     return BAD_CHARACTER;
 }
 

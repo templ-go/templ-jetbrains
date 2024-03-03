@@ -6,6 +6,7 @@ package com.templ.templ.parsing;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.lexer.FlexLexer;
 import org.bouncycastle.util.Arrays;
+import com.intellij.util.containers.Stack;
 
 import static com.intellij.psi.TokenType.*;
 import static com.templ.templ.psi.TemplTypes.*;
@@ -584,19 +585,31 @@ public class _TemplLexer implements FlexLexer {
   /* user code: */
     private int braceNestingLevel = 0;
     private int parensNestingLevel = 0;
-    private int previousState = -1;
+    private Stack<Integer> stateStack = new Stack<>();
 
     public void yyPushState(int newState) {
-        previousState = yystate();
+        stateStack.push(yystate());
+        yybegin(newState);
+    }
+
+    public void yyReplaceState(int newState) {
+        // Since the top of the stack is the previous state we want to pop to when replacing
+        // the current state, we don't need to do any stack manipulation here.
+        yybegin(newState);
+    }
+
+    public void yyResetState(int newState) {
+        stateStack.clear();
+        stateStack.push(yystate());
         yybegin(newState);
     }
 
     public void yyPopState() {
-        if (previousState == -1) { // We only remember one level of state.
-          throw new IllegalStateException("No previous state to pop");
-        }
-        yybegin(previousState);
-        previousState = -1;
+        yybegin(stateStack.pop());
+    }
+
+    public int peekPreviousState() {
+        return stateStack.peek();
     }
 
     // Resolves the default token for given state, e.g., GO_ROOT_FRAGMENT for YYNITIAL.
@@ -896,13 +909,13 @@ public class _TemplLexer implements FlexLexer {
           case 65: break;
           case 2:
             { yyPushState(IN_GO_STRING);
-        return resolveStateDefaultToken(previousState);
+        return resolveStateDefaultToken(peekPreviousState());
             }
           // fall through
           case 66: break;
           case 3:
             { yyPushState(IN_GO_RAW_STRING);
-        return resolveStateDefaultToken(previousState);
+        return resolveStateDefaultToken(peekPreviousState());
             }
           // fall through
           case 67: break;
@@ -941,13 +954,13 @@ public class _TemplLexer implements FlexLexer {
           // fall through
           case 73: break;
           case 10:
-            { yyPushState(YYINITIAL);
+            { yyResetState(YYINITIAL);
         return RBRACE;
             }
           // fall through
           case 74: break;
           case 11:
-            { yybegin(YYINITIAL);
+            { yyResetState(YYINITIAL);
     return BAD_CHARACTER;
             }
           // fall through
@@ -984,7 +997,7 @@ public class _TemplLexer implements FlexLexer {
           case 17:
             { parensNestingLevel--;
         if (parensNestingLevel == 0) {
-            yyPushState(IN_CSS_DECLARATION_START);
+            yyPopState(); // IN_CSS_DECLARATION_START
             return RPARENTH;
         }
             }
@@ -1007,7 +1020,7 @@ public class _TemplLexer implements FlexLexer {
           case 84: break;
           case 21:
             { yypushback(1);
-        yyPushState(YYINITIAL);
+        yyResetState(YYINITIAL);
         return RBRACE;
             }
           // fall through
@@ -1028,14 +1041,14 @@ public class _TemplLexer implements FlexLexer {
           case 24:
             { braceNestingLevel--;
         if (braceNestingLevel == 0) {
-            yyPushState(IN_TEMPL_DECLARATION_BODY);
+            yyPopState(); // IN_TEMPL_DECLARATION_BODY or IN_HTML_TAG_OPENER
             return RBRACE;
         }
             }
           // fall through
           case 88: break;
           case 25:
-            { yyPushState(IN_TEMPL_DECLARATION_BODY);
+            { yyPopState(); // IN_TEMPL_DECLARATION_BODY or IN_HTML_TAG_OPENER
         return COMPONENT_REFERENCE;
             }
           // fall through
@@ -1054,13 +1067,13 @@ public class _TemplLexer implements FlexLexer {
             { parensNestingLevel--;
         if (parensNestingLevel == 0) {
             yypushback(1);
-            yyPushState(IN_COMPONENT_IMPORT_PARAMS_END_WITHOUT_CHILDREN);
+            yybegin(IN_COMPONENT_IMPORT_PARAMS_END_WITHOUT_CHILDREN);
         }
             }
           // fall through
           case 92: break;
           case 29:
-            { yyPushState(IN_TEMPL_DECLARATION_BODY);
+            { yyPopState(); // IN_TEMPL_DECLARATION_BODY
         return RPARENTH;
             }
           // fall through
@@ -1071,7 +1084,7 @@ public class _TemplLexer implements FlexLexer {
           // fall through
           case 94: break;
           case 31:
-            { yyPushState(IN_TEMPL_DECLARATION_BODY);
+            { yyPopState(); // IN_TEMPL_DECLARATION_BODY
         return LBRACE;
             }
           // fall through
@@ -1082,7 +1095,7 @@ public class _TemplLexer implements FlexLexer {
           // fall through
           case 96: break;
           case 33:
-            { return resolveStateDefaultToken(previousState);
+            { return resolveStateDefaultToken(peekPreviousState());
             }
           // fall through
           case 97: break;
@@ -1093,7 +1106,7 @@ public class _TemplLexer implements FlexLexer {
           // fall through
           case 98: break;
           case 35:
-            { yybegin(IN_TEMPL_DECLARATION_BODY);
+            { yyPopState();
         yypushback(1); // So that we can detect component imports "@" straight after ">".
             }
           // fall through
@@ -1119,7 +1132,7 @@ public class _TemplLexer implements FlexLexer {
             // lookahead expression with fixed base length
             zzMarkedPos = Character.offsetByCodePoints
                 (zzBufferL, zzStartRead, 1);
-            { yyPushState(IN_TEMPL_DECLARATION_BODY);
+            { yyReplaceState(IN_TEMPL_DECLARATION_BODY);
         return LBRACE;
             }
           // fall through
@@ -1137,14 +1150,14 @@ public class _TemplLexer implements FlexLexer {
             // lookahead expression with fixed base length
             zzMarkedPos = Character.offsetByCodePoints
                 (zzBufferL, zzStartRead, 1);
-            { yyPushState(IN_SCRIPT_DECLARATION_BODY);
+            { yyReplaceState(IN_SCRIPT_DECLARATION_BODY);
         return SCRIPT_FUNCTION_DECL;
             }
           // fall through
           case 104: break;
           case 41:
             { yypushback(1);
-        yyPushState(IN_COMPONENT_IMPORT_PARAMS);
+        yyReplaceState(IN_COMPONENT_IMPORT_PARAMS);
         return COMPONENT_REFERENCE;
             }
           // fall through
@@ -1153,7 +1166,7 @@ public class _TemplLexer implements FlexLexer {
             { parensNestingLevel--;
         if (parensNestingLevel == 0) {
             yypushback(yylength());
-            yyPushState(IN_COMPONENT_IMPORT_CHILDREN_BLOCK_START);
+            yybegin(IN_COMPONENT_IMPORT_CHILDREN_BLOCK_START);
         }
             }
           // fall through
@@ -1166,7 +1179,7 @@ public class _TemplLexer implements FlexLexer {
           case 107: break;
           case 44:
             { // Ignore escaped quotes.
-        return resolveStateDefaultToken(previousState);
+        return resolveStateDefaultToken(peekPreviousState());
             }
           // fall through
           case 108: break;

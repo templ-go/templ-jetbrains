@@ -393,6 +393,26 @@ class TemplLexerTest : LexerTestCase() {
                 /* block comment */
                 <div>normal html</div>
             }
+            
+            templ ComplexCommentTest() {
+                <!--
+                This is a comment
+                if (true) {
+                   <div>hello</div>
+                }
+                -->
+                <div
+                    aria-label="test>"
+                    class={
+                        "a", /* templ.KV("b"}, false) */ "c",
+                        templ.KV("d", true),
+                    }
+                    @click="alert('hello')"
+                 >
+                 /* Test3 */
+                 Test4
+                </div>
+            }
             """.trimIndent(),
             """
             TemplTokenType.GO_ROOT_FRAGMENT ('package main\n')
@@ -408,6 +428,20 @@ class TemplLexerTest : LexerTestCase() {
             TemplTokenType.HTML_FRAGMENT ('\n    ')
             TemplTokenType.BLOCK_COMMENT ('/* block comment */')
             TemplTokenType.HTML_FRAGMENT ('\n    <div>normal html</div>\n')
+            TemplTokenType.} ('}')
+            TemplTokenType.GO_ROOT_FRAGMENT ('\n\n')
+            TemplTokenType.templ ('templ')
+            TemplTokenType.DECL_GO_TOKEN (' ComplexCommentTest() ')
+            TemplTokenType.{ ('{')
+            TemplTokenType.HTML_FRAGMENT ('\n    <!--\n    This is a comment\n    if (true) {\n       <div>hello</div>\n    }\n    -->\n    <div\n        aria-label="test>"\n        class=')
+            TemplTokenType.{ ('{')
+            TemplTokenType.GO_EXPR ('\n            "a", ')
+            TemplTokenType.BLOCK_COMMENT ('/* templ.KV("b"}, false) */')
+            TemplTokenType.GO_EXPR (' "c",\n            templ.KV("d", true),\n        ')
+            TemplTokenType.} ('}')
+            TemplTokenType.HTML_FRAGMENT ('\n        @click="alert('hello')"\n     >\n     ')
+            TemplTokenType.BLOCK_COMMENT ('/* Test3 */')
+            TemplTokenType.HTML_FRAGMENT ('\n     Test4\n    </div>\n')
             TemplTokenType.} ('}')
             """.trimIndent()
         )

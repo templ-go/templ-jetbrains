@@ -164,15 +164,17 @@ public class TemplParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // BOOL_EXPR_START? LBRACE GO_EXPR RBRACE
+  // BOOL_EXPR_START? LBRACE GO_EXPR* RBRACE
   public static boolean expr(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "expr")) return false;
     if (!nextTokenIs(b, "<expr>", BOOL_EXPR_START, LBRACE)) return false;
     boolean r, p;
     Marker m = enter_section_(b, l, _NONE_, EXPR, "<expr>");
     r = expr_0(b, l + 1);
-    r = r && consumeTokens(b, 1, LBRACE, GO_EXPR, RBRACE);
+    r = r && consumeToken(b, LBRACE);
     p = r; // pin = 2
+    r = r && report_error_(b, expr_2(b, l + 1));
+    r = p && consumeToken(b, RBRACE) && r;
     exit_section_(b, l, m, r, p, null);
     return r || p;
   }
@@ -181,6 +183,17 @@ public class TemplParser implements PsiParser, LightPsiParser {
   private static boolean expr_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "expr_0")) return false;
     consumeToken(b, BOOL_EXPR_START);
+    return true;
+  }
+
+  // GO_EXPR*
+  private static boolean expr_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "expr_2")) return false;
+    while (true) {
+      int c = current_position_(b);
+      if (!consumeToken(b, GO_EXPR)) break;
+      if (!empty_element_parsed_guard_(b, "expr_2", c)) break;
+    }
     return true;
   }
 
@@ -212,18 +225,31 @@ public class TemplParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // HTML_DECL_START DECL_GO_TOKEN LBRACE html_decl_body RBRACE
+  // HTML_DECL_START DECL_GO_TOKEN* LBRACE html_decl_body RBRACE
   public static boolean html_decl(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "html_decl")) return false;
     if (!nextTokenIs(b, HTML_DECL_START)) return false;
     boolean r, p;
     Marker m = enter_section_(b, l, _NONE_, HTML_DECL, null);
-    r = consumeTokens(b, 1, HTML_DECL_START, DECL_GO_TOKEN, LBRACE);
+    r = consumeToken(b, HTML_DECL_START);
     p = r; // pin = 1
-    r = r && report_error_(b, html_decl_body(b, l + 1));
+    r = r && report_error_(b, html_decl_1(b, l + 1));
+    r = p && report_error_(b, consumeToken(b, LBRACE)) && r;
+    r = p && report_error_(b, html_decl_body(b, l + 1)) && r;
     r = p && consumeToken(b, RBRACE) && r;
     exit_section_(b, l, m, r, p, null);
     return r || p;
+  }
+
+  // DECL_GO_TOKEN*
+  private static boolean html_decl_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "html_decl_1")) return false;
+    while (true) {
+      int c = current_position_(b);
+      if (!consumeToken(b, DECL_GO_TOKEN)) break;
+      if (!empty_element_parsed_guard_(b, "html_decl_1", c)) break;
+    }
+    return true;
   }
 
   /* ********************************************************** */
