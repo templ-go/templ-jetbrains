@@ -443,7 +443,6 @@ OPTIONAL_WHITE_SPACE=\s*
 
 <IN_SCRIPT_DECLARATION_BODY> {
     ^ "}" {
-        yypushback(1);
         yyResetState(YYINITIAL);
         return RBRACE;
     }
