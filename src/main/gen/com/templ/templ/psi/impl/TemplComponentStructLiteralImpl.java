@@ -11,38 +11,20 @@ import static com.templ.templ.psi.TemplTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.templ.templ.psi.*;
 
-public class TemplComponentImpl extends ASTWrapperPsiElement implements TemplComponent {
+public class TemplComponentStructLiteralImpl extends ASTWrapperPsiElement implements TemplComponentStructLiteral {
 
-  public TemplComponentImpl(@NotNull ASTNode node) {
+  public TemplComponentStructLiteralImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull TemplVisitor visitor) {
-    visitor.visitComponent(this);
+    visitor.visitComponentStructLiteral(this);
   }
 
   @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof TemplVisitor) accept((TemplVisitor)visitor);
     else super.accept(visitor);
-  }
-
-  @Override
-  @Nullable
-  public TemplComponentChildren getComponentChildren() {
-    return findChildByClass(TemplComponentChildren.class);
-  }
-
-  @Override
-  @Nullable
-  public TemplComponentParams getComponentParams() {
-    return findChildByClass(TemplComponentParams.class);
-  }
-
-  @Override
-  @Nullable
-  public TemplComponentStructLiteral getComponentStructLiteral() {
-    return findChildByClass(TemplComponentStructLiteral.class);
   }
 
 }

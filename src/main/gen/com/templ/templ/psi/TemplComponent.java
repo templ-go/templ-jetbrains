@@ -13,4 +13,7 @@ public interface TemplComponent extends PsiElement {
   @Nullable
   TemplComponentParams getComponentParams();
 
+  @Nullable
+  TemplComponentStructLiteral getComponentStructLiteral();
+
 }

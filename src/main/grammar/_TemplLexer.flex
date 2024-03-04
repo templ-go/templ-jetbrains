@@ -75,6 +75,7 @@ OPTIONAL_WHITE_SPACE=\s*
 %state IN_SCRIPT_DECLARATION_BODY
 %state IN_EXPR
 %state IN_COMPONENT_IMPORT
+%state IN_COMPONENT_IMPORT_STRUCT_LITERAL
 %state IN_COMPONENT_IMPORT_PARAMS
 %state IN_COMPONENT_IMPORT_PARAMS_END_WITHOUT_CHILDREN
 %state IN_COMPONENT_IMPORT_CHILDREN_BLOCK_START
@@ -296,15 +297,48 @@ OPTIONAL_WHITE_SPACE=\s*
         return COMPONENT_IMPORT_START;
     }
 
+    [\w\.]+ "{" {
+        yypushback(1);
+        yyPushState(IN_COMPONENT_IMPORT_STRUCT_LITERAL);
+        return COMPONENT_REFERENCE;
+    }
+
     [\w\.]+ "(" {
         yypushback(1);
         yyReplaceState(IN_COMPONENT_IMPORT_PARAMS);
         return COMPONENT_REFERENCE;
     }
 
-    [\w\.]+ {
-        yyPopState(); // IN_TEMPL_DECLARATION_BODY or IN_HTML_TAG_OPENER
+    [\w\.]+ {WHITE_SPACE} "{" {
+        yypushback(2);
+        yyReplaceState(IN_COMPONENT_IMPORT_CHILDREN_BLOCK_START);
         return COMPONENT_REFERENCE;
+    }
+
+    [\w\.]+ {
+        yyPopState(); // IN_TEMPL_DECLARATION_BODY
+        return COMPONENT_REFERENCE;
+    }
+}
+
+<IN_COMPONENT_IMPORT_STRUCT_LITERAL> {
+    "{" {
+        braceNestingLevel++;
+        if (braceNestingLevel == 1) {
+            return LBRACE;
+        }
+    }
+
+    "}" {
+        braceNestingLevel--;
+        if (braceNestingLevel == 0) {
+            yyPopState(); // IN_COMPONENT_IMPORT
+            return RBRACE;
+        }
+    }
+
+    [^] {
+        return GO_COMPONENT_STRUCT_LITERAL;
     }
 }
 
@@ -316,19 +350,20 @@ OPTIONAL_WHITE_SPACE=\s*
         }
     }
 
-    ")" {OPTIONAL_WHITE_SPACE} "{" {
+    ")" {WHITE_SPACE} "{" {
         parensNestingLevel--;
         if (parensNestingLevel == 0) {
-            yypushback(yylength());
-            yybegin(IN_COMPONENT_IMPORT_CHILDREN_BLOCK_START);
+            yypushback(yylength() - 1);
+            yyReplaceState(IN_COMPONENT_IMPORT_CHILDREN_BLOCK_START);
+            return RPARENTH;
         }
     }
 
     ")" {
         parensNestingLevel--;
         if (parensNestingLevel == 0) {
-            yypushback(1);
-            yybegin(IN_COMPONENT_IMPORT_PARAMS_END_WITHOUT_CHILDREN);
+            yyPopState(); // IN_TEMPL_DECLARATION_BODY
+            return RPARENTH;
         }
     }
 
@@ -337,20 +372,9 @@ OPTIONAL_WHITE_SPACE=\s*
     }
 }
 
-<IN_COMPONENT_IMPORT_PARAMS_END_WITHOUT_CHILDREN> {
-    ")" {
-        yyPopState(); // IN_TEMPL_DECLARATION_BODY
-        return RPARENTH;
-    }
-}
-
 <IN_COMPONENT_IMPORT_CHILDREN_BLOCK_START> {
-    ")" {
-        return RPARENTH;
-    }
-
     {WHITE_SPACE} {
-        return WHITE_SPACE;
+        return COMPONENT_CHILDREN_START;
     }
 
     "{" {

@@ -18,6 +18,7 @@ class TemplLexer : MergingLexerAdapter(
         TemplTypes.CSS_PROPERTIES,
         TemplTypes.SCRIPT_FUNCTION_DECL,
         TemplTypes.SCRIPT_BODY,
-        TemplTypes.BLOCK_COMMENT
+        TemplTypes.BLOCK_COMMENT,
+        TemplTypes.GO_COMPONENT_STRUCT_LITERAL
     )
 )

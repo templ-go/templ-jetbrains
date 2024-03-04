@@ -36,7 +36,7 @@ public class TemplParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // COMPONENT_IMPORT_START COMPONENT_REFERENCE component_params? component_children?
+  // COMPONENT_IMPORT_START COMPONENT_REFERENCE (component_struct_literal COMPONENT_REFERENCE)? component_params? component_children?
   public static boolean component(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "component")) return false;
     boolean r, p;
@@ -44,38 +44,73 @@ public class TemplParser implements PsiParser, LightPsiParser {
     r = consumeTokens(b, 1, COMPONENT_IMPORT_START, COMPONENT_REFERENCE);
     p = r; // pin = 1
     r = r && report_error_(b, component_2(b, l + 1));
-    r = p && component_3(b, l + 1) && r;
+    r = p && report_error_(b, component_3(b, l + 1)) && r;
+    r = p && component_4(b, l + 1) && r;
     exit_section_(b, l, m, r, p, TemplParser::recover_component);
     return r || p;
   }
 
-  // component_params?
+  // (component_struct_literal COMPONENT_REFERENCE)?
   private static boolean component_2(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "component_2")) return false;
+    component_2_0(b, l + 1);
+    return true;
+  }
+
+  // component_struct_literal COMPONENT_REFERENCE
+  private static boolean component_2_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "component_2_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = component_struct_literal(b, l + 1);
+    r = r && consumeToken(b, COMPONENT_REFERENCE);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // component_params?
+  private static boolean component_3(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "component_3")) return false;
     component_params(b, l + 1);
     return true;
   }
 
   // component_children?
-  private static boolean component_3(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "component_3")) return false;
+  private static boolean component_4(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "component_4")) return false;
     component_children(b, l + 1);
     return true;
   }
 
   /* ********************************************************** */
-  // LBRACE html_decl_body RBRACE
+  // COMPONENT_CHILDREN_START+ LBRACE html_decl_body RBRACE
   public static boolean component_children(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "component_children")) return false;
-    if (!nextTokenIs(b, LBRACE)) return false;
+    if (!nextTokenIs(b, COMPONENT_CHILDREN_START)) return false;
     boolean r, p;
     Marker m = enter_section_(b, l, _NONE_, COMPONENT_CHILDREN, null);
-    r = consumeToken(b, LBRACE);
+    r = component_children_0(b, l + 1);
     p = r; // pin = 1
-    r = r && report_error_(b, html_decl_body(b, l + 1));
+    r = r && report_error_(b, consumeToken(b, LBRACE));
+    r = p && report_error_(b, html_decl_body(b, l + 1)) && r;
     r = p && consumeToken(b, RBRACE) && r;
     exit_section_(b, l, m, r, p, null);
     return r || p;
+  }
+
+  // COMPONENT_CHILDREN_START+
+  private static boolean component_children_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "component_children_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, COMPONENT_CHILDREN_START);
+    while (r) {
+      int c = current_position_(b);
+      if (!consumeToken(b, COMPONENT_CHILDREN_START)) break;
+      if (!empty_element_parsed_guard_(b, "component_children_0", c)) break;
+    }
+    exit_section_(b, m, null, r);
+    return r;
   }
 
   /* ********************************************************** */
@@ -83,13 +118,14 @@ public class TemplParser implements PsiParser, LightPsiParser {
   public static boolean component_params(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "component_params")) return false;
     if (!nextTokenIs(b, LPARENTH)) return false;
-    boolean r;
-    Marker m = enter_section_(b);
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, COMPONENT_PARAMS, null);
     r = consumeToken(b, LPARENTH);
-    r = r && component_params_1(b, l + 1);
-    r = r && consumeToken(b, RPARENTH);
-    exit_section_(b, m, COMPONENT_PARAMS, r);
-    return r;
+    p = r; // pin = 1
+    r = r && report_error_(b, component_params_1(b, l + 1));
+    r = p && consumeToken(b, RPARENTH) && r;
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
   }
 
   // GO_COMPONENT_IMPORT_PARAMS*
@@ -99,6 +135,32 @@ public class TemplParser implements PsiParser, LightPsiParser {
       int c = current_position_(b);
       if (!consumeToken(b, GO_COMPONENT_IMPORT_PARAMS)) break;
       if (!empty_element_parsed_guard_(b, "component_params_1", c)) break;
+    }
+    return true;
+  }
+
+  /* ********************************************************** */
+  // LBRACE GO_COMPONENT_STRUCT_LITERAL* RBRACE
+  public static boolean component_struct_literal(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "component_struct_literal")) return false;
+    if (!nextTokenIs(b, LBRACE)) return false;
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, COMPONENT_STRUCT_LITERAL, null);
+    r = consumeToken(b, LBRACE);
+    p = r; // pin = 1
+    r = r && report_error_(b, component_struct_literal_1(b, l + 1));
+    r = p && consumeToken(b, RBRACE) && r;
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
+  }
+
+  // GO_COMPONENT_STRUCT_LITERAL*
+  private static boolean component_struct_literal_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "component_struct_literal_1")) return false;
+    while (true) {
+      int c = current_position_(b);
+      if (!consumeToken(b, GO_COMPONENT_STRUCT_LITERAL)) break;
+      if (!empty_element_parsed_guard_(b, "component_struct_literal_1", c)) break;
     }
     return true;
   }

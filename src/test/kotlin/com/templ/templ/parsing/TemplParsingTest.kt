@@ -15,6 +15,10 @@ class TemplParsingTest: ParsingTestCase("", "templ", TemplParserDefinition()) {
         doTest(true)
     }
 
+    fun testParsingTestComplexSyntax() {
+        doTest(true)
+    }
+
     override fun getTestDataPath(): String {
         return "src/test/testData"
     }

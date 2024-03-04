@@ -197,7 +197,7 @@ class TemplLexerTest : LexerTestCase() {
             TemplTokenType.( ('(')
             TemplTokenType.GO_COMPONENT_IMPORT_PARAMS ('"hello"')
             TemplTokenType.) (')')
-            WHITE_SPACE (' ')
+            TemplTokenType.COMPONENT_CHILDREN_START (' ')
             TemplTokenType.{ ('{')
             TemplTokenType.HTML_FRAGMENT ('\n        <span>hello</span> \n    ')
             TemplTokenType.} ('}')
@@ -238,7 +238,7 @@ class TemplLexerTest : LexerTestCase() {
             TemplTokenType.COMPONENT_REFERENCE ('test2')
             TemplTokenType.( ('(')
             TemplTokenType.) (')')
-            WHITE_SPACE (' ')
+            TemplTokenType.COMPONENT_CHILDREN_START (' ')
             TemplTokenType.{ ('{')
             TemplTokenType.HTML_FRAGMENT ('\n        <button>\n            Click me\n        </button>\n    ')
             TemplTokenType.} ('}')
@@ -299,7 +299,7 @@ class TemplLexerTest : LexerTestCase() {
             TemplTokenType.( ('(')
             TemplTokenType.GO_COMPONENT_IMPORT_PARAMS ('1')
             TemplTokenType.) (')')
-            WHITE_SPACE (' ')
+            TemplTokenType.COMPONENT_CHILDREN_START (' ')
             TemplTokenType.{ ('{')
             TemplTokenType.HTML_FRAGMENT ('\n        <div>hello</div>\n        ')
             TemplTokenType.@ ('@')
@@ -307,7 +307,7 @@ class TemplLexerTest : LexerTestCase() {
             TemplTokenType.( ('(')
             TemplTokenType.GO_COMPONENT_IMPORT_PARAMS ('2')
             TemplTokenType.) (')')
-            WHITE_SPACE (' ')
+            TemplTokenType.COMPONENT_CHILDREN_START (' ')
             TemplTokenType.{ ('{')
             TemplTokenType.HTML_FRAGMENT ('\n\n             ')
             TemplTokenType.@ ('@')
@@ -315,7 +315,7 @@ class TemplLexerTest : LexerTestCase() {
             TemplTokenType.( ('(')
             TemplTokenType.GO_COMPONENT_IMPORT_PARAMS ('3')
             TemplTokenType.) (')')
-            WHITE_SPACE (' ')
+            TemplTokenType.COMPONENT_CHILDREN_START (' ')
             TemplTokenType.{ ('{')
             TemplTokenType.HTML_FRAGMENT ('\n                 child3\n                 ')
             TemplTokenType.@ ('@')
@@ -465,4 +465,63 @@ class TemplLexerTest : LexerTestCase() {
             """.trimIndent()
         )
     }
+
+    fun testInlineDataModel() {
+        doTest(
+            """
+            templ Message() {
+                <div>
+                    @Data{
+                        message: fmt.Sprintf("%s", "You can implement methods on a type."),
+                    }.Method()
+                </div>
+            }
+            """.trimIndent(),
+            """
+            TemplTokenType.templ ('templ')
+            TemplTokenType.DECL_GO_TOKEN (' Message() ')
+            TemplTokenType.{ ('{')
+            TemplTokenType.HTML_FRAGMENT ('\n    <div>\n        ')
+            TemplTokenType.@ ('@')
+            TemplTokenType.COMPONENT_REFERENCE ('Data')
+            TemplTokenType.{ ('{')
+            TemplTokenType.GO_COMPONENT_STRUCT_LITERAL ('\n            message: fmt.Sprintf("%s", "You can implement methods on a type."),\n        ')
+            TemplTokenType.} ('}')
+            TemplTokenType.COMPONENT_REFERENCE ('.Method')
+            TemplTokenType.( ('(')
+            TemplTokenType.) (')')
+            TemplTokenType.HTML_FRAGMENT ('\n    </div>\n')
+            TemplTokenType.} ('}')
+            """.trimIndent()
+        )
+    }
+
+    fun testComponentParameterWithChildren() {
+        doTest(
+            """
+            templ test(comp templ.Component) {
+                <div>
+                    @comp {
+                        <div>Children</div>
+                    }
+                </div>
+            }
+            """.trimIndent(),
+            """
+            TemplTokenType.templ ('templ')
+            TemplTokenType.DECL_GO_TOKEN (' test(comp templ.Component) ')
+            TemplTokenType.{ ('{')
+            TemplTokenType.HTML_FRAGMENT ('\n    <div>\n        ')
+            TemplTokenType.@ ('@')
+            TemplTokenType.COMPONENT_REFERENCE ('comp')
+            TemplTokenType.COMPONENT_CHILDREN_START (' ')
+            TemplTokenType.{ ('{')
+            TemplTokenType.HTML_FRAGMENT ('\n            <div>Children</div>\n        ')
+            TemplTokenType.} ('}')
+            TemplTokenType.HTML_FRAGMENT ('\n    </div>\n')
+            TemplTokenType.} ('}')
+            """.trimIndent()
+        )
+    }
+
 }

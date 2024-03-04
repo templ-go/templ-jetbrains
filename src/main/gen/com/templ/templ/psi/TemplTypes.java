@@ -11,6 +11,7 @@ public interface TemplTypes {
   IElementType COMPONENT = new TemplElementType("COMPONENT");
   IElementType COMPONENT_CHILDREN = new TemplElementType("COMPONENT_CHILDREN");
   IElementType COMPONENT_PARAMS = new TemplElementType("COMPONENT_PARAMS");
+  IElementType COMPONENT_STRUCT_LITERAL = new TemplElementType("COMPONENT_STRUCT_LITERAL");
   IElementType CSS_DECL = new TemplElementType("CSS_DECL");
   IElementType ELSE = new TemplElementType("ELSE");
   IElementType ELSE_IF = new TemplElementType("ELSE_IF");
@@ -27,6 +28,7 @@ public interface TemplTypes {
 
   IElementType BLOCK_COMMENT = new TemplTokenType("BLOCK_COMMENT");
   IElementType BOOL_EXPR_START = new TemplTokenType("BOOL_EXPR_START");
+  IElementType COMPONENT_CHILDREN_START = new TemplTokenType("COMPONENT_CHILDREN_START");
   IElementType COMPONENT_IMPORT_START = new TemplTokenType("@");
   IElementType COMPONENT_REFERENCE = new TemplTokenType("COMPONENT_REFERENCE");
   IElementType CSS_CLASS_ID = new TemplTokenType("CSS_CLASS_ID");
@@ -35,6 +37,7 @@ public interface TemplTypes {
   IElementType DECL_GO_TOKEN = new TemplTokenType("DECL_GO_TOKEN");
   IElementType GO_CASE_FRAGMENT = new TemplTokenType("GO_CASE_FRAGMENT");
   IElementType GO_COMPONENT_IMPORT_PARAMS = new TemplTokenType("GO_COMPONENT_IMPORT_PARAMS");
+  IElementType GO_COMPONENT_STRUCT_LITERAL = new TemplTokenType("GO_COMPONENT_STRUCT_LITERAL");
   IElementType GO_CSS_DECL_PARAMS = new TemplTokenType("GO_CSS_DECL_PARAMS");
   IElementType GO_DEFAULT_FRAGMENT = new TemplTokenType("GO_DEFAULT_FRAGMENT");
   IElementType GO_ELSE_IF_START_FRAGMENT = new TemplTokenType("GO_ELSE_IF_START_FRAGMENT");
@@ -66,6 +69,9 @@ public interface TemplTypes {
       }
       else if (type == COMPONENT_PARAMS) {
         return new TemplComponentParamsImpl(node);
+      }
+      else if (type == COMPONENT_STRUCT_LITERAL) {
+        return new TemplComponentStructLiteralImpl(node);
       }
       else if (type == CSS_DECL) {
         return new TemplCssDeclImpl(node);

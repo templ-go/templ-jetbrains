@@ -19,6 +19,10 @@ public class TemplVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitComponentStructLiteral(@NotNull TemplComponentStructLiteral o) {
+    visitPsiElement(o);
+  }
+
   public void visitCssDecl(@NotNull TemplCssDecl o) {
     visitPsiElement(o);
   }
