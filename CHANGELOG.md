@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [0.0.13] - 2024-03-22
+
 ### Added
 
 - js syntax
@@ -58,7 +60,8 @@
 - Changelog tracking
 - Syntax Highlights from textmate
 
-[Unreleased]: https://github.com/templ-go/templ-jetbrains/compare/v0.0.10...HEAD
+[Unreleased]: https://github.com/templ-go/templ-jetbrains/compare/v0.0.13...HEAD
+[0.0.13]: https://github.com/templ-go/templ-jetbrains/compare/v0.0.10...v0.0.13
 [0.0.10]: https://github.com/templ-go/templ-jetbrains/compare/v0.0.9...v0.0.10
 [0.0.9]: https://github.com/templ-go/templ-jetbrains/compare/v0.0.8...v0.0.9
 [0.0.8]: https://github.com/templ-go/templ-jetbrains/compare/v0.0.7...v0.0.8
