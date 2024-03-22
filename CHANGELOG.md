@@ -5,6 +5,7 @@
 ### Added
 
 - js syntax
+- feat: Program Structure Interface (PSI) implementation and HTML template editing support (#17)
 
 ## [0.0.10] - 2024-01-31
 
