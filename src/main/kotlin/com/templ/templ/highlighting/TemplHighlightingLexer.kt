@@ -10,7 +10,7 @@ import org.jetbrains.plugins.textmate.language.syntax.lexer.TextMateHighlighting
 import java.io.*
 import java.nio.file.Path
 import java.util.zip.ZipInputStream
-import com.intellij.psi.tree.IElementType;
+import com.intellij.psi.tree.IElementType
 import org.jetbrains.plugins.textmate.bundles.readTextMateBundle
 import org.jetbrains.plugins.textmate.language.syntax.lexer.TextMateElementType
 
@@ -29,11 +29,11 @@ private fun extract(zip: ZipInputStream, target: File) {
     try {
         while (true) {
             val entry = zip.nextEntry ?: break
-            val file = File(target, entry.getName())
+            val file = File(target, entry.name)
             if (!file.toPath().normalize().startsWith(target.toPath())) {
                 throw IOException("Bad zip entry")
             }
-            if (entry.isDirectory()) {
+            if (entry.isDirectory) {
                 file.mkdirs()
                 continue
             }
@@ -70,11 +70,11 @@ private fun getBundlePath(): Path {
 fun getTextMateLanguageDescriptor(): TextMateLanguageDescriptor {
     try {
         val bundle = readTextMateBundle(getBundlePath())
-        val syntax = TextMateSyntaxTable();
-        val interner = Interner.createWeakInterner<CharSequence>();
+        val syntax = TextMateSyntaxTable()
+        val interner = Interner.createWeakInterner<CharSequence>()
         val grammars = bundle.readGrammars()
         for (g in grammars) {
-            syntax.loadSyntax(g.plist.value, interner);
+            syntax.loadSyntax(g.plist.value, interner)
         }
         return TextMateLanguageDescriptor("source.templ", syntax.getSyntax("source.templ"))
     } catch (ex: Exception) {
@@ -82,7 +82,7 @@ fun getTextMateLanguageDescriptor(): TextMateLanguageDescriptor {
     }
 }
 
-class TemplHighlightingLexer() : TextMateHighlightingLexer(getTextMateLanguageDescriptor(), 20000) {
+class TemplHighlightingLexer : TextMateHighlightingLexer(getTextMateLanguageDescriptor(), 20000) {
     override fun getTokenType(): IElementType? {
         val tt = super.getTokenType() ?: return null
         return TemplElementType((tt as TextMateElementType).scope)

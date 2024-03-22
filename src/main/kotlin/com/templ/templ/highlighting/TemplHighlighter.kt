@@ -20,7 +20,7 @@ class TemplHighlighter(lexer: TemplHighlightingLexer) : SyntaxHighlighterBase() 
 
     override fun getTokenHighlights(tokenType: IElementType): Array<out TextAttributesKey> {
         if (tokenType is TemplElementType) {
-            val scope = tokenType.getScope().scopeName ?: "";
+            val scope = tokenType.getScope().scopeName ?: ""
 
             if (scope.startsWith("punctuation.definition.comment")) return COMMENT
             if (scope.startsWith("comment")) return COMMENT

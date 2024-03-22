@@ -40,3 +40,7 @@ bin/
 
 ### Mac OS ###
 .DS_Store
+
+### Code generation dependencies automatically downloaded at code generation ###
+/src/main/grammar/idea-flex.skeleton
+/src/main/grammar/jflex-1.9.1.jar

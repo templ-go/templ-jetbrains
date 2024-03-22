@@ -1,0 +1,29 @@
+package main
+
+struct Data {
+    message string
+}
+
+templ (d Data) Method(greeting string) {
+	<div>{ d.message }</div>
+	<div>{ greeting }</div>
+}
+
+templ test(comp templ.Component) {
+    <div>
+        @comp {
+            <div>Children</div>
+        }
+    </div>
+}
+
+templ Hello() {
+	@Data{
+	    message: "You can implement methods on a type.",
+	}.Method("hello") {
+	    @test(Data{ message: "You can implement methods on a type." }.Method("hello"))
+        <div>
+            { children... }
+        </div>
+	}
+}

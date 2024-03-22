@@ -1,0 +1,67 @@
+{
+  parserClass="com.templ.templ.parsing.TemplParser"
+
+  extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
+
+  psiClassPrefix="Templ"
+  psiImplClassSuffix="Impl"
+  psiPackage="com.templ.templ.psi"
+  psiImplPackage="com.templ.templ.psi.impl"
+
+  elementTypeHolderClass="com.templ.templ.psi.TemplTypes"
+  elementTypeClass="com.templ.templ.psi.TemplElementType"
+  tokenTypeClass="com.templ.templ.psi.TemplTokenType"
+  psiImplUtilClass="com.templ.templ.psi.TemplPsiImplUtil"
+
+  tokens=[
+      LBRACE='{'
+      RBRACE='}'
+      LPARENTH='('
+      RPARENTH=')'
+      HTML_DECL_START='templ'
+      SCRIPT_DECL_START='script'
+      CSS_DECL_START='css'
+      COMPONENT_IMPORT_START='@'
+      LINE_COMMENT='LINE_COMMENT'
+      BLOCK_COMMENT='BLOCK_COMMENT'
+  ]
+}
+
+root ::= go_root (root_item)*
+private root_item ::= go_root | html_decl | css_decl | script_decl {pin=1 recoverWhile=recover}
+private recover ::= !(HTML_DECL_START | CSS_DECL_START | SCRIPT_DECL_START | GO_ROOT_FRAGMENT)
+
+go_root ::= GO_ROOT_FRAGMENT
+
+html_decl ::= HTML_DECL_START DECL_GO_TOKEN* LBRACE html_decl_body RBRACE {pin=1}
+html_decl_body ::= (HTML_FRAGMENT | expr | if_cond | switch_stmt | for_loop | component)*
+
+// https://templ.guide/syntax-and-usage/expressions and https://templ.guide/syntax-and-usage/template-composition
+expr ::= BOOL_EXPR_START? LBRACE GO_EXPR* RBRACE {pin=2}
+
+// https://templ.guide/syntax-and-usage/if-else
+if_cond ::= GO_IF_START_FRAGMENT html_decl_body else_if* else? RBRACE {pin=1}
+else_if ::= GO_ELSE_IF_START_FRAGMENT html_decl_body {pin=1}
+else ::= GO_ELSE_START_FRAGMENT html_decl_body {pin=1}
+
+// https://templ.guide/syntax-and-usage/switch
+switch_stmt ::= GO_SWITCH_START_FRAGMENT switch_case* switch_default? RBRACE {pin=1}
+switch_case ::= GO_CASE_FRAGMENT html_decl_body {pin=1}
+switch_default ::= GO_DEFAULT_FRAGMENT html_decl_body {pin=1}
+
+// https://templ.guide/syntax-and-usage/loops
+for_loop ::= GO_FOR_START_FRAGMENT html_decl_body RBRACE {pin=1}
+
+// https://templ.guide/syntax-and-usage/template-composition
+component ::= COMPONENT_IMPORT_START COMPONENT_REFERENCE (component_struct_literal COMPONENT_REFERENCE)? component_params? component_children? {pin=1; recoverWhile=recover_component}
+private recover_component ::= !(COMPONENT_IMPORT_START | HTML_FRAGMENT | RBRACE | RPARENTH)
+component_struct_literal ::= LBRACE GO_COMPONENT_STRUCT_LITERAL* RBRACE {pin=1}
+component_params ::= LPARENTH GO_COMPONENT_IMPORT_PARAMS* RPARENTH {pin=1}
+component_children ::= COMPONENT_CHILDREN_START+ LBRACE html_decl_body RBRACE {pin=1}
+
+// https://templ.guide/syntax-and-usage/css-style-management#css-components
+css_decl ::= CSS_DECL_START CSS_CLASS_ID css_params LBRACE CSS_PROPERTIES* RBRACE {pin=1}
+private css_params ::= LPARENTH GO_CSS_DECL_PARAMS* RPARENTH
+
+// https://templ.guide/syntax-and-usage/script-templates#script-templates
+script_decl ::= SCRIPT_DECL_START SCRIPT_FUNCTION_DECL* SCRIPT_BODY* RBRACE {pin=1}

@@ -18,13 +18,16 @@
                   implementationClass="com.templ.templ.TemplFileType"
                   extensions="templ"
                   fieldName="INSTANCE"/>
-
+        <lang.parserDefinition
+                language="templ"
+                implementationClass="com.templ.templ.parsing.TemplParserDefinition"/>
+        <lang.fileViewProviderFactory language="templ" implementationClass="com.templ.templ.file.TemplFileViewProviderFactory"/>
         <editorHighlighterProvider filetype="templ" implementationClass="com.templ.templ.highlighting.TemplEditorHighlighterProvider"/>
         <projectService serviceImplementation="com.templ.templ.TemplSettings"/>
         <projectConfigurable groupId="tools" instance="com.templ.templ.TemplConfigurable"/>
         <treeStructureProvider implementation="com.templ.templ.treestructure.TemplTreeStructureProvider"/>
         <platform.lsp.serverSupportProvider implementation="com.templ.templ.TemplLspServerSupportProvider"/>
-        <spellchecker.support language="templ" />
+        <spellchecker.support language="templ" implementationClass="com.intellij.spellchecker.tokenizer.SpellcheckingStrategy" />
         <spellchecker.bundledDictionaryProvider implementation="com.templ.templ.spellchecker.TemplBundledDictionaryProvider"/>
     </extensions>
 </idea-plugin>
