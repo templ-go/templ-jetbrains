@@ -25,7 +25,16 @@ class TemplLspServerSupportProvider : LspServerSupportProvider {
 private class TemplLspServerDescriptor(project: Project, val executable: File) :
     ProjectWideLspServerDescriptor(project, "templ") {
     override fun isSupportedFile(file: VirtualFile) = file.extension == "templ"
-    override fun createCommandLine() = GeneralCommandLine(executable.absolutePath, "lsp")
+    override fun createCommandLine(): GeneralCommandLine {
+        val cmd = GeneralCommandLine(executable.absolutePath, "lsp")
+        val settings = TemplSettings.getService(project).state
+        if (settings.goplsLog.isNotEmpty()) cmd.addParameter("-goplsLog=${settings.goplsLog}")
+        if (settings.log.isNotEmpty()) cmd.addParameter("-log=${settings.log}")
+        if (settings.http.isNotEmpty()) cmd.addParameter("-http=${settings.http}")
+        if (settings.goplsRPCTrace) cmd.addParameter("-goplsRPCTrace=true")
+        if (settings.pprof) cmd.addParameter("-pprof=true")
+        return cmd
+    }
 }
 
 fun findGlobalTemplExecutable(): File? {

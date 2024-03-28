@@ -8,6 +8,11 @@ import com.intellij.openapi.project.Project
 
 class TemplState {
     var templLspPath = ""
+    var goplsLog = ""
+    var goplsRPCTrace = false
+    var log = ""
+    var pprof = false
+    var http = ""
 }
 
 @State(name = "TemplSettings", storages = [Storage("templ.xml")])
@@ -32,9 +37,5 @@ class TemplSettings(private val project: Project) : PersistentStateComponent<Tem
             return findGlobalTemplExecutable()?.absolutePath ?: ""
         }
         return templPath
-    }
-
-    fun setTemplLspPath(path: String) {
-        this.state.templLspPath = path
     }
 }

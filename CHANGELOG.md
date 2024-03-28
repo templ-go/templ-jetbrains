@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Add templ command settings
+
 ## [0.0.13] - 2024-03-22
 
 ### Added
