@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [0.0.14] - 2024-04-02
+
 ### Added
 
 - Add templ command settings
@@ -64,7 +66,8 @@
 - Changelog tracking
 - Syntax Highlights from textmate
 
-[Unreleased]: https://github.com/templ-go/templ-jetbrains/compare/v0.0.13...HEAD
+[Unreleased]: https://github.com/templ-go/templ-jetbrains/compare/v0.0.14...HEAD
+[0.0.14]: https://github.com/templ-go/templ-jetbrains/compare/v0.0.13...v0.0.14
 [0.0.13]: https://github.com/templ-go/templ-jetbrains/compare/v0.0.10...v0.0.13
 [0.0.10]: https://github.com/templ-go/templ-jetbrains/compare/v0.0.9...v0.0.10
 [0.0.9]: https://github.com/templ-go/templ-jetbrains/compare/v0.0.8...v0.0.9
