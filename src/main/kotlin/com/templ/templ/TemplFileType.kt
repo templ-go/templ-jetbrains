@@ -7,7 +7,7 @@ import javax.swing.Icon
 object TemplFileType : LanguageFileType(TemplLanguage) {
     override fun getName(): String = "templ"
 
-    override fun getDescription(): String = "A language for writing HTML user interfaces in Go. "
+    override fun getDescription(): String = "Templ template"
 
     override fun getDefaultExtension(): String = "templ"
 
