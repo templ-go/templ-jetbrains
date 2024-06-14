@@ -10,7 +10,7 @@ Support for the [Templ Programming Language](https://templ.guide/)
 
 ## Prerequisites
 - [gopls](https://pkg.go.dev/golang.org/x/tools/gopls)
-- [temple](https://templ.guide/quick-start/installation/)
+- [templ](https://templ.guide/quick-start/installation/)
 
 ## Tasks
 
