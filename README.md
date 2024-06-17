@@ -8,6 +8,10 @@ Support for the [Templ Programming Language](https://templ.guide/)
 - HTML editing support
 <!-- Plugin description end -->
 
+## Prerequisites
+- [gopls](https://pkg.go.dev/golang.org/x/tools/gopls)
+- [templ](https://templ.guide/quick-start/installation/)
+
 ## Tasks
 
 ### bundle-vscode
