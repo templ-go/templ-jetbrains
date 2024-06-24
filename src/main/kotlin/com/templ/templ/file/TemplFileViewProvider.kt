@@ -1,5 +1,6 @@
 package com.templ.templ.file
 
+import com.goide.GoLanguage
 import com.intellij.lang.Language
 import com.intellij.lang.LanguageParserDefinitions
 import com.intellij.lang.html.HTMLLanguage
@@ -30,12 +31,18 @@ class TemplFileViewProvider(manager: PsiManager, virtualFile: VirtualFile, event
         }
     }
 
+    private val goLanguageType = object : TemplateDataElementType("Go inside Templ", GoLanguage.INSTANCE, TemplTypes.GO_ROOT_FRAGMENT, TemplLeafElementType("TEMPL_NOT_GO")) {
+        override fun getTemplateFileLanguage(viewProvider: TemplateLanguageFileViewProvider): Language {
+            return GoLanguage.INSTANCE
+        }
+    }
+
     override fun getBaseLanguage(): Language {
         return TemplLanguage
     }
 
     override fun getLanguages(): Set<Language> {
-        return setOf(baseLanguage, HTMLLanguage.INSTANCE)
+        return setOf(baseLanguage, HTMLLanguage.INSTANCE, GoLanguage.INSTANCE)
     }
 
     override fun getTemplateDataLanguage(): Language {
@@ -43,11 +50,15 @@ class TemplFileViewProvider(manager: PsiManager, virtualFile: VirtualFile, event
     }
 
     override fun createFile(lang: Language): PsiFile? {
-        if (lang === HTMLLanguage.INSTANCE) {
-            val file = LanguageParserDefinitions.INSTANCE.forLanguage(lang).createFile(this) as PsiFileImpl
-            file.contentElementType = htmlElementType
-            return file
-        } else if (lang === baseLanguage) {
+         if (lang === GoLanguage.INSTANCE) {
+             val file = LanguageParserDefinitions.INSTANCE.forLanguage(lang).createFile(this) as PsiFileImpl
+             file.contentElementType = goLanguageType
+             return file
+        } else if (lang === HTMLLanguage.INSTANCE) {
+             val file = LanguageParserDefinitions.INSTANCE.forLanguage(lang).createFile(this) as PsiFileImpl
+             file.contentElementType = htmlElementType
+             return file
+         } else if (lang === baseLanguage) {
             return LanguageParserDefinitions.INSTANCE.forLanguage(lang).createFile(this) as PsiFileImpl
         } else {
             return null
