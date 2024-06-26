@@ -233,6 +233,11 @@ OPTIONAL_WHITE_SPACE=[\ \t\f]*
         return HTML_FRAGMENT;
     }
 
+    "='" ~"'" {
+        // Skip over attribute value so that we don't detect keywords in it.
+        return HTML_FRAGMENT;
+    }
+
     "?={" {
         yypushback(1); // IN_EXPR handles brace nesting
         yyPushState(IN_EXPR);
