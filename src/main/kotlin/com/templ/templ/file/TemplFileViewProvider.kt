@@ -134,6 +134,25 @@ class TemplFileViewProvider(manager: PsiManager, virtualFile: VirtualFile, event
                     val tokenModifications =
                         this.appendCurrentTemplateToken(baseLexer.tokenEnd, baseLexer.tokenSequence)
                     modifications.addAll(tokenModifications)
+                } else if (arrayOf(
+                        TemplTypes.GO_ROOT_FRAGMENT,
+                        TemplTypes.GO_IF_START_FRAGMENT,
+                        TemplTypes.GO_ELSE_IF_START_FRAGMENT,
+                        TemplTypes.GO_ELSE_START_FRAGMENT,
+                        TemplTypes.GO_FRAGMENT,
+                        TemplTypes.GO_SWITCH_START_FRAGMENT,
+                        TemplTypes.GO_CASE_FRAGMENT,
+                        TemplTypes.GO_DEFAULT_FRAGMENT,
+                        TemplTypes.GO_FOR_START_FRAGMENT,
+                        TemplTypes.DECL_GO_TOKEN
+                    ).contains(baseLexer.tokenType)
+                ) {
+                    val emptyText = baseLexer.tokenSequence.toString().replace(Regex("\\S"), "")
+                    modifications.addRangeToRemove(baseLexer.tokenStart, emptyText)
+                    modifications.addOuterRange(
+                        currentRange,
+                        this.isInsertionToken(baseLexer.tokenType, baseLexer.tokenSequence)
+                    )
                 } else {
                     modifications.addOuterRange(
                         currentRange,
@@ -256,6 +275,16 @@ class TemplFileViewProvider(manager: PsiManager, virtualFile: VirtualFile, event
                     val tokenModifications =
                         this.appendCurrentTemplateToken(baseLexer.tokenEnd, baseLexer.tokenSequence)
                     modifications.addAll(tokenModifications)
+                } else if (arrayOf(
+                        TemplTypes.HTML_FRAGMENT,
+                        TemplTypes.SCRIPT_BODY,
+                    ).contains(baseLexer.tokenType)) {
+                    val emptyText = baseLexer.tokenSequence.toString().replace(Regex("\\S"), "")
+                    modifications.addRangeToRemove(baseLexer.tokenStart, emptyText)
+                    modifications.addOuterRange(
+                        currentRange,
+                        this.isInsertionToken(baseLexer.tokenType, baseLexer.tokenSequence)
+                    )
                 } else {
                     modifications.addOuterRange(
                         currentRange,
