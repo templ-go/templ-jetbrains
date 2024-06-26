@@ -386,22 +386,20 @@ OPTIONAL_WHITE_SPACE=\s*
 <IN_EXPR> {
     "{" {
         braceNestingLevel++;
-        if (braceNestingLevel == 1) {
-            return LBRACE;
-        }
+        return LBRACE;
     }
 
     "}" {
-        braceNestingLevel--;
-        if (braceNestingLevel == 0) {
-            yyPopState(); // IN_TEMPL_DECLARATION_BODY or IN_HTML_TAG_OPENER
-            return RBRACE;
-        }
+       braceNestingLevel--;
+       if (braceNestingLevel == 0) {
+           yyPopState(); // IN_COMPONENT_IMPORT
+       }
+       return RBRACE;
     }
 
     [^] {
           return GO_EXPR;
-     }
+    }
 }
 
 <IN_CSS_DECLARATION_START> {

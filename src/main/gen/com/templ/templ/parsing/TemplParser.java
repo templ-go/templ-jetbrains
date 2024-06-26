@@ -247,7 +247,7 @@ public class TemplParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // BOOL_EXPR_START? LBRACE GO_EXPR* RBRACE
+  // BOOL_EXPR_START? LBRACE LBRACE? GO_EXPR* RBRACE RBRACE?
   public static boolean expr(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "expr")) return false;
     if (!nextTokenIs(b, "<expr>", BOOL_EXPR_START, LBRACE)) return false;
@@ -257,7 +257,9 @@ public class TemplParser implements PsiParser, LightPsiParser {
     r = r && consumeToken(b, LBRACE);
     p = r; // pin = 2
     r = r && report_error_(b, expr_2(b, l + 1));
-    r = p && consumeToken(b, RBRACE) && r;
+    r = p && report_error_(b, expr_3(b, l + 1)) && r;
+    r = p && report_error_(b, consumeToken(b, RBRACE)) && r;
+    r = p && expr_5(b, l + 1) && r;
     exit_section_(b, l, m, r, p, null);
     return r || p;
   }
@@ -269,14 +271,28 @@ public class TemplParser implements PsiParser, LightPsiParser {
     return true;
   }
 
-  // GO_EXPR*
+  // LBRACE?
   private static boolean expr_2(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "expr_2")) return false;
+    consumeToken(b, LBRACE);
+    return true;
+  }
+
+  // GO_EXPR*
+  private static boolean expr_3(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "expr_3")) return false;
     while (true) {
       int c = current_position_(b);
       if (!consumeToken(b, GO_EXPR)) break;
-      if (!empty_element_parsed_guard_(b, "expr_2", c)) break;
+      if (!empty_element_parsed_guard_(b, "expr_3", c)) break;
     }
+    return true;
+  }
+
+  // RBRACE?
+  private static boolean expr_5(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "expr_5")) return false;
+    consumeToken(b, RBRACE);
     return true;
   }
 
