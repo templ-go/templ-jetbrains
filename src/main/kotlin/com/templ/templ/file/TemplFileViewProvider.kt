@@ -273,6 +273,12 @@ class TemplFileViewProvider(manager: PsiManager, virtualFile: VirtualFile, event
                             _TemplLexer.IN_EXPR,
                             _TemplLexer.IN_HTML_TAG_OPENER,
                         ).contains(baseLexer.state)) {
+                            if (baseLexer.tokenType === TemplTypes.LBRACE && baseLexer.state == _TemplLexer.IN_TEMPL_DECLARATION_START) {
+                                modifications.addRangeToRemove(baseLexer.tokenStart, "templ.Component ")
+                            }
+                            if (baseLexer.tokenType === TemplTypes.RBRACE && baseLexer.state == _TemplLexer.IN_TEMPL_DECLARATION_BODY) {
+                                modifications.addRangeToRemove(baseLexer.tokenStart, "return nil")
+                            }
                             val tokenModifications =
                                 this.appendCurrentTemplateToken(baseLexer.tokenEnd, baseLexer.tokenSequence)
                             modifications.addAll(tokenModifications)
