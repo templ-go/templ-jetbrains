@@ -214,7 +214,7 @@ class TemplFileViewProvider(manager: PsiManager, virtualFile: VirtualFile, event
             var currentRange = TextRange.EMPTY_RANGE
 
             var tokenCounter = 0
-            var braceCounter = -1
+            var braceCounter = 0
             while (baseLexer.tokenType != null) {
                 ++tokenCounter
                 if (tokenCounter % 1000 == 0) {
@@ -241,7 +241,7 @@ class TemplFileViewProvider(manager: PsiManager, virtualFile: VirtualFile, event
                         TemplTypes.GO_CASE_FRAGMENT,
                         TemplTypes.GO_DEFAULT_FRAGMENT,
                         TemplTypes.GO_FOR_START_FRAGMENT,
-                        TemplTypes.DECL_GO_TOKEN
+                        TemplTypes.DECL_GO_TOKEN,
                     ).contains(baseLexer.tokenType)
                 ) {
                     val tokenModifications =
@@ -260,6 +260,12 @@ class TemplFileViewProvider(manager: PsiManager, virtualFile: VirtualFile, event
                             this.isInsertionToken(baseLexer.tokenType, baseLexer.tokenSequence)
                         )
                     }
+                } else if (baseLexer.tokenType === TemplTypes.COMPONENT_REFERENCE) {
+                    val tokenModifications =
+                        this.appendCurrentTemplateToken(baseLexer.tokenEnd, baseLexer.tokenSequence)
+                    modifications.addAll(tokenModifications)
+                    modifications.addRangeToRemove(baseLexer.tokenEnd, ".Render(nil, nil)")
+
                 } else if (baseLexer.tokenType === TemplTypes.HTML_DECL_START) {
                     modifications.addRangeToRemove(baseLexer.tokenStart, "func ")
                     modifications.addOuterRange(
@@ -272,11 +278,17 @@ class TemplFileViewProvider(manager: PsiManager, virtualFile: VirtualFile, event
                             _TemplLexer.IN_TEMPL_DECLARATION_BODY,
                             _TemplLexer.IN_EXPR,
                             _TemplLexer.IN_HTML_TAG_OPENER,
+                            _TemplLexer.IN_COMPONENT_IMPORT_CHILDREN_BLOCK_START
                         ).contains(baseLexer.state)) {
+                            if (baseLexer.tokenType === TemplTypes.LBRACE) {
+                                braceCounter++
+                            } else {
+                                braceCounter--
+                            }
                             if (baseLexer.tokenType === TemplTypes.LBRACE && baseLexer.state == _TemplLexer.IN_TEMPL_DECLARATION_START) {
                                 modifications.addRangeToRemove(baseLexer.tokenStart, "templ.Component ")
                             }
-                            if (baseLexer.tokenType === TemplTypes.RBRACE && baseLexer.state == _TemplLexer.IN_TEMPL_DECLARATION_BODY) {
+                            if (baseLexer.tokenType === TemplTypes.RBRACE && baseLexer.state == _TemplLexer.IN_TEMPL_DECLARATION_BODY && braceCounter == 0) {
                                 modifications.addRangeToRemove(baseLexer.tokenStart, "return nil")
                             }
                             val tokenModifications =

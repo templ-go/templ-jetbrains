@@ -3,7 +3,7 @@ package com.templ.templ.parsing;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.lexer.FlexLexer;
 import org.bouncycastle.util.Arrays;
-import com.intellij.util.containers.Stack;
+import com.intellij.util.containers.Stack;import q.H.W;
 
 import static com.intellij.psi.TokenType.*;
 import static com.templ.templ.psi.TemplTypes.*;
@@ -45,7 +45,7 @@ import static com.templ.templ.psi.TemplTypes.*;
         switch (state) {
             case YYINITIAL: return GO_ROOT_FRAGMENT;
             case IN_EXPR: return GO_EXPR;
-            case IN_COMPONENT_IMPORT_PARAMS: return GO_COMPONENT_IMPORT_PARAMS;
+//            case IN_COMPONENT_IMPORT_PARAMS: return GO_COMPONENT_IMPORT_PARAMS;
             case IN_TEMPL_DECLARATION_START: return DECL_GO_TOKEN;
             default: throw new IllegalStateException("Unknown default token for state: " + state);
         }
@@ -260,7 +260,7 @@ OPTIONAL_WHITE_SPACE=[\ \t\f]*
         return HTML_FRAGMENT;
     }
 
-    ^ {OPTIONAL_WHITE_SPACE} "switch" ~"{\n" {
+    ^ {OPTIONAL_WHITE_SPACE} "switch" ~"{" {NEW_LINE} {
         return GO_SWITCH_START_FRAGMENT;
     }
 
@@ -279,7 +279,7 @@ OPTIONAL_WHITE_SPACE=[\ \t\f]*
     ^ {OPTIONAL_WHITE_SPACE} "@" {
         yypushback(1);
         yyPushState(IN_COMPONENT_IMPORT);
-        return HTML_FRAGMENT;
+        return WHITE_SPACE;
     }
 
     ">" {OPTIONAL_WHITE_SPACE} "@" {
@@ -309,84 +309,77 @@ OPTIONAL_WHITE_SPACE=[\ \t\f]*
         return COMPONENT_IMPORT_START;
     }
 
-    [\w\.]+ "{" {
+    [\ \t\f] "{" {
         yypushback(1);
-        yyPushState(IN_COMPONENT_IMPORT_STRUCT_LITERAL);
-        return COMPONENT_REFERENCE;
-    }
-
-    [\w\.]+ "(" {
-        yypushback(1);
-        yyReplaceState(IN_COMPONENT_IMPORT_PARAMS);
-        return COMPONENT_REFERENCE;
-    }
-
-    [\w\.]+ {WHITE_SPACE} "{" {
-        yypushback(2);
         yyReplaceState(IN_COMPONENT_IMPORT_CHILDREN_BLOCK_START);
+        return WHITE_SPACE;
+    }
+
+    ([^{,(]|")") {NEW_LINE} {
+        yypushback(yylength()-1);
+        yyPopState();
         return COMPONENT_REFERENCE;
     }
 
-    [\w\.]+ {
-        yyPopState(); // IN_TEMPL_DECLARATION_BODY
+    [^] {
         return COMPONENT_REFERENCE;
     }
 }
 
-<IN_COMPONENT_IMPORT_STRUCT_LITERAL> {
-    "{" {
-        braceNestingLevel++;
-        if (braceNestingLevel == 1) {
-            return LBRACE;
-        }
-    }
-
-    "}" {
-        braceNestingLevel--;
-        if (braceNestingLevel == 0) {
-            yyPopState(); // IN_COMPONENT_IMPORT
-            return RBRACE;
-        }
-    }
-
-    [^] {
-        return GO_COMPONENT_STRUCT_LITERAL;
-    }
-}
-
-<IN_COMPONENT_IMPORT_PARAMS> {
-    "(" {
-        parensNestingLevel++;
-        if (parensNestingLevel == 1) {
-            return LPARENTH;
-        }
-    }
-
-    ")" {WHITE_SPACE} "{" {
-        parensNestingLevel--;
-        if (parensNestingLevel == 0) {
-            yypushback(yylength() - 1);
-            yyReplaceState(IN_COMPONENT_IMPORT_CHILDREN_BLOCK_START);
-            return RPARENTH;
-        }
-    }
-
-    ")" {
-        parensNestingLevel--;
-        if (parensNestingLevel == 0) {
-            yyPopState(); // IN_TEMPL_DECLARATION_BODY
-            return RPARENTH;
-        }
-    }
-
-    [^] {
-        return GO_COMPONENT_IMPORT_PARAMS;
-    }
-}
+//<IN_COMPONENT_IMPORT_STRUCT_LITERAL> {
+//    "{" {
+//        braceNestingLevel++;
+//        if (braceNestingLevel == 1) {
+//            return LBRACE;
+//        }
+//    }
+//
+//    "}" {
+//        braceNestingLevel--;
+//        if (braceNestingLevel == 0) {
+//            yyPopState(); // IN_COMPONENT_IMPORT
+//            return RBRACE;
+//        }
+//    }
+//
+//    [^] {
+//        return GO_COMPONENT_STRUCT_LITERAL;
+//    }
+//}
+//
+//<IN_COMPONENT_IMPORT_PARAMS> {
+//    "(" {
+//        parensNestingLevel++;
+//        if (parensNestingLevel == 1) {
+//            return LPARENTH;
+//        }
+//    }
+//
+////    ")" {WHITE_SPACE} "{" {
+////        parensNestingLevel--;
+////        if (parensNestingLevel == 0) {
+////            yypushback(yylength() - 1);
+////            yyReplaceState(IN_COMPONENT_IMPORT_CHILDREN_BLOCK_START);
+////            return RPARENTH;
+////        }
+////    }
+//
+//    ")" {
+//        parensNestingLevel--;
+//        if (parensNestingLevel == 0) {
+//            yyPopState(); // IN_TEMPL_DECLARATION_BODY
+//            return RPARENTH;
+//        }
+//    }
+//
+//    [^] {
+//        return GO_COMPONENT_IMPORT_PARAMS;
+//    }
+//}
 
 <IN_COMPONENT_IMPORT_CHILDREN_BLOCK_START> {
-    {WHITE_SPACE} {
-        return COMPONENT_CHILDREN_START;
+    [\ \t\f] {
+        return WHITE_SPACE;
     }
 
     "{" {

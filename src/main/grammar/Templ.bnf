@@ -13,6 +13,10 @@
   tokenTypeClass="com.templ.templ.psi.TemplTokenType"
   psiImplUtilClass="com.templ.templ.psi.TemplPsiImplUtil"
 
+  parserImports=[
+    "static com.intellij.psi.TokenType.WHITE_SPACE"
+  ]
+
   tokens=[
       LBRACE='{'
       RBRACE='}'
@@ -27,6 +31,7 @@
       LINE_COMMENT='LINE_COMMENT'
       BLOCK_COMMENT='BLOCK_COMMENT'
   ]
+
 }
 
 
@@ -59,11 +64,9 @@ switch_default ::= GO_DEFAULT_FRAGMENT html_decl_body {pin=1}
 for_loop ::= GO_FOR_START_FRAGMENT html_decl_body RBRACE {pin=1}
 
 // https://templ.guide/syntax-and-usage/template-composition
-component ::= COMPONENT_IMPORT_START COMPONENT_REFERENCE (component_struct_literal COMPONENT_REFERENCE)? component_params? component_children? {pin=1; recoverWhile=recover_component}
+component ::= COMPONENT_IMPORT_START COMPONENT_REFERENCE component_children? {pin=1; recoverWhile=recover_component}
 private recover_component ::= !(COMPONENT_IMPORT_START | HTML_FRAGMENT | RBRACE | RPARENTH)
-component_struct_literal ::= LBRACE GO_COMPONENT_STRUCT_LITERAL* RBRACE {pin=1}
-component_params ::= LPARENTH GO_COMPONENT_IMPORT_PARAMS* RPARENTH {pin=1}
-component_children ::= COMPONENT_CHILDREN_START+ LBRACE html_decl_body RBRACE {pin=1}
+component_children ::= LBRACE html_decl_body RBRACE {pin=1}
 
 // https://templ.guide/syntax-and-usage/css-style-management#css-components
 css_decl ::= CSS_DECL_START CSS_CLASS_ID css_params LBRACE CSS_PROPERTIES* RBRACE {pin=1}
@@ -71,3 +74,4 @@ private css_params ::= LPARENTH GO_CSS_DECL_PARAMS* RPARENTH
 
 // https://templ.guide/syntax-and-usage/script-templates#script-templates
 script_decl ::= SCRIPT_DECL_START SCRIPT_FUNCTION_DECL* LBRACE SCRIPT_BODY* RBRACE {pin=1}
+
