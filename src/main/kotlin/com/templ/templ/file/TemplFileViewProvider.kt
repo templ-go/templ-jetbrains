@@ -75,25 +75,54 @@ class TemplFileViewProvider(manager: PsiManager, virtualFile: VirtualFile, event
                         this.appendCurrentTemplateToken(baseLexer.tokenEnd, baseLexer.tokenSequence)
                     modifications.addAll(tokenModifications)
                 } else if (baseLexer.tokenType === TemplTypes.SCRIPT_DECL_START) {
-                    modifications.addRangeToRemove(baseLexer.tokenStart, "<script>\nfunction")
-                    modifications.addOuterRange(
-                        currentRange,
-                        this.isInsertionToken(baseLexer.tokenType, baseLexer.tokenSequence)
-                    )
+                    modifications.addRangeToRemove(baseLexer.tokenStart, "<")
+                    val tokenModifications =
+                        this.appendCurrentTemplateToken(baseLexer.tokenEnd, baseLexer.tokenSequence)
+                    modifications.addAll(tokenModifications)
+                    modifications.addRangeToRemove(baseLexer.tokenEnd, ">function")
                 } else if (baseLexer.tokenType === TemplTypes.SCRIPT_FUNCTION_DECL) {
+                    // TODO: this is a hack to get the function name and arguments, it should really be done straight from the lexer.
                     val matches = "(.*)\\((.*)\\)".toRegex().find(baseLexer.tokenSequence)
                     if (matches != null && matches.groups.size == 3) {
                         val functionName = matches.groups[1]?.value
                         val functionArgs = matches.groups[2]?.value
 
                         if (functionName != null && functionArgs != null) {
-                            val args = functionArgs.split(",").joinToString(", ") { it.split(" ").first() }
+                            val args = functionArgs.split(",").map { it.split(" ") }
 
-                            modifications.addRangeToRemove(baseLexer.tokenStart, "$functionName($args) ")
-                            modifications.addOuterRange(
-                                currentRange,
-                                this.isInsertionToken(baseLexer.tokenType, baseLexer.tokenSequence)
+                            modifications.addAll(this.appendCurrentTemplateToken(
+                                baseLexer.tokenStart + functionName.length+1,
+                                baseLexer.tokenSequence.subSequence(0, functionName.length+1))
                             )
+
+                            var pos = baseLexer.tokenStart + functionName.length+1
+                            for (arg in args) {
+                                modifications.addAll(this.appendCurrentTemplateToken(
+                                    pos,
+                                    arg[0])
+                                )
+                                pos += arg[0].length
+                                if (arg.size > 1) {
+                                    modifications.addOuterRange(
+                                        TextRange(pos, pos + 1 + arg[1].length),
+                                        this.isInsertionToken(baseLexer.tokenType, baseLexer.tokenSequence)
+                                    )
+                                    pos += 1 + arg[1].length
+                                }
+                                if (args.indexOf(arg) < args.size - 1) {
+                                    modifications.addAll(
+                                        this.appendCurrentTemplateToken(
+                                            pos,
+                                            ","
+                                        )
+                                    )
+                                }
+                            }
+                            modifications.addAll(this.appendCurrentTemplateToken(
+                                pos,
+                                ")"
+                            ))
+
                         }
                     }
 
@@ -122,7 +151,7 @@ class TemplFileViewProvider(manager: PsiManager, virtualFile: VirtualFile, event
                         val tokenModifications =
                             this.appendCurrentTemplateToken(baseLexer.tokenEnd, baseLexer.tokenSequence)
                         modifications.addAll(tokenModifications)
-                        modifications.addRangeToRemove(baseLexer.tokenEnd, "\n</script>")
+                        modifications.addRangeToRemove(baseLexer.tokenEnd, "</script>")
                         braceCounter = -1
                     } else {
                         modifications.addOuterRange(
@@ -220,11 +249,11 @@ class TemplFileViewProvider(manager: PsiManager, virtualFile: VirtualFile, event
                     modifications.addAll(tokenModifications)
                 } else if (baseLexer.tokenType === TemplTypes.GO_EXPR) {
                     if (baseLexer.state == _TemplLexer.IN_EXPR) {
-                        modifications.addRangeToRemove(baseLexer.tokenStart, "\nstring(${baseLexer.tokenSequence})")
-                        modifications.addOuterRange(
-                            currentRange,
-                            this.isInsertionToken(baseLexer.tokenType, baseLexer.tokenSequence)
-                        )
+                        modifications.addRangeToRemove(baseLexer.tokenStart, "string(")
+                        val tokenModifications =
+                            this.appendCurrentTemplateToken(baseLexer.tokenEnd, baseLexer.tokenSequence)
+                        modifications.addAll(tokenModifications)
+                        modifications.addRangeToRemove(baseLexer.tokenEnd, ")")
                     } else {
                         modifications.addOuterRange(
                             currentRange,
@@ -237,40 +266,22 @@ class TemplFileViewProvider(manager: PsiManager, virtualFile: VirtualFile, event
                         currentRange,
                         this.isInsertionToken(baseLexer.tokenType, baseLexer.tokenSequence)
                     )
-                } else if (baseLexer.tokenType === TemplTypes.LBRACE) {
-                    if (braceCounter > 0) {
-                        braceCounter++
-                    }
-                    if (baseLexer.state == _TemplLexer.IN_TEMPL_DECLARATION_START || baseLexer.state == _TemplLexer.IN_TEMPL_DECLARATION_BODY) {
-                        if (braceCounter == -1) {
-                            braceCounter = 1
+                } else if (baseLexer.tokenType === TemplTypes.LBRACE || baseLexer.tokenType === TemplTypes.RBRACE) {
+                    if (arrayOf(
+                            _TemplLexer.IN_TEMPL_DECLARATION_START,
+                            _TemplLexer.IN_TEMPL_DECLARATION_BODY,
+                            _TemplLexer.IN_EXPR,
+                            _TemplLexer.IN_HTML_TAG_OPENER,
+                        ).contains(baseLexer.state)) {
+                            val tokenModifications =
+                                this.appendCurrentTemplateToken(baseLexer.tokenEnd, baseLexer.tokenSequence)
+                            modifications.addAll(tokenModifications)
+                        } else {
+                            modifications.addOuterRange(
+                                currentRange,
+                                this.isInsertionToken(baseLexer.tokenType, baseLexer.tokenSequence)
+                            )
                         }
-                        val tokenModifications =
-                            this.appendCurrentTemplateToken(baseLexer.tokenEnd, baseLexer.tokenSequence)
-                        modifications.addAll(tokenModifications)
-                    } else {
-                        modifications.addOuterRange(
-                            currentRange,
-                            this.isInsertionToken(baseLexer.tokenType, baseLexer.tokenSequence)
-                        )
-                    }
-                } else if (baseLexer.tokenType === TemplTypes.RBRACE) {
-                    if (braceCounter >= 0 && baseLexer.state != _TemplLexer.IN_EXPR) {
-                        braceCounter--
-                    }
-                    if (baseLexer.state != _TemplLexer.IN_EXPR && braceCounter >= 0) {
-                        val tokenModifications =
-                            this.appendCurrentTemplateToken(baseLexer.tokenEnd, baseLexer.tokenSequence)
-                        modifications.addAll(tokenModifications)
-                        if (braceCounter == 0) {
-                            braceCounter = -1
-                        }
-                    } else {
-                        modifications.addOuterRange(
-                            currentRange,
-                            this.isInsertionToken(baseLexer.tokenType, baseLexer.tokenSequence)
-                        )
-                    }
                 } else if (baseLexer.tokenType === TokenType.WHITE_SPACE) {
                     val tokenModifications =
                         this.appendCurrentTemplateToken(baseLexer.tokenEnd, baseLexer.tokenSequence)
