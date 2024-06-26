@@ -492,6 +492,7 @@ OPTIONAL_WHITE_SPACE=[\ \t\f]*
     }
 }
 
+// TODO: Make whitespace work!
 //\R?(\R|[\ \n\t\f])+ {
 //    return WHITE_SPACE;
 //}
