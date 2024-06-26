@@ -63,8 +63,9 @@ import static com.templ.templ.psi.TemplTypes.*;
 %type IElementType
 %unicode
 
+NEW_LINE = \r|\n|\r\n
 WHITE_SPACE=\s+
-OPTIONAL_WHITE_SPACE=\s*
+OPTIONAL_WHITE_SPACE=[\ \t\f]*
 
 %state IN_TEMPL_DECLARATION_START
 %state IN_TEMPL_DECLARATION_BODY
@@ -73,6 +74,7 @@ OPTIONAL_WHITE_SPACE=\s*
 %state IN_CSS_DECLARATION_BODY
 %state IN_SCRIPT_DECLARATION_START
 %state IN_SCRIPT_DECLARATION_BODY
+%state IN_RAW_GO
 %state IN_EXPR
 %state IN_COMPONENT_IMPORT
 %state IN_COMPONENT_IMPORT_STRUCT_LITERAL
@@ -188,7 +190,7 @@ OPTIONAL_WHITE_SPACE=\s*
 }
 
 <IN_TEMPL_DECLARATION_BODY, IN_HTML_TAG_OPENER> {
-    ^ {OPTIONAL_WHITE_SPACE} "if" ~"{" $ {
+    {NEW_LINE} {OPTIONAL_WHITE_SPACE} "if" ~"{" $ {
         return GO_IF_START_FRAGMENT;
     }
 
@@ -198,6 +200,11 @@ OPTIONAL_WHITE_SPACE=\s*
 
     "}" {OPTIONAL_WHITE_SPACE} "else" {OPTIONAL_WHITE_SPACE} "{" {OPTIONAL_WHITE_SPACE} $ {
         return GO_ELSE_START_FRAGMENT;
+    }
+
+    "{{" {
+        yyPushState(IN_RAW_GO);
+        return DOUBLE_LBRACE;
     }
 
     "{" {
@@ -248,7 +255,7 @@ OPTIONAL_WHITE_SPACE=\s*
         return HTML_FRAGMENT;
     }
 
-    ^ {OPTIONAL_WHITE_SPACE} "switch" {WHITE_SPACE} ~"{\n" {
+    ^ {OPTIONAL_WHITE_SPACE} "switch" ~"{\n" {
         return GO_SWITCH_START_FRAGMENT;
     }
 
@@ -383,6 +390,17 @@ OPTIONAL_WHITE_SPACE=\s*
     }
 }
 
+<IN_RAW_GO> {
+    "}}" {
+        yyPopState();
+        return DOUBLE_RBRACE;
+    }
+
+    [^] {
+        return GO_FRAGMENT;
+    }
+}
+
 <IN_EXPR> {
     "{" {
         braceNestingLevel++;
@@ -455,7 +473,7 @@ OPTIONAL_WHITE_SPACE=\s*
 <IN_SCRIPT_DECLARATION_START> {
     "{" $ {
         yyReplaceState(IN_SCRIPT_DECLARATION_BODY);
-        return SCRIPT_FUNCTION_DECL;
+        return LBRACE;
     }
 
     [^] {
@@ -473,6 +491,14 @@ OPTIONAL_WHITE_SPACE=\s*
         return SCRIPT_BODY;
     }
 }
+
+//\R?(\R|[\ \n\t\f])+ {
+//    return WHITE_SPACE;
+//}
+//
+//[\ \n\t\f]+ {
+//    return WHITE_SPACE;
+//}
 
 [^] {
     yyResetState(YYINITIAL);

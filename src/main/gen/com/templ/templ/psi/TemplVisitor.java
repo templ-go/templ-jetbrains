@@ -59,6 +59,10 @@ public class TemplVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitRawGo(@NotNull TemplRawGo o) {
+    visitPsiElement(o);
+  }
+
   public void visitScriptDecl(@NotNull TemplScriptDecl o) {
     visitPsiElement(o);
   }

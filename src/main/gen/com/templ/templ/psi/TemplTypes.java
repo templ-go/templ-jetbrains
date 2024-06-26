@@ -21,6 +21,7 @@ public interface TemplTypes {
   IElementType HTML_DECL = new TemplElementType("HTML_DECL");
   IElementType HTML_DECL_BODY = new TemplElementType("HTML_DECL_BODY");
   IElementType IF_COND = new TemplElementType("IF_COND");
+  IElementType RAW_GO = new TemplElementType("RAW_GO");
   IElementType SCRIPT_DECL = new TemplElementType("SCRIPT_DECL");
   IElementType SWITCH_CASE = new TemplElementType("SWITCH_CASE");
   IElementType SWITCH_DEFAULT = new TemplElementType("SWITCH_DEFAULT");
@@ -35,6 +36,8 @@ public interface TemplTypes {
   IElementType CSS_DECL_START = new TemplTokenType("css");
   IElementType CSS_PROPERTIES = new TemplTokenType("CSS_PROPERTIES");
   IElementType DECL_GO_TOKEN = new TemplTokenType("DECL_GO_TOKEN");
+  IElementType DOUBLE_LBRACE = new TemplTokenType("{{");
+  IElementType DOUBLE_RBRACE = new TemplTokenType("}}");
   IElementType GO_CASE_FRAGMENT = new TemplTokenType("GO_CASE_FRAGMENT");
   IElementType GO_COMPONENT_IMPORT_PARAMS = new TemplTokenType("GO_COMPONENT_IMPORT_PARAMS");
   IElementType GO_COMPONENT_STRUCT_LITERAL = new TemplTokenType("GO_COMPONENT_STRUCT_LITERAL");
@@ -44,6 +47,7 @@ public interface TemplTypes {
   IElementType GO_ELSE_START_FRAGMENT = new TemplTokenType("GO_ELSE_START_FRAGMENT");
   IElementType GO_EXPR = new TemplTokenType("GO_EXPR");
   IElementType GO_FOR_START_FRAGMENT = new TemplTokenType("GO_FOR_START_FRAGMENT");
+  IElementType GO_FRAGMENT = new TemplTokenType("GO_FRAGMENT");
   IElementType GO_IF_START_FRAGMENT = new TemplTokenType("GO_IF_START_FRAGMENT");
   IElementType GO_ROOT_FRAGMENT = new TemplTokenType("GO_ROOT_FRAGMENT");
   IElementType GO_SWITCH_START_FRAGMENT = new TemplTokenType("GO_SWITCH_START_FRAGMENT");
@@ -99,6 +103,9 @@ public interface TemplTypes {
       }
       else if (type == IF_COND) {
         return new TemplIfCondImpl(node);
+      }
+      else if (type == RAW_GO) {
+        return new TemplRawGoImpl(node);
       }
       else if (type == SCRIPT_DECL) {
         return new TemplScriptDeclImpl(node);
