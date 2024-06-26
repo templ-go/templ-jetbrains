@@ -190,7 +190,7 @@ OPTIONAL_WHITE_SPACE=[\ \t\f]*
 }
 
 <IN_TEMPL_DECLARATION_BODY, IN_HTML_TAG_OPENER> {
-    {NEW_LINE} {OPTIONAL_WHITE_SPACE} "if" ~"{" $ {
+    ^ {OPTIONAL_WHITE_SPACE} "if" ~"{" $ {
         return GO_IF_START_FRAGMENT;
     }
 
