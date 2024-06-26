@@ -202,18 +202,6 @@ public class TemplParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // GO_ROOT_FRAGMENT
-  public static boolean go_root(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "go_root")) return false;
-    if (!nextTokenIs(b, GO_ROOT_FRAGMENT)) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = consumeToken(b, GO_ROOT_FRAGMENT);
-    exit_section_(b, m, GO_ROOT, r);
-    return r;
-  }
-
-  /* ********************************************************** */
   // HTML_DECL_START DECL_GO_TOKEN* LBRACE html_decl_body RBRACE
   public static boolean html_decl(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "html_decl")) return false;
@@ -378,13 +366,13 @@ public class TemplParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // go_root (root_item)*
+  // GO_PACKAGE_FRAGMENT (root_item)*
   static boolean root(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "root")) return false;
-    if (!nextTokenIs(b, GO_ROOT_FRAGMENT)) return false;
+    if (!nextTokenIs(b, GO_PACKAGE_FRAGMENT)) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = go_root(b, l + 1);
+    r = consumeToken(b, GO_PACKAGE_FRAGMENT);
     r = r && root_1(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
@@ -412,12 +400,12 @@ public class TemplParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // go_root | html_decl | css_decl | script_decl
+  // GO_ROOT_FRAGMENT | html_decl | css_decl | script_decl
   static boolean root_item(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "root_item")) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_);
-    r = go_root(b, l + 1);
+    r = consumeToken(b, GO_ROOT_FRAGMENT);
     if (!r) r = html_decl(b, l + 1);
     if (!r) r = css_decl(b, l + 1);
     if (!r) r = script_decl(b, l + 1);

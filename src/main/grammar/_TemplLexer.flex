@@ -159,6 +159,11 @@ OPTIONAL_WHITE_SPACE=[\ \t\f]*
 }
 
 <YYINITIAL> {
+    ^ "package" ~{NEW_LINE} {
+        yypushback(1);
+        return GO_PACKAGE_FRAGMENT;
+    }
+
     ^ "templ" {
         yyPushState(IN_TEMPL_DECLARATION_START);
         return HTML_DECL_START;

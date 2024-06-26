@@ -35,10 +35,6 @@ public class TemplVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
-  public void visitGoRoot(@NotNull TemplGoRoot o) {
-    visitPsiElement(o);
-  }
-
   public void visitHtmlDecl(@NotNull TemplHtmlDecl o) {
     visitPsiElement(o);
   }

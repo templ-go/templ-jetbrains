@@ -35,11 +35,10 @@
 }
 
 
-root ::= go_root (root_item)*
-private root_item ::= go_root | html_decl | css_decl | script_decl {pin=1 recoverWhile=recover}
+root ::= GO_PACKAGE_FRAGMENT (root_item)*
+private root_item ::= GO_ROOT_FRAGMENT | html_decl | css_decl | script_decl {pin=1 recoverWhile=recover}
 private recover ::= !(HTML_DECL_START | CSS_DECL_START | SCRIPT_DECL_START | GO_ROOT_FRAGMENT)
 
-go_root ::= GO_ROOT_FRAGMENT
 
 html_decl ::= HTML_DECL_START DECL_GO_TOKEN* LBRACE html_decl_body RBRACE {pin=1}
 html_decl_body ::= (HTML_FRAGMENT | TEMPL_FRAGMENT | raw_go | expr | if_cond | switch_stmt | for_loop | component)*

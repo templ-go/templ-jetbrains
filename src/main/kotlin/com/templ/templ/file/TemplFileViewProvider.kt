@@ -164,6 +164,7 @@ class TemplFileViewProvider(manager: PsiManager, virtualFile: VirtualFile, event
                         this.appendCurrentTemplateToken(baseLexer.tokenEnd, baseLexer.tokenSequence)
                     modifications.addAll(tokenModifications)
                 } else if (arrayOf(
+                        TemplTypes.GO_PACKAGE_FRAGMENT,
                         TemplTypes.GO_ROOT_FRAGMENT,
                         TemplTypes.GO_IF_START_FRAGMENT,
                         TemplTypes.GO_ELSE_IF_START_FRAGMENT,
@@ -248,9 +249,14 @@ class TemplFileViewProvider(manager: PsiManager, virtualFile: VirtualFile, event
                     val tokenModifications =
                         this.appendCurrentTemplateToken(baseLexer.tokenEnd, baseLexer.tokenSequence)
                     modifications.addAll(tokenModifications)
+                } else if (baseLexer.tokenType === TemplTypes.GO_PACKAGE_FRAGMENT) {
+                    val tokenModifications =
+                        this.appendCurrentTemplateToken(baseLexer.tokenEnd, baseLexer.tokenSequence)
+                    modifications.addAll(tokenModifications)
+                    modifications.addRangeToRemove(baseLexer.tokenEnd, "\nimport \"github.com/a-h/templ\"")
                 } else if (baseLexer.tokenType === TemplTypes.GO_EXPR) {
                     if (baseLexer.state == _TemplLexer.IN_EXPR) {
-                        modifications.addRangeToRemove(baseLexer.tokenStart, "string(")
+                        modifications.addRangeToRemove(baseLexer.tokenStart, "_ = string(")
                         val tokenModifications =
                             this.appendCurrentTemplateToken(baseLexer.tokenEnd, baseLexer.tokenSequence)
                         modifications.addAll(tokenModifications)
@@ -265,10 +271,10 @@ class TemplFileViewProvider(manager: PsiManager, virtualFile: VirtualFile, event
                     val tokenModifications =
                         this.appendCurrentTemplateToken(baseLexer.tokenEnd, baseLexer.tokenSequence)
                     modifications.addAll(tokenModifications)
-                    modifications.addRangeToRemove(baseLexer.tokenEnd, ".Render(nil, nil)")
+                    modifications.addRangeToRemove(baseLexer.tokenEnd, ".Render(nil, nil);")
 
                 } else if (baseLexer.tokenType === TemplTypes.HTML_DECL_START) {
-                    modifications.addRangeToRemove(baseLexer.tokenStart, "func ")
+                    modifications.addRangeToRemove(baseLexer.tokenStart, "func")
                     modifications.addOuterRange(
                         currentRange,
                         this.isInsertionToken(baseLexer.tokenType, baseLexer.tokenSequence)
@@ -308,9 +314,10 @@ class TemplFileViewProvider(manager: PsiManager, virtualFile: VirtualFile, event
                 } else if (arrayOf(
                         TemplTypes.HTML_FRAGMENT,
                         TemplTypes.SCRIPT_BODY,
-                        TemplTypes.TEMPL_FRAGMENT
+                        TemplTypes.TEMPL_FRAGMENT,
+                        TemplTypes.COMPONENT_IMPORT_START,
                     ).contains(baseLexer.tokenType)) {
-                    val emptyText = baseLexer.tokenSequence.toString().replace(Regex("\\S"), "")
+                    val emptyText = baseLexer.tokenSequence.toString().replace(Regex("\\S"), " ")
                     modifications.addRangeToRemove(baseLexer.tokenStart, emptyText)
                     modifications.addOuterRange(
                         currentRange,
