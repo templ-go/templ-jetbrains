@@ -459,7 +459,8 @@ class TemplLexerTest : LexerTestCase() {
             """
             TemplTokenType.GO_ROOT_FRAGMENT ('package main\n\n')
             TemplTokenType.script ('script')
-            TemplTokenType.SCRIPT_FUNCTION_DECL (' test1() {')
+            TemplTokenType.SCRIPT_FUNCTION_DECL (' test1() ')
+            TemplTokenType.{ ('{')
             TemplTokenType.SCRIPT_BODY ('\n    console.log("hello")\n')
             TemplTokenType.} ('}')
             """.trimIndent()
