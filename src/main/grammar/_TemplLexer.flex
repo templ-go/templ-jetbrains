@@ -76,6 +76,7 @@ OPTIONAL_WHITE_SPACE=[\ \t\f]*
 %state IN_SCRIPT_DECLARATION_BODY
 %state IN_RAW_GO
 %state IN_EXPR
+%state IN_CLASS_EXPR
 %state IN_COMPONENT_IMPORT
 %state IN_COMPONENT_IMPORT_STRUCT_LITERAL
 %state IN_COMPONENT_IMPORT_PARAMS
@@ -228,13 +229,15 @@ OPTIONAL_WHITE_SPACE=[\ \t\f]*
         yypushback(1); // So that we can detect component imports "@" straight after ">".
     }
 
-    "=\"" ~"\"" {
+    ("=\"" ~"\""|"='" ~"'") {
         // Skip over attribute value so that we don't detect keywords in it.
         return HTML_FRAGMENT;
     }
 
-    "='" ~"'" {
-        // Skip over attribute value so that we don't detect keywords in it.
+    "class={" {
+        // skip over class attributes for now
+        yypushback(1);
+        yyPushState(IN_CLASS_EXPR);
         return HTML_FRAGMENT;
     }
 
@@ -257,6 +260,10 @@ OPTIONAL_WHITE_SPACE=[\ \t\f]*
 
     "<" {
         yyPushState(IN_HTML_TAG_OPENER);
+        return HTML_FRAGMENT;
+    }
+
+    "." [.\w\ \t\f]+ "{" ~"}" {
         return HTML_FRAGMENT;
     }
 
@@ -326,57 +333,6 @@ OPTIONAL_WHITE_SPACE=[\ \t\f]*
     }
 }
 
-//<IN_COMPONENT_IMPORT_STRUCT_LITERAL> {
-//    "{" {
-//        braceNestingLevel++;
-//        if (braceNestingLevel == 1) {
-//            return LBRACE;
-//        }
-//    }
-//
-//    "}" {
-//        braceNestingLevel--;
-//        if (braceNestingLevel == 0) {
-//            yyPopState(); // IN_COMPONENT_IMPORT
-//            return RBRACE;
-//        }
-//    }
-//
-//    [^] {
-//        return GO_COMPONENT_STRUCT_LITERAL;
-//    }
-//}
-//
-//<IN_COMPONENT_IMPORT_PARAMS> {
-//    "(" {
-//        parensNestingLevel++;
-//        if (parensNestingLevel == 1) {
-//            return LPARENTH;
-//        }
-//    }
-//
-////    ")" {WHITE_SPACE} "{" {
-////        parensNestingLevel--;
-////        if (parensNestingLevel == 0) {
-////            yypushback(yylength() - 1);
-////            yyReplaceState(IN_COMPONENT_IMPORT_CHILDREN_BLOCK_START);
-////            return RPARENTH;
-////        }
-////    }
-//
-//    ")" {
-//        parensNestingLevel--;
-//        if (parensNestingLevel == 0) {
-//            yyPopState(); // IN_TEMPL_DECLARATION_BODY
-//            return RPARENTH;
-//        }
-//    }
-//
-//    [^] {
-//        return GO_COMPONENT_IMPORT_PARAMS;
-//    }
-//}
-
 <IN_COMPONENT_IMPORT_CHILDREN_BLOCK_START> {
     [\ \t\f] {
         return WHITE_SPACE;
@@ -415,6 +371,25 @@ OPTIONAL_WHITE_SPACE=[\ \t\f]*
 
     [^] {
           return GO_EXPR;
+    }
+}
+
+<IN_CLASS_EXPR> {
+    "{" {
+        braceNestingLevel++;
+        return TEMPL_FRAGMENT;
+    }
+
+    "}" {
+       braceNestingLevel--;
+       if (braceNestingLevel == 0) {
+           yyPopState(); // IN_HTML_TAG_OPENER
+       }
+       return TEMPL_FRAGMENT;
+    }
+
+    [^] {
+        return TEMPL_FRAGMENT;
     }
 }
 

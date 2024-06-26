@@ -173,7 +173,8 @@ class TemplFileViewProvider(manager: PsiManager, virtualFile: VirtualFile, event
                         TemplTypes.GO_CASE_FRAGMENT,
                         TemplTypes.GO_DEFAULT_FRAGMENT,
                         TemplTypes.GO_FOR_START_FRAGMENT,
-                        TemplTypes.DECL_GO_TOKEN
+                        TemplTypes.DECL_GO_TOKEN,
+                        TemplTypes.TEMPL_FRAGMENT
                     ).contains(baseLexer.tokenType)
                 ) {
                     val emptyText = baseLexer.tokenSequence.toString().replace(Regex("\\S"), "")
@@ -307,6 +308,7 @@ class TemplFileViewProvider(manager: PsiManager, virtualFile: VirtualFile, event
                 } else if (arrayOf(
                         TemplTypes.HTML_FRAGMENT,
                         TemplTypes.SCRIPT_BODY,
+                        TemplTypes.TEMPL_FRAGMENT
                     ).contains(baseLexer.tokenType)) {
                     val emptyText = baseLexer.tokenSequence.toString().replace(Regex("\\S"), "")
                     modifications.addRangeToRemove(baseLexer.tokenStart, emptyText)

@@ -56,6 +56,7 @@ public interface TemplTypes {
   IElementType SCRIPT_BODY = new TemplTokenType("SCRIPT_BODY");
   IElementType SCRIPT_DECL_START = new TemplTokenType("script");
   IElementType SCRIPT_FUNCTION_DECL = new TemplTokenType("SCRIPT_FUNCTION_DECL");
+  IElementType TEMPL_FRAGMENT = new TemplTokenType("TEMPL_FRAGMENT");
 
   class Factory {
     public static PsiElement createElement(ASTNode node) {

@@ -242,7 +242,7 @@ public class TemplParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // (HTML_FRAGMENT | raw_go | expr | if_cond | switch_stmt | for_loop | component)*
+  // (HTML_FRAGMENT | TEMPL_FRAGMENT | raw_go | expr | if_cond | switch_stmt | for_loop | component)*
   public static boolean html_decl_body(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "html_decl_body")) return false;
     Marker m = enter_section_(b, l, _NONE_, HTML_DECL_BODY, "<html decl body>");
@@ -255,12 +255,13 @@ public class TemplParser implements PsiParser, LightPsiParser {
     return true;
   }
 
-  // HTML_FRAGMENT | raw_go | expr | if_cond | switch_stmt | for_loop | component
+  // HTML_FRAGMENT | TEMPL_FRAGMENT | raw_go | expr | if_cond | switch_stmt | for_loop | component
   private static boolean html_decl_body_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "html_decl_body_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = consumeToken(b, HTML_FRAGMENT);
+    if (!r) r = consumeToken(b, TEMPL_FRAGMENT);
     if (!r) r = raw_go(b, l + 1);
     if (!r) r = expr(b, l + 1);
     if (!r) r = if_cond(b, l + 1);

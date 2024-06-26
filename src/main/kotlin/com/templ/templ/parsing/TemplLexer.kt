@@ -20,5 +20,6 @@ class TemplLexer : MergingLexerAdapter(
         TemplTypes.SCRIPT_BODY,
         TemplTypes.BLOCK_COMMENT,
         TemplTypes.COMPONENT_REFERENCE,
+        TemplTypes.TEMPL_FRAGMENT
     )
 )
