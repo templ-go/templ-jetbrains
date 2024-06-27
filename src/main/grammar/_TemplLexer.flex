@@ -327,7 +327,7 @@ OPTIONAL_WHITE_SPACE=[\ \t\f]*
         return WHITE_SPACE;
     }
 
-    ([^{,(.]|")") {NEW_LINE} {
+    ([^{,(.]|")") {OPTIONAL_WHITE_SPACE} {NEW_LINE} {
         yypushback(yylength()-1);
         yyPopState();
         return COMPONENT_REFERENCE;
