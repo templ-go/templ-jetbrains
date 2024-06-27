@@ -182,7 +182,7 @@ class TemplFileViewProvider(manager: PsiManager, virtualFile: VirtualFile, event
                     modifications.addRangeToRemove(baseLexer.tokenStart, emptyText)
                     modifications.addOuterRange(
                         currentRange,
-                        this.isInsertionToken(baseLexer.tokenType, baseLexer.tokenSequence)
+                        this.isInsertionToken(baseLexer.tokenType, emptyText)
                     )
                 } else {
                     modifications.addOuterRange(
@@ -246,21 +246,20 @@ class TemplFileViewProvider(manager: PsiManager, virtualFile: VirtualFile, event
                         TemplTypes.DECL_GO_TOKEN,
                     ).contains(baseLexer.tokenType)
                 ) {
-                    val tokenModifications =
+                    modifications.addAll(
                         this.appendCurrentTemplateToken(baseLexer.tokenEnd, baseLexer.tokenSequence)
-                    modifications.addAll(tokenModifications)
+                    )
                 } else if (baseLexer.tokenType === TemplTypes.GO_PACKAGE_FRAGMENT) {
-                    val tokenModifications =
+                    modifications.addAll(
                         this.appendCurrentTemplateToken(baseLexer.tokenEnd, baseLexer.tokenSequence)
-                    modifications.addAll(tokenModifications)
+                    )
                     modifications.addRangeToRemove(baseLexer.tokenEnd, "\nimport \"github.com/a-h/templ\"")
                 } else if (baseLexer.tokenType === TemplTypes.GO_EXPR) {
                     if (baseLexer.state == _TemplLexer.IN_EXPR) {
-                        modifications.addRangeToRemove(baseLexer.tokenStart, "_ = string(")
-                        val tokenModifications =
+                        modifications.addRangeToRemove(baseLexer.tokenStart, "var _ string = ")
+                        modifications.addAll(
                             this.appendCurrentTemplateToken(baseLexer.tokenEnd, baseLexer.tokenSequence)
-                        modifications.addAll(tokenModifications)
-                        modifications.addRangeToRemove(baseLexer.tokenEnd, ")")
+                        )
                     } else {
                         modifications.addOuterRange(
                             currentRange,
@@ -298,9 +297,9 @@ class TemplFileViewProvider(manager: PsiManager, virtualFile: VirtualFile, event
                             if (baseLexer.tokenType === TemplTypes.RBRACE && baseLexer.state == _TemplLexer.IN_TEMPL_DECLARATION_BODY && braceCounter == 0) {
                                 modifications.addRangeToRemove(baseLexer.tokenStart, "return nil")
                             }
-                            val tokenModifications =
+                            modifications.addAll(
                                 this.appendCurrentTemplateToken(baseLexer.tokenEnd, baseLexer.tokenSequence)
-                            modifications.addAll(tokenModifications)
+                            )
                         } else {
                             modifications.addOuterRange(
                                 currentRange,
@@ -308,9 +307,9 @@ class TemplFileViewProvider(manager: PsiManager, virtualFile: VirtualFile, event
                             )
                         }
                 } else if (baseLexer.tokenType === TokenType.WHITE_SPACE) {
-                    val tokenModifications =
+                    modifications.addAll(
                         this.appendCurrentTemplateToken(baseLexer.tokenEnd, baseLexer.tokenSequence)
-                    modifications.addAll(tokenModifications)
+                    )
                 } else if (arrayOf(
                         TemplTypes.HTML_FRAGMENT,
                         TemplTypes.SCRIPT_BODY,
@@ -319,10 +318,7 @@ class TemplFileViewProvider(manager: PsiManager, virtualFile: VirtualFile, event
                     ).contains(baseLexer.tokenType)) {
                     val emptyText = baseLexer.tokenSequence.toString().replace(Regex("\\S"), " ")
                     modifications.addRangeToRemove(baseLexer.tokenStart, emptyText)
-                    modifications.addOuterRange(
-                        currentRange,
-                        this.isInsertionToken(baseLexer.tokenType, baseLexer.tokenSequence)
-                    )
+                    modifications.addOuterRange(currentRange)
                 } else {
                     modifications.addOuterRange(
                         currentRange,

@@ -327,7 +327,7 @@ OPTIONAL_WHITE_SPACE=[\ \t\f]*
         return WHITE_SPACE;
     }
 
-    ([^{,(]|")") {NEW_LINE} {
+    ([^{,(.]|")") {NEW_LINE} {
         yypushback(yylength()-1);
         yyPopState();
         return COMPONENT_REFERENCE;
@@ -374,8 +374,16 @@ OPTIONAL_WHITE_SPACE=[\ \t\f]*
        return RBRACE;
     }
 
+    "children..." {
+        return TEMPL_FRAGMENT;
+    }
+
+    [\ \t\f] {
+        return WHITE_SPACE;
+    }
+
     [^] {
-          return GO_EXPR;
+        return GO_EXPR;
     }
 }
 
