@@ -58,9 +58,8 @@ class GoLanguageType : TemplateDataElementType(
             currentRange = newRange
             when (baseLexer.tokenType) {
                 TemplTypes.GO_ROOT_FRAGMENT,
-                TemplTypes.GO_IF_START_FRAGMENT,
-                TemplTypes.GO_ELSE_IF_START_FRAGMENT,
-                TemplTypes.GO_ELSE_START_FRAGMENT,
+                TemplTypes.GO_IF,
+                TemplTypes.GO_ELSE,
                 TemplTypes.GO_FRAGMENT,
                 TemplTypes.GO_SWITCH_START_FRAGMENT,
                 TemplTypes.GO_CASE_FRAGMENT,
@@ -113,7 +112,6 @@ class GoLanguageType : TemplateDataElementType(
                         this.appendCurrentTemplateToken(baseLexer.tokenEnd, baseLexer.tokenSequence)
                     modifications.addAll(tokenModifications)
                     modifications.addRangeToRemove(baseLexer.tokenEnd, ".Render(nil, nil);")
-
                 }
 
                 TemplTypes.HTML_DECL_START -> {
@@ -131,7 +129,8 @@ class GoLanguageType : TemplateDataElementType(
                             _TemplLexer.IN_TEMPL_DECLARATION_BODY,
                             _TemplLexer.IN_EXPR,
                             _TemplLexer.IN_HTML_TAG_OPENER,
-                            _TemplLexer.IN_COMPONENT_IMPORT_CHILDREN_BLOCK_START
+                            _TemplLexer.IN_COMPONENT_IMPORT_CHILDREN_BLOCK_START,
+                            _TemplLexer.IN_GO_BLOCK_START,
                         ).contains(baseLexer.state)
                     ) {
                         if (baseLexer.tokenType === TemplTypes.LBRACE) {

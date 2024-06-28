@@ -76,6 +76,7 @@ OPTIONAL_WHITE_SPACE=[\ \t\f]*
 %state IN_SCRIPT_DECLARATION_BODY
 %state IN_RAW_GO
 %state IN_EXPR
+%state IN_GO_BLOCK_START
 %state IN_CLASS_EXPR
 %state IN_COMPONENT_IMPORT
 %state IN_COMPONENT_IMPORT_STRUCT_LITERAL
@@ -196,16 +197,16 @@ OPTIONAL_WHITE_SPACE=[\ \t\f]*
 }
 
 <IN_TEMPL_DECLARATION_BODY, IN_HTML_TAG_OPENER> {
-    ^ {OPTIONAL_WHITE_SPACE} "if" ~"{" $ {
-        return GO_IF_START_FRAGMENT;
+    ^ {OPTIONAL_WHITE_SPACE} "if" {
+        yypushback(2);
+        yyPushState(IN_GO_BLOCK_START);
+        return WHITE_SPACE;
     }
 
-    "}" {OPTIONAL_WHITE_SPACE} "else if" ~"{" $ {
-        return GO_ELSE_IF_START_FRAGMENT;
-    }
-
-    "}" {OPTIONAL_WHITE_SPACE} "else" {OPTIONAL_WHITE_SPACE} "{" {OPTIONAL_WHITE_SPACE} $ {
-        return GO_ELSE_START_FRAGMENT;
+    "}" {OPTIONAL_WHITE_SPACE} "else" {
+        yypushback(yylength() - 1);
+        yyPushState(IN_GO_BLOCK_START);
+        return RBRACE;
     }
 
     "{{" {
@@ -378,12 +379,31 @@ OPTIONAL_WHITE_SPACE=[\ \t\f]*
         return TEMPL_FRAGMENT;
     }
 
+    [^] {
+        return GO_EXPR;
+    }
+}
+
+<IN_GO_BLOCK_START> {
+    "{" {
+        yyPopState();
+        return LBRACE;
+    }
+
+    "if" {
+        return GO_IF;
+    }
+
+    "else" {
+        return GO_ELSE;
+    }
+
     [\ \t\f] {
         return WHITE_SPACE;
     }
 
     [^] {
-        return GO_EXPR;
+        return GO_FRAGMENT;
     }
 }
 

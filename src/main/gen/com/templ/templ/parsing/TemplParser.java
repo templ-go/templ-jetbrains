@@ -125,31 +125,52 @@ public class TemplParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // GO_ELSE_START_FRAGMENT html_decl_body
+  // RBRACE GO_ELSE (GO_IF GO_FRAGMENT+)? LBRACE html_decl_body
   public static boolean else_$(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "else_$")) return false;
-    if (!nextTokenIs(b, GO_ELSE_START_FRAGMENT)) return false;
+    if (!nextTokenIs(b, RBRACE)) return false;
     boolean r, p;
     Marker m = enter_section_(b, l, _NONE_, ELSE, null);
-    r = consumeToken(b, GO_ELSE_START_FRAGMENT);
-    p = r; // pin = 1
-    r = r && html_decl_body(b, l + 1);
+    r = consumeTokens(b, 2, RBRACE, GO_ELSE);
+    p = r; // pin = 2
+    r = r && report_error_(b, else_2(b, l + 1));
+    r = p && report_error_(b, consumeToken(b, LBRACE)) && r;
+    r = p && html_decl_body(b, l + 1) && r;
     exit_section_(b, l, m, r, p, null);
     return r || p;
   }
 
-  /* ********************************************************** */
-  // GO_ELSE_IF_START_FRAGMENT html_decl_body
-  public static boolean else_if(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "else_if")) return false;
-    if (!nextTokenIs(b, GO_ELSE_IF_START_FRAGMENT)) return false;
-    boolean r, p;
-    Marker m = enter_section_(b, l, _NONE_, ELSE_IF, null);
-    r = consumeToken(b, GO_ELSE_IF_START_FRAGMENT);
-    p = r; // pin = 1
-    r = r && html_decl_body(b, l + 1);
-    exit_section_(b, l, m, r, p, null);
-    return r || p;
+  // (GO_IF GO_FRAGMENT+)?
+  private static boolean else_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "else_2")) return false;
+    else_2_0(b, l + 1);
+    return true;
+  }
+
+  // GO_IF GO_FRAGMENT+
+  private static boolean else_2_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "else_2_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, GO_IF);
+    r = r && else_2_0_1(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // GO_FRAGMENT+
+  private static boolean else_2_0_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "else_2_0_1")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, GO_FRAGMENT);
+    while (r) {
+      int c = current_position_(b);
+      if (!consumeToken(b, GO_FRAGMENT)) break;
+      if (!empty_element_parsed_guard_(b, "else_2_0_1", c)) break;
+    }
+    exit_section_(b, m, null, r);
+    return r;
   }
 
   /* ********************************************************** */
@@ -270,37 +291,42 @@ public class TemplParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // GO_IF_START_FRAGMENT html_decl_body else_if* else? RBRACE
+  // GO_IF GO_FRAGMENT* LBRACE html_decl_body else* RBRACE
   public static boolean if_cond(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "if_cond")) return false;
-    if (!nextTokenIs(b, GO_IF_START_FRAGMENT)) return false;
+    if (!nextTokenIs(b, GO_IF)) return false;
     boolean r, p;
     Marker m = enter_section_(b, l, _NONE_, IF_COND, null);
-    r = consumeToken(b, GO_IF_START_FRAGMENT);
+    r = consumeToken(b, GO_IF);
     p = r; // pin = 1
-    r = r && report_error_(b, html_decl_body(b, l + 1));
-    r = p && report_error_(b, if_cond_2(b, l + 1)) && r;
-    r = p && report_error_(b, if_cond_3(b, l + 1)) && r;
+    r = r && report_error_(b, if_cond_1(b, l + 1));
+    r = p && report_error_(b, consumeToken(b, LBRACE)) && r;
+    r = p && report_error_(b, html_decl_body(b, l + 1)) && r;
+    r = p && report_error_(b, if_cond_4(b, l + 1)) && r;
     r = p && consumeToken(b, RBRACE) && r;
     exit_section_(b, l, m, r, p, null);
     return r || p;
   }
 
-  // else_if*
-  private static boolean if_cond_2(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "if_cond_2")) return false;
+  // GO_FRAGMENT*
+  private static boolean if_cond_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "if_cond_1")) return false;
     while (true) {
       int c = current_position_(b);
-      if (!else_if(b, l + 1)) break;
-      if (!empty_element_parsed_guard_(b, "if_cond_2", c)) break;
+      if (!consumeToken(b, GO_FRAGMENT)) break;
+      if (!empty_element_parsed_guard_(b, "if_cond_1", c)) break;
     }
     return true;
   }
 
-  // else?
-  private static boolean if_cond_3(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "if_cond_3")) return false;
-    else_$(b, l + 1);
+  // else*
+  private static boolean if_cond_4(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "if_cond_4")) return false;
+    while (true) {
+      int c = current_position_(b);
+      if (!else_$(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "if_cond_4", c)) break;
+    }
     return true;
   }
 

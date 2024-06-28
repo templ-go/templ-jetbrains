@@ -28,15 +28,9 @@ public class TemplIfCondImpl extends ASTWrapperPsiElement implements TemplIfCond
   }
 
   @Override
-  @Nullable
-  public TemplElse getElse() {
-    return findChildByClass(TemplElse.class);
-  }
-
-  @Override
   @NotNull
-  public List<TemplElseIf> getElseIfList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, TemplElseIf.class);
+  public List<TemplElse> getElseList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, TemplElse.class);
   }
 
   @Override

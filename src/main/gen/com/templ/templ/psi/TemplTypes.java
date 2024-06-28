@@ -12,7 +12,6 @@ public interface TemplTypes {
   IElementType COMPONENT_CHILDREN = new TemplElementType("COMPONENT_CHILDREN");
   IElementType CSS_DECL = new TemplElementType("CSS_DECL");
   IElementType ELSE = new TemplElementType("ELSE");
-  IElementType ELSE_IF = new TemplElementType("ELSE_IF");
   IElementType EXPR = new TemplElementType("EXPR");
   IElementType FOR_LOOP = new TemplElementType("FOR_LOOP");
   IElementType HTML_DECL = new TemplElementType("HTML_DECL");
@@ -37,12 +36,11 @@ public interface TemplTypes {
   IElementType GO_CASE_FRAGMENT = new TemplTokenType("GO_CASE_FRAGMENT");
   IElementType GO_CSS_DECL_PARAMS = new TemplTokenType("GO_CSS_DECL_PARAMS");
   IElementType GO_DEFAULT_FRAGMENT = new TemplTokenType("GO_DEFAULT_FRAGMENT");
-  IElementType GO_ELSE_IF_START_FRAGMENT = new TemplTokenType("GO_ELSE_IF_START_FRAGMENT");
-  IElementType GO_ELSE_START_FRAGMENT = new TemplTokenType("GO_ELSE_START_FRAGMENT");
+  IElementType GO_ELSE = new TemplTokenType("GO_ELSE");
   IElementType GO_EXPR = new TemplTokenType("GO_EXPR");
   IElementType GO_FOR_START_FRAGMENT = new TemplTokenType("GO_FOR_START_FRAGMENT");
   IElementType GO_FRAGMENT = new TemplTokenType("GO_FRAGMENT");
-  IElementType GO_IF_START_FRAGMENT = new TemplTokenType("GO_IF_START_FRAGMENT");
+  IElementType GO_IF = new TemplTokenType("GO_IF");
   IElementType GO_PACKAGE_FRAGMENT = new TemplTokenType("GO_PACKAGE_FRAGMENT");
   IElementType GO_ROOT_FRAGMENT = new TemplTokenType("GO_ROOT_FRAGMENT");
   IElementType GO_SWITCH_START_FRAGMENT = new TemplTokenType("GO_SWITCH_START_FRAGMENT");
@@ -72,9 +70,6 @@ public interface TemplTypes {
       }
       else if (type == ELSE) {
         return new TemplElseImpl(node);
-      }
-      else if (type == ELSE_IF) {
-        return new TemplElseIfImpl(node);
       }
       else if (type == EXPR) {
         return new TemplExprImpl(node);

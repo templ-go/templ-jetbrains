@@ -50,9 +50,9 @@ expr ::= BOOL_EXPR_START? LBRACE (GO_EXPR | TEMPL_FRAGMENT)* RBRACE {pin=2}
 raw_go ::= DOUBLE_LBRACE GO_FRAGMENT* DOUBLE_RBRACE {pin=1}
 
 // https://templ.guide/syntax-and-usage/if-else
-if_cond ::= GO_IF_START_FRAGMENT html_decl_body else_if* else? RBRACE {pin=1}
-else_if ::= GO_ELSE_IF_START_FRAGMENT html_decl_body {pin=1}
-else ::= GO_ELSE_START_FRAGMENT html_decl_body {pin=1}
+if_cond ::= GO_IF GO_FRAGMENT* LBRACE html_decl_body else* RBRACE {pin=1}
+//else_if ::= RBRACE GO_ELSE GO_IF GO_FRAGMENT* LBRACE html_decl_body {pin=1}
+else ::= RBRACE GO_ELSE (GO_IF GO_FRAGMENT+)? LBRACE html_decl_body {pin=2}
 
 // https://templ.guide/syntax-and-usage/switch
 switch_stmt ::= GO_SWITCH_START_FRAGMENT switch_case* switch_default? RBRACE {pin=1}

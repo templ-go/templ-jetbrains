@@ -23,10 +23,6 @@ public class TemplVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
-  public void visitElseIf(@NotNull TemplElseIf o) {
-    visitPsiElement(o);
-  }
-
   public void visitExpr(@NotNull TemplExpr o) {
     visitPsiElement(o);
   }
