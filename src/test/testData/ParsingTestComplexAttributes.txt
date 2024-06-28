@@ -1,6 +1,6 @@
 Templ File(0,646)
-  TemplGoRootImpl(TemplElementType.GO_ROOT)(0,31)
-    PsiElement(TemplTokenType.GO_ROOT_FRAGMENT)('package testcomplexattributes\n\n')(0,31)
+  PsiElement(TemplTokenType.GO_PACKAGE_FRAGMENT)('package testcomplexattributes')(0,29)
+  PsiElement(TemplTokenType.GO_ROOT_FRAGMENT)('\n\n')(29,31)
   TemplHtmlDeclImpl(TemplElementType.HTML_DECL)(31,646)
     PsiElement(TemplTokenType.templ)('templ')(31,36)
     PsiElement(TemplTokenType.DECL_GO_TOKEN)(' ComplexAttributes() ')(36,57)
