@@ -273,8 +273,10 @@ OPTIONAL_WHITE_SPACE=[\ \t\f]*
         return HTML_FRAGMENT;
     }
 
-    ^ {OPTIONAL_WHITE_SPACE} "switch" ~"{" {NEW_LINE} {
-        return GO_SWITCH_START_FRAGMENT;
+    ^ {OPTIONAL_WHITE_SPACE} "switch" {
+        yypushback(6);
+        yyPushState(IN_GO_BLOCK_START);
+        return WHITE_SPACE;
     }
 
     ^ {OPTIONAL_WHITE_SPACE} "case" ~":" {OPTIONAL_WHITE_SPACE} $ {
@@ -285,8 +287,10 @@ OPTIONAL_WHITE_SPACE=[\ \t\f]*
         return GO_DEFAULT_FRAGMENT;
     }
 
-    ^ {OPTIONAL_WHITE_SPACE} "for" {WHITE_SPACE} ~"{" $ {
-        return GO_FOR_START_FRAGMENT;
+    ^ {OPTIONAL_WHITE_SPACE} "for" {
+        yypushback(3);
+        yyPushState(IN_GO_BLOCK_START);
+        return WHITE_SPACE;
     }
 
     ^ {OPTIONAL_WHITE_SPACE} "@" {
@@ -385,7 +389,7 @@ OPTIONAL_WHITE_SPACE=[\ \t\f]*
 }
 
 <IN_GO_BLOCK_START> {
-    "{" {
+    "{" {OPTIONAL_WHITE_SPACE} {NEW_LINE} {
         yyPopState();
         return LBRACE;
     }
@@ -396,6 +400,14 @@ OPTIONAL_WHITE_SPACE=[\ \t\f]*
 
     "else" {
         return GO_ELSE;
+    }
+
+    "switch" {
+        return GO_SWITCH;
+    }
+
+    "for" {
+        return GO_FOR;
     }
 
     [\ \t\f] {

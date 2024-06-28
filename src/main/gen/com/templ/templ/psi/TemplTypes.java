@@ -38,12 +38,12 @@ public interface TemplTypes {
   IElementType GO_DEFAULT_FRAGMENT = new TemplTokenType("GO_DEFAULT_FRAGMENT");
   IElementType GO_ELSE = new TemplTokenType("GO_ELSE");
   IElementType GO_EXPR = new TemplTokenType("GO_EXPR");
-  IElementType GO_FOR_START_FRAGMENT = new TemplTokenType("GO_FOR_START_FRAGMENT");
+  IElementType GO_FOR = new TemplTokenType("GO_FOR");
   IElementType GO_FRAGMENT = new TemplTokenType("GO_FRAGMENT");
   IElementType GO_IF = new TemplTokenType("GO_IF");
   IElementType GO_PACKAGE_FRAGMENT = new TemplTokenType("GO_PACKAGE_FRAGMENT");
   IElementType GO_ROOT_FRAGMENT = new TemplTokenType("GO_ROOT_FRAGMENT");
-  IElementType GO_SWITCH_START_FRAGMENT = new TemplTokenType("GO_SWITCH_START_FRAGMENT");
+  IElementType GO_SWITCH = new TemplTokenType("GO_SWITCH");
   IElementType HTML_DECL_START = new TemplTokenType("templ");
   IElementType HTML_FRAGMENT = new TemplTokenType("HTML_FRAGMENT");
   IElementType LBRACE = new TemplTokenType("{");

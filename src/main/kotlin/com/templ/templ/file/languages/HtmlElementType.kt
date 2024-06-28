@@ -77,10 +77,10 @@ class HtmlElementType : TemplateDataElementType("HTML inside Templ",
                 TemplTypes.GO_IF,
                 TemplTypes.GO_ELSE,
                 TemplTypes.GO_FRAGMENT,
-                TemplTypes.GO_SWITCH_START_FRAGMENT,
+                TemplTypes.GO_SWITCH,
                 TemplTypes.GO_CASE_FRAGMENT,
                 TemplTypes.GO_DEFAULT_FRAGMENT,
-                TemplTypes.GO_FOR_START_FRAGMENT,
+                TemplTypes.GO_FOR,
                 TemplTypes.DECL_GO_TOKEN,
                 TemplTypes.TEMPL_FRAGMENT -> {
                     val emptyText = baseLexer.tokenSequence.toString().replace(Regex("\\S"), "")
