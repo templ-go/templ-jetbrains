@@ -65,12 +65,7 @@ class GoLanguageType : TemplateDataElementType(
                 TemplTypes.GO_CASE_FRAGMENT,
                 TemplTypes.GO_DEFAULT_FRAGMENT,
                 TemplTypes.GO_FOR,
-                TemplTypes.DECL_GO_TOKEN -> {
-                    modifications.addAll(
-                        this.appendCurrentTemplateToken(baseLexer.tokenEnd, baseLexer.tokenSequence)
-                    )
-                }
-
+                TemplTypes.DECL_GO_TOKEN,
                 TokenType.WHITE_SPACE -> {
                     modifications.addAll(
                         this.appendCurrentTemplateToken(baseLexer.tokenEnd, baseLexer.tokenSequence)
@@ -90,27 +85,20 @@ class GoLanguageType : TemplateDataElementType(
                     modifications.addAll(
                         this.appendCurrentTemplateToken(baseLexer.tokenEnd, baseLexer.tokenSequence)
                     )
-                    modifications.addRangeToRemove(baseLexer.tokenEnd, "\nimport \"github.com/a-h/templ\"")
+                    modifications.addRangeToRemove(baseLexer.tokenEnd, "import \"github.com/a-h/templ\"\n")
                 }
 
                 TemplTypes.GO_EXPR -> {
-                    if (baseLexer.state == _TemplLexer.IN_EXPR) {
-                        modifications.addRangeToRemove(baseLexer.tokenStart, "var _ string = ")
-                        modifications.addAll(
-                            this.appendCurrentTemplateToken(baseLexer.tokenEnd, baseLexer.tokenSequence)
-                        )
-                    } else {
-                        modifications.addOuterRange(
-                            currentRange,
-                            this.isInsertionToken(baseLexer.tokenType, baseLexer.tokenSequence)
-                        )
-                    }
+                    modifications.addRangeToRemove(baseLexer.tokenStart, "var _ string = ")
+                    modifications.addAll(
+                        this.appendCurrentTemplateToken(baseLexer.tokenEnd, baseLexer.tokenSequence)
+                    )
                 }
 
                 TemplTypes.COMPONENT_REFERENCE -> {
-                    val tokenModifications =
+                    modifications.addAll(
                         this.appendCurrentTemplateToken(baseLexer.tokenEnd, baseLexer.tokenSequence)
-                    modifications.addAll(tokenModifications)
+                    )
                     modifications.addRangeToRemove(baseLexer.tokenEnd, ".Render(nil, nil);")
                 }
 
@@ -122,7 +110,33 @@ class GoLanguageType : TemplateDataElementType(
                     )
                 }
 
-                TemplTypes.LBRACE,
+                TemplTypes.LBRACE -> {
+                    if (arrayOf(
+                            _TemplLexer.IN_TEMPL_DECLARATION_START,
+                            _TemplLexer.IN_TEMPL_DECLARATION_BODY,
+                            _TemplLexer.IN_EXPR,
+                            _TemplLexer.IN_HTML_TAG_OPENER,
+                            _TemplLexer.IN_COMPONENT_IMPORT_CHILDREN_BLOCK_START,
+                            _TemplLexer.IN_GO_BLOCK_START,
+                        ).contains(baseLexer.state)
+                    ) {
+                        braceCounter++
+
+                        if (baseLexer.state == _TemplLexer.IN_TEMPL_DECLARATION_START) {
+                            modifications.addRangeToRemove(baseLexer.tokenStart, "templ.Component ")
+                        }
+
+                        modifications.addAll(
+                            this.appendCurrentTemplateToken(baseLexer.tokenEnd, baseLexer.tokenSequence)
+                        )
+                    } else {
+                        modifications.addOuterRange(
+                            currentRange,
+                            this.isInsertionToken(baseLexer.tokenType, baseLexer.tokenSequence)
+                        )
+                    }
+                }
+
                 TemplTypes.RBRACE -> {
                     if (arrayOf(
                             _TemplLexer.IN_TEMPL_DECLARATION_START,
@@ -133,20 +147,17 @@ class GoLanguageType : TemplateDataElementType(
                             _TemplLexer.IN_GO_BLOCK_START,
                         ).contains(baseLexer.state)
                     ) {
-                        if (baseLexer.tokenType === TemplTypes.LBRACE) {
-                            braceCounter++
-                        } else {
                             braceCounter--
-                        }
-                        if (baseLexer.tokenType === TemplTypes.LBRACE && baseLexer.state == _TemplLexer.IN_TEMPL_DECLARATION_START) {
-                            modifications.addRangeToRemove(baseLexer.tokenStart, "templ.Component ")
-                        }
-                        if (baseLexer.tokenType === TemplTypes.RBRACE && baseLexer.state == _TemplLexer.IN_TEMPL_DECLARATION_BODY && braceCounter == 0) {
+
+                        if (baseLexer.state == _TemplLexer.IN_TEMPL_DECLARATION_BODY
+                            && braceCounter == 0) {
                             modifications.addRangeToRemove(baseLexer.tokenStart, "return nil")
                         }
+
                         modifications.addAll(
                             this.appendCurrentTemplateToken(baseLexer.tokenEnd, baseLexer.tokenSequence)
                         )
+                        modifications.addRangeToRemove(baseLexer.tokenEnd, ";")
                     } else {
                         modifications.addOuterRange(
                             currentRange,

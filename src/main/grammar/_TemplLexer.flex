@@ -161,7 +161,6 @@ OPTIONAL_WHITE_SPACE=[\ \t\f]*
 
 <YYINITIAL> {
     ^ "package" ~{NEW_LINE} {
-        yypushback(1);
         return GO_PACKAGE_FRAGMENT;
     }
 
@@ -326,13 +325,13 @@ OPTIONAL_WHITE_SPACE=[\ \t\f]*
         return COMPONENT_IMPORT_START;
     }
 
-    [\ \t\f] "{" {
-        yypushback(1);
+    [\ \t\f] "{" {OPTIONAL_WHITE_SPACE} {NEW_LINE} {
+        yypushback(yylength()-1);
         yyReplaceState(IN_COMPONENT_IMPORT_CHILDREN_BLOCK_START);
         return WHITE_SPACE;
     }
 
-    ([^{,(.]|")") {OPTIONAL_WHITE_SPACE} {NEW_LINE} {
+    ([^{(,.]|")") {OPTIONAL_WHITE_SPACE} {NEW_LINE} {
         yypushback(yylength()-1);
         yyPopState();
         return COMPONENT_REFERENCE;

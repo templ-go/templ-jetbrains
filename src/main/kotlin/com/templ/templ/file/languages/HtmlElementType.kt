@@ -60,13 +60,9 @@ class HtmlElementType : TemplateDataElementType("HTML inside Templ",
             currentRange = newRange
             when (baseLexer.tokenType) {
                 TemplTypes.HTML_FRAGMENT,
-                TemplTypes.SCRIPT_BODY -> {
-                    val tokenModifications =
-                        this.appendCurrentTemplateToken(baseLexer.tokenEnd, baseLexer.tokenSequence)
-                    modifications.addAll(tokenModifications)
-                }
-
+                TemplTypes.SCRIPT_BODY,
                 TokenType.WHITE_SPACE -> {
+
                     val tokenModifications =
                         this.appendCurrentTemplateToken(baseLexer.tokenEnd, baseLexer.tokenSequence)
                     modifications.addAll(tokenModifications)
