@@ -21,6 +21,9 @@
         <lang.parserDefinition
                 language="templ"
                 implementationClass="com.templ.templ.parsing.TemplParserDefinition"/>
+        <lang.commenter
+                language="templ"
+                implementationClass="com.templ.templ.TemplCommenter"/>
         <lang.fileViewProviderFactory language="templ" implementationClass="com.templ.templ.file.TemplFileViewProviderFactory"/>
         <editorHighlighterProvider filetype="templ" implementationClass="com.templ.templ.highlighting.TemplEditorHighlighterProvider"/>
         <projectService serviceImplementation="com.templ.templ.TemplSettings"/>
