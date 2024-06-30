@@ -66,6 +66,7 @@ class GoLanguageType : TemplateDataElementType(
                 TemplTypes.GO_DEFAULT_FRAGMENT,
                 TemplTypes.GO_FOR,
                 TemplTypes.DECL_GO_TOKEN,
+                TemplTypes.GO_EXPR,
                 TokenType.WHITE_SPACE -> {
                     modifications.addAll(
                         this.appendCurrentTemplateToken(baseLexer.tokenEnd, baseLexer.tokenSequence)
@@ -86,13 +87,6 @@ class GoLanguageType : TemplateDataElementType(
                         this.appendCurrentTemplateToken(baseLexer.tokenEnd, baseLexer.tokenSequence)
                     )
                     modifications.addRangeToRemove(baseLexer.tokenEnd, "import \"github.com/a-h/templ\"\n")
-                }
-
-                TemplTypes.GO_EXPR -> {
-                    modifications.addRangeToRemove(baseLexer.tokenStart, "var _ string = ")
-                    modifications.addAll(
-                        this.appendCurrentTemplateToken(baseLexer.tokenEnd, baseLexer.tokenSequence)
-                    )
                 }
 
                 TemplTypes.COMPONENT_REFERENCE -> {
@@ -129,6 +123,10 @@ class GoLanguageType : TemplateDataElementType(
                         modifications.addAll(
                             this.appendCurrentTemplateToken(baseLexer.tokenEnd, baseLexer.tokenSequence)
                         )
+
+                        if (baseLexer.state == _TemplLexer.IN_HTML_TAG_OPENER || baseLexer.state == _TemplLexer.IN_TEMPL_DECLARATION_BODY) {
+                            modifications.addRangeToRemove(baseLexer.tokenEnd, "var _ string = ")
+                        }
                     } else {
                         modifications.addOuterRange(
                             currentRange,
@@ -157,7 +155,9 @@ class GoLanguageType : TemplateDataElementType(
                         modifications.addAll(
                             this.appendCurrentTemplateToken(baseLexer.tokenEnd, baseLexer.tokenSequence)
                         )
-                        modifications.addRangeToRemove(baseLexer.tokenEnd, ";")
+                        if (baseLexer.state == _TemplLexer.IN_EXPR) {
+                            modifications.addRangeToRemove(baseLexer.tokenEnd, ";")
+                        }
                     } else {
                         modifications.addOuterRange(
                             currentRange,
