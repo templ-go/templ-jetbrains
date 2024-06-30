@@ -20,6 +20,9 @@ public interface TemplHtmlDeclBody extends PsiElement {
   List<TemplIfCond> getIfCondList();
 
   @NotNull
+  List<TemplRawGo> getRawGoList();
+
+  @NotNull
   List<TemplSwitchStmt> getSwitchStmtList();
 
 }
