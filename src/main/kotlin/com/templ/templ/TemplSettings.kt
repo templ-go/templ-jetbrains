@@ -16,7 +16,7 @@ class TemplState {
 }
 
 @State(name = "TemplSettings", storages = [Storage("templ.xml")])
-class TemplSettings(private val project: Project) : PersistentStateComponent<TemplState> {
+class TemplSettings : PersistentStateComponent<TemplState> {
     companion object {
         fun getService(project: Project): TemplSettings = project.service<TemplSettings>()
     }

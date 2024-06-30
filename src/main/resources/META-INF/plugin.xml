@@ -29,5 +29,6 @@
         <platform.lsp.serverSupportProvider implementation="com.templ.templ.TemplLspServerSupportProvider"/>
         <spellchecker.support language="templ" implementationClass="com.intellij.spellchecker.tokenizer.SpellcheckingStrategy" />
         <spellchecker.bundledDictionaryProvider implementation="com.templ.templ.spellchecker.TemplBundledDictionaryProvider"/>
+        <formattingService implementation="com.templ.templ.TemplFormatter"/>
     </extensions>
 </idea-plugin>
