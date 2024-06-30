@@ -378,8 +378,12 @@ OPTIONAL_WHITE_SPACE=[\ \t\f]*
        return RBRACE;
     }
 
-    "children..." {
+    ([:letter:]|[:digit:])+ "..." {
         return TEMPL_FRAGMENT;
+    }
+
+    [\ \t\f] {
+        return WHITE_SPACE;
     }
 
     [^] {
