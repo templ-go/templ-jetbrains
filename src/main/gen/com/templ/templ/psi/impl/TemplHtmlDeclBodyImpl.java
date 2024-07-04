@@ -53,6 +53,12 @@ public class TemplHtmlDeclBodyImpl extends ASTWrapperPsiElement implements Templ
 
   @Override
   @NotNull
+  public List<TemplRawGo> getRawGoList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, TemplRawGo.class);
+  }
+
+  @Override
+  @NotNull
   public List<TemplSwitchStmt> getSwitchStmtList() {
     return PsiTreeUtil.getChildrenOfTypeAsList(this, TemplSwitchStmt.class);
   }

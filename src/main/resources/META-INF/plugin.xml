@@ -12,6 +12,7 @@
     <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.modules.ultimate</depends>
     <depends>org.jetbrains.plugins.textmate</depends>
+    <depends>org.jetbrains.plugins.go</depends>
     <extensions defaultExtensionNs="com.intellij">
         <fileType name="templ"
                   language="templ"

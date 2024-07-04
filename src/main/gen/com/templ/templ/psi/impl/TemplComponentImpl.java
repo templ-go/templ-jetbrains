@@ -33,16 +33,4 @@ public class TemplComponentImpl extends ASTWrapperPsiElement implements TemplCom
     return findChildByClass(TemplComponentChildren.class);
   }
 
-  @Override
-  @Nullable
-  public TemplComponentParams getComponentParams() {
-    return findChildByClass(TemplComponentParams.class);
-  }
-
-  @Override
-  @Nullable
-  public TemplComponentStructLiteral getComponentStructLiteral() {
-    return findChildByClass(TemplComponentStructLiteral.class);
-  }
-
 }

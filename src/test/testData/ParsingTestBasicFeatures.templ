@@ -1,11 +1,15 @@
-package main
+package untitled1
 
 templ Hello(name string) {
   <div>Hello, { name }</div>
 }
 
+type Person struct {
+    Name string
+}
+
 templ Greeting(
-  person Person
+  person Person,
   ) {
   <div class="greeting">
     @Hello(person.Name)
@@ -30,6 +34,12 @@ templ Message() {
 
 script withComment() {
 	//'
+}
+
+type data struct{}
+
+func (d data) IsTrue() bool {
+    return true
 }
 
 templ conditionals(d data) {

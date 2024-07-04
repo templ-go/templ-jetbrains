@@ -12,13 +12,14 @@ class TemplLexer : MergingLexerAdapter(
         TemplTypes.HTML_FRAGMENT,
         TemplTypes.GO_ROOT_FRAGMENT,
         TemplTypes.DECL_GO_TOKEN,
-        TemplTypes.GO_COMPONENT_IMPORT_PARAMS,
         TemplTypes.GO_EXPR,
+        TemplTypes.GO_FRAGMENT,
         TemplTypes.GO_CSS_DECL_PARAMS,
         TemplTypes.CSS_PROPERTIES,
         TemplTypes.SCRIPT_FUNCTION_DECL,
         TemplTypes.SCRIPT_BODY,
         TemplTypes.BLOCK_COMMENT,
-        TemplTypes.GO_COMPONENT_STRUCT_LITERAL
+        TemplTypes.COMPONENT_REFERENCE,
+        TemplTypes.TEMPL_FRAGMENT
     )
 )
