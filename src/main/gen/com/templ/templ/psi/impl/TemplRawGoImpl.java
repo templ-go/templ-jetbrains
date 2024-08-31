@@ -11,26 +11,20 @@ import static com.templ.templ.psi.TemplTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.templ.templ.psi.*;
 
-public class TemplElseIfImpl extends ASTWrapperPsiElement implements TemplElseIf {
+public class TemplRawGoImpl extends ASTWrapperPsiElement implements TemplRawGo {
 
-  public TemplElseIfImpl(@NotNull ASTNode node) {
+  public TemplRawGoImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull TemplVisitor visitor) {
-    visitor.visitElseIf(this);
+    visitor.visitRawGo(this);
   }
 
   @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof TemplVisitor) accept((TemplVisitor)visitor);
     else super.accept(visitor);
-  }
-
-  @Override
-  @Nullable
-  public TemplHtmlDeclBody getHtmlDeclBody() {
-    return findChildByClass(TemplHtmlDeclBody.class);
   }
 
 }

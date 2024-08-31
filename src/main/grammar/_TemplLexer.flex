@@ -3,7 +3,7 @@ package com.templ.templ.parsing;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.lexer.FlexLexer;
 import org.bouncycastle.util.Arrays;
-import com.intellij.util.containers.Stack;
+import com.intellij.util.containers.Stack;import q.H.W;
 
 import static com.intellij.psi.TokenType.*;
 import static com.templ.templ.psi.TemplTypes.*;
@@ -45,7 +45,7 @@ import static com.templ.templ.psi.TemplTypes.*;
         switch (state) {
             case YYINITIAL: return GO_ROOT_FRAGMENT;
             case IN_EXPR: return GO_EXPR;
-            case IN_COMPONENT_IMPORT_PARAMS: return GO_COMPONENT_IMPORT_PARAMS;
+//            case IN_COMPONENT_IMPORT_PARAMS: return GO_COMPONENT_IMPORT_PARAMS;
             case IN_TEMPL_DECLARATION_START: return DECL_GO_TOKEN;
             default: throw new IllegalStateException("Unknown default token for state: " + state);
         }
@@ -63,8 +63,9 @@ import static com.templ.templ.psi.TemplTypes.*;
 %type IElementType
 %unicode
 
+NEW_LINE = \r|\n|\r\n
 WHITE_SPACE=\s+
-OPTIONAL_WHITE_SPACE=\s*
+OPTIONAL_WHITE_SPACE=[\ \t\f]*
 
 %state IN_TEMPL_DECLARATION_START
 %state IN_TEMPL_DECLARATION_BODY
@@ -73,7 +74,10 @@ OPTIONAL_WHITE_SPACE=\s*
 %state IN_CSS_DECLARATION_BODY
 %state IN_SCRIPT_DECLARATION_START
 %state IN_SCRIPT_DECLARATION_BODY
+%state IN_RAW_GO
 %state IN_EXPR
+%state IN_GO_BLOCK_START
+%state IN_CLASS_EXPR
 %state IN_COMPONENT_IMPORT
 %state IN_COMPONENT_IMPORT_STRUCT_LITERAL
 %state IN_COMPONENT_IMPORT_PARAMS
@@ -156,6 +160,10 @@ OPTIONAL_WHITE_SPACE=\s*
 }
 
 <YYINITIAL> {
+    ^ "package" ~{NEW_LINE} {
+        return GO_PACKAGE_FRAGMENT;
+    }
+
     ^ "templ" {
         yyPushState(IN_TEMPL_DECLARATION_START);
         return HTML_DECL_START;
@@ -188,16 +196,21 @@ OPTIONAL_WHITE_SPACE=\s*
 }
 
 <IN_TEMPL_DECLARATION_BODY, IN_HTML_TAG_OPENER> {
-    ^ {OPTIONAL_WHITE_SPACE} "if" ~"{" $ {
-        return GO_IF_START_FRAGMENT;
+    ^ {OPTIONAL_WHITE_SPACE} "if" {
+        yypushback(2);
+        yyPushState(IN_GO_BLOCK_START);
+        return WHITE_SPACE;
     }
 
-    "}" {OPTIONAL_WHITE_SPACE} "else if" ~"{" $ {
-        return GO_ELSE_IF_START_FRAGMENT;
+    "}" {OPTIONAL_WHITE_SPACE} "else" {
+        yypushback(yylength() - 1);
+        yyPushState(IN_GO_BLOCK_START);
+        return RBRACE;
     }
 
-    "}" {OPTIONAL_WHITE_SPACE} "else" {OPTIONAL_WHITE_SPACE} "{" {OPTIONAL_WHITE_SPACE} $ {
-        return GO_ELSE_START_FRAGMENT;
+    "{{" {
+        yyPushState(IN_RAW_GO);
+        return DOUBLE_LBRACE;
     }
 
     "{" {
@@ -221,8 +234,15 @@ OPTIONAL_WHITE_SPACE=\s*
         yypushback(1); // So that we can detect component imports "@" straight after ">".
     }
 
-    "=\"" ~"\"" {
+    ("=\"" ~"\""|"='" ~"'") {
         // Skip over attribute value so that we don't detect keywords in it.
+        return HTML_FRAGMENT;
+    }
+
+    "class={" {
+        // skip over class attributes for now
+        yypushback(1);
+        yyPushState(IN_CLASS_EXPR);
         return HTML_FRAGMENT;
     }
 
@@ -248,8 +268,14 @@ OPTIONAL_WHITE_SPACE=\s*
         return HTML_FRAGMENT;
     }
 
-    ^ {OPTIONAL_WHITE_SPACE} "switch" {WHITE_SPACE} ~"{\n" {
-        return GO_SWITCH_START_FRAGMENT;
+    "." [.\w\ \t\f]+ "{" ~"}" {
+        return HTML_FRAGMENT;
+    }
+
+    ^ {OPTIONAL_WHITE_SPACE} "switch" {
+        yypushback(6);
+        yyPushState(IN_GO_BLOCK_START);
+        return WHITE_SPACE;
     }
 
     ^ {OPTIONAL_WHITE_SPACE} "case" ~":" {OPTIONAL_WHITE_SPACE} $ {
@@ -260,14 +286,16 @@ OPTIONAL_WHITE_SPACE=\s*
         return GO_DEFAULT_FRAGMENT;
     }
 
-    ^ {OPTIONAL_WHITE_SPACE} "for" {WHITE_SPACE} ~"{" $ {
-        return GO_FOR_START_FRAGMENT;
+    ^ {OPTIONAL_WHITE_SPACE} "for" {
+        yypushback(3);
+        yyPushState(IN_GO_BLOCK_START);
+        return WHITE_SPACE;
     }
 
     ^ {OPTIONAL_WHITE_SPACE} "@" {
         yypushback(1);
         yyPushState(IN_COMPONENT_IMPORT);
-        return HTML_FRAGMENT;
+        return WHITE_SPACE;
     }
 
     ">" {OPTIONAL_WHITE_SPACE} "@" {
@@ -297,84 +325,26 @@ OPTIONAL_WHITE_SPACE=\s*
         return COMPONENT_IMPORT_START;
     }
 
-    [\w\.]+ "{" {
-        yypushback(1);
-        yyPushState(IN_COMPONENT_IMPORT_STRUCT_LITERAL);
-        return COMPONENT_REFERENCE;
-    }
-
-    [\w\.]+ "(" {
-        yypushback(1);
-        yyReplaceState(IN_COMPONENT_IMPORT_PARAMS);
-        return COMPONENT_REFERENCE;
-    }
-
-    [\w\.]+ {WHITE_SPACE} "{" {
-        yypushback(2);
+    [\ \t\f] "{" {OPTIONAL_WHITE_SPACE} {NEW_LINE} {
+        yypushback(yylength()-1);
         yyReplaceState(IN_COMPONENT_IMPORT_CHILDREN_BLOCK_START);
+        return WHITE_SPACE;
+    }
+
+    ([^{(,.]|")") {OPTIONAL_WHITE_SPACE} {NEW_LINE} {
+        yypushback(yylength()-1);
+        yyPopState();
         return COMPONENT_REFERENCE;
     }
 
-    [\w\.]+ {
-        yyPopState(); // IN_TEMPL_DECLARATION_BODY
+    [^] {
         return COMPONENT_REFERENCE;
-    }
-}
-
-<IN_COMPONENT_IMPORT_STRUCT_LITERAL> {
-    "{" {
-        braceNestingLevel++;
-        if (braceNestingLevel == 1) {
-            return LBRACE;
-        }
-    }
-
-    "}" {
-        braceNestingLevel--;
-        if (braceNestingLevel == 0) {
-            yyPopState(); // IN_COMPONENT_IMPORT
-            return RBRACE;
-        }
-    }
-
-    [^] {
-        return GO_COMPONENT_STRUCT_LITERAL;
-    }
-}
-
-<IN_COMPONENT_IMPORT_PARAMS> {
-    "(" {
-        parensNestingLevel++;
-        if (parensNestingLevel == 1) {
-            return LPARENTH;
-        }
-    }
-
-    ")" {WHITE_SPACE} "{" {
-        parensNestingLevel--;
-        if (parensNestingLevel == 0) {
-            yypushback(yylength() - 1);
-            yyReplaceState(IN_COMPONENT_IMPORT_CHILDREN_BLOCK_START);
-            return RPARENTH;
-        }
-    }
-
-    ")" {
-        parensNestingLevel--;
-        if (parensNestingLevel == 0) {
-            yyPopState(); // IN_TEMPL_DECLARATION_BODY
-            return RPARENTH;
-        }
-    }
-
-    [^] {
-        return GO_COMPONENT_IMPORT_PARAMS;
     }
 }
 
 <IN_COMPONENT_IMPORT_CHILDREN_BLOCK_START> {
-    {WHITE_SPACE} {
-        return COMPONENT_CHILDREN_START;
+    [\ \t\f] {
+        return WHITE_SPACE;
     }
 
     "{" {
@@ -383,25 +353,92 @@ OPTIONAL_WHITE_SPACE=\s*
     }
 }
 
-<IN_EXPR> {
-    "{" {
-        braceNestingLevel++;
-        if (braceNestingLevel == 1) {
-            return LBRACE;
-        }
-    }
-
-    "}" {
-        braceNestingLevel--;
-        if (braceNestingLevel == 0) {
-            yyPopState(); // IN_TEMPL_DECLARATION_BODY or IN_HTML_TAG_OPENER
-            return RBRACE;
-        }
+<IN_RAW_GO> {
+    "}}" {
+        yyPopState();
+        return DOUBLE_RBRACE;
     }
 
     [^] {
-          return GO_EXPR;
-     }
+        return GO_FRAGMENT;
+    }
+}
+
+<IN_EXPR> {
+    "{" {
+        braceNestingLevel++;
+        return LBRACE;
+    }
+
+    "}" {
+       braceNestingLevel--;
+       if (braceNestingLevel == 0) {
+           yyPopState(); // IN_COMPONENT_IMPORT
+       }
+       return RBRACE;
+    }
+
+    ([:letter:]|[:digit:])+ "..." {
+        return TEMPL_FRAGMENT;
+    }
+
+    [\ \t\f] {
+        return WHITE_SPACE;
+    }
+
+    [^] {
+        return GO_EXPR;
+    }
+}
+
+<IN_GO_BLOCK_START> {
+    "{" {OPTIONAL_WHITE_SPACE} {NEW_LINE} {
+        yyPopState();
+        return LBRACE;
+    }
+
+    "if" {
+        return GO_IF;
+    }
+
+    "else" {
+        return GO_ELSE;
+    }
+
+    "switch" {
+        return GO_SWITCH;
+    }
+
+    "for" {
+        return GO_FOR;
+    }
+
+    [\ \t\f] {
+        return WHITE_SPACE;
+    }
+
+    [^] {
+        return GO_FRAGMENT;
+    }
+}
+
+<IN_CLASS_EXPR> {
+    "{" {
+        braceNestingLevel++;
+        return TEMPL_FRAGMENT;
+    }
+
+    "}" {
+       braceNestingLevel--;
+       if (braceNestingLevel == 0) {
+           yyPopState(); // IN_HTML_TAG_OPENER
+       }
+       return TEMPL_FRAGMENT;
+    }
+
+    [^] {
+        return TEMPL_FRAGMENT;
+    }
 }
 
 <IN_CSS_DECLARATION_START> {
@@ -457,7 +494,7 @@ OPTIONAL_WHITE_SPACE=\s*
 <IN_SCRIPT_DECLARATION_START> {
     "{" $ {
         yyReplaceState(IN_SCRIPT_DECLARATION_BODY);
-        return SCRIPT_FUNCTION_DECL;
+        return LBRACE;
     }
 
     [^] {
@@ -475,6 +512,15 @@ OPTIONAL_WHITE_SPACE=\s*
         return SCRIPT_BODY;
     }
 }
+
+// TODO: Make whitespace work!
+//\R?(\R|[\ \n\t\f])+ {
+//    return WHITE_SPACE;
+//}
+//
+//[\ \n\t\f]+ {
+//    return WHITE_SPACE;
+//}
 
 [^] {
     yyResetState(YYINITIAL);

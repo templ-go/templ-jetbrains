@@ -7,11 +7,8 @@ import com.intellij.psi.PsiElement;
 
 public interface TemplIfCond extends PsiElement {
 
-  @Nullable
-  TemplElse getElse();
-
   @NotNull
-  List<TemplElseIf> getElseIfList();
+  List<TemplElse> getElseList();
 
   @Nullable
   TemplHtmlDeclBody getHtmlDeclBody();

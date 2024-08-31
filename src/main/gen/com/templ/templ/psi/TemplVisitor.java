@@ -15,14 +15,6 @@ public class TemplVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
-  public void visitComponentParams(@NotNull TemplComponentParams o) {
-    visitPsiElement(o);
-  }
-
-  public void visitComponentStructLiteral(@NotNull TemplComponentStructLiteral o) {
-    visitPsiElement(o);
-  }
-
   public void visitCssDecl(@NotNull TemplCssDecl o) {
     visitPsiElement(o);
   }
@@ -31,19 +23,11 @@ public class TemplVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
-  public void visitElseIf(@NotNull TemplElseIf o) {
-    visitPsiElement(o);
-  }
-
   public void visitExpr(@NotNull TemplExpr o) {
     visitPsiElement(o);
   }
 
   public void visitForLoop(@NotNull TemplForLoop o) {
-    visitPsiElement(o);
-  }
-
-  public void visitGoRoot(@NotNull TemplGoRoot o) {
     visitPsiElement(o);
   }
 
@@ -56,6 +40,10 @@ public class TemplVisitor extends PsiElementVisitor {
   }
 
   public void visitIfCond(@NotNull TemplIfCond o) {
+    visitPsiElement(o);
+  }
+
+  public void visitRawGo(@NotNull TemplRawGo o) {
     visitPsiElement(o);
   }
 
