@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- feat: resolve go path by using the configured SDK 
+
 ## [0.0.14] - 2024-04-02
 
 ### Added
