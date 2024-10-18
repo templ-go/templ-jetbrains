@@ -2,9 +2,11 @@
 
 ## [Unreleased]
 
+## [0.0.15] - 2024-10-18
+
 ### Added
 
-- feat: resolve go path by using the configured SDK 
+- feat: resolve go path by using the configured SDK
 
 ## [0.0.14] - 2024-04-02
 
@@ -70,7 +72,8 @@
 - Changelog tracking
 - Syntax Highlights from textmate
 
-[Unreleased]: https://github.com/templ-go/templ-jetbrains/compare/v0.0.14...HEAD
+[Unreleased]: https://github.com/templ-go/templ-jetbrains/compare/v0.0.15...HEAD
+[0.0.15]: https://github.com/templ-go/templ-jetbrains/compare/v0.0.14...v0.0.15
 [0.0.14]: https://github.com/templ-go/templ-jetbrains/compare/v0.0.13...v0.0.14
 [0.0.13]: https://github.com/templ-go/templ-jetbrains/compare/v0.0.10...v0.0.13
 [0.0.10]: https://github.com/templ-go/templ-jetbrains/compare/v0.0.9...v0.0.10
