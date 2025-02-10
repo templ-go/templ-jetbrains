@@ -18,18 +18,25 @@ import com.templ.templ.psi.TemplTypes
 
 class TemplFileViewProvider(manager: PsiManager, virtualFile: VirtualFile, eventSystemEnabled: Boolean) :
     MultiplePsiFilesPerDocumentFileViewProvider(manager, virtualFile, eventSystemEnabled), TemplateLanguageFileViewProvider {
+    companion object {
+        val OUTER_TEMPL = TemplLeafElementType("OUTER_TEMPL")
+        private val htmlElementType = object: TemplateDataElementType(
+            "HTML inside Templ",
+            HTMLLanguage.INSTANCE,
+            TemplTypes.HTML_FRAGMENT,
+            OUTER_TEMPL
+        ) {
+            override fun appendCurrentTemplateToken(tokenEndOffset: Int, tokenText: CharSequence): TemplateDataModifications {
+                // Detect if were inside an attribute value and if so, insert fake quotes to make the HTML parser happy.
+                if (StringUtil.endsWithChar(tokenText, '=')) {
+                    return TemplateDataModifications.fromRangeToRemove(tokenEndOffset, "\"\"")
+                }
 
-    private val htmlElementType = object : TemplateDataElementType("HTML inside Templ", HTMLLanguage.INSTANCE, TemplTypes.HTML_FRAGMENT, TemplLeafElementType("TEMPL_NOT_HTML")) {
-        override fun appendCurrentTemplateToken(tokenEndOffset: Int, tokenText: CharSequence): TemplateDataModifications {
-            // Detect if were inside an attribute value and if so, insert fake quotes to make the HTML parser happy.
-            if (StringUtil.endsWithChar(tokenText, '=')) {
-                return TemplateDataModifications.fromRangeToRemove(tokenEndOffset, "\"\"")
+                return super.appendCurrentTemplateToken(tokenEndOffset, tokenText)
             }
-
-            return super.appendCurrentTemplateToken(tokenEndOffset, tokenText)
         }
-    }
 
+    }
     override fun getBaseLanguage(): Language {
         return TemplLanguage
     }
