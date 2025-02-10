@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- fix: Potential fix for too many elements registered error.
+
 ## [0.0.15] - 2024-10-18
 
 ### Added
