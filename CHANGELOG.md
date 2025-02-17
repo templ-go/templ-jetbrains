@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- feat: hide generated txt files
+
 ## [0.0.16] - 2025-02-12
 
 ### Added
