@@ -34,6 +34,8 @@ private class TemplLspServerDescriptor(project: Project, val executable: File) :
         if (settings.http.isNotEmpty()) cmd.addParameter("-http=${settings.http}")
         if (settings.goplsRPCTrace) cmd.addParameter("-goplsRPCTrace=true")
         if (settings.pprof) cmd.addParameter("-pprof=true")
+        if (settings.noPreload) cmd.addParameter("-no-preload=true")
+        if (settings.goplsRemote.isNotEmpty()) cmd.addParameter("-gopls-remote=${settings.goplsRemote}")
 
         val goPath = GoSdkService.getInstance(project).getSdk(null).executable?.parent?.path
         val currentPath = System.getenv("PATH").orEmpty()
