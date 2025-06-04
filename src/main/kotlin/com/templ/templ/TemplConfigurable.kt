@@ -20,6 +20,8 @@ class TemplConfigurable(private val project: Project) : Configurable {
     private val goplsRPCTrace = JCheckBox()
     private val pprof = JCheckBox()
     private val http = JTextField()
+    private val noPreload = JCheckBox()
+    private val goplsRemote = JTextField()
 
 
     override fun getDisplayName(): @ConfigurableName String {
@@ -34,6 +36,8 @@ class TemplConfigurable(private val project: Project) : Configurable {
         goplsRPCTrace.isSelected = service.state.goplsRPCTrace
         pprof.isSelected = service.state.pprof
         http.text = service.state.http
+        noPreload.isSelected = service.state.noPreload
+        goplsRemote.text = service.state.goplsRemote
 
         val mainFormBuilder = FormBuilder.createFormBuilder()
         mainFormBuilder.addLabeledComponent("LSP Path", myTemplLspPath)
@@ -42,6 +46,8 @@ class TemplConfigurable(private val project: Project) : Configurable {
         mainFormBuilder.addLabeledComponent("goplsRPCTrace", goplsRPCTrace)
         mainFormBuilder.addLabeledComponent("pprof", pprof)
         mainFormBuilder.addLabeledComponent("http", http)
+        mainFormBuilder.addLabeledComponent("noPreload", noPreload)
+        mainFormBuilder.addLabeledComponent("goplsRemote", goplsRemote)
         val wrapper = JPanel(BorderLayout())
         wrapper.add(mainFormBuilder.panel, BorderLayout.NORTH)
         return wrapper
@@ -55,8 +61,9 @@ class TemplConfigurable(private val project: Project) : Configurable {
                 log.text != state.log ||
                 goplsRPCTrace.isSelected != state.goplsRPCTrace ||
                 pprof.isSelected != state.pprof ||
-                http.text != state.http
-
+                http.text != state.http ||
+                noPreload.isSelected != state.noPreload ||
+                goplsRemote.text != state.goplsRemote
     }
 
     @Throws(ConfigurationException::class)
@@ -68,6 +75,8 @@ class TemplConfigurable(private val project: Project) : Configurable {
             state.goplsLog = goplsLog.text
             state.goplsRPCTrace = goplsRPCTrace.isSelected
             state.http = http.text
+            state.noPreload = noPreload.isSelected
+            state.goplsRemote = goplsRemote.text
             state.templLspPath = myTemplLspPath.text
             service.loadState(state)
         }

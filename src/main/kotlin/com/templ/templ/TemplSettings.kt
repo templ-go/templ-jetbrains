@@ -13,6 +13,8 @@ class TemplState {
     var log = ""
     var pprof = false
     var http = ""
+    var noPreload = false
+    var goplsRemote = ""
 }
 
 @State(name = "TemplSettings", storages = [Storage("templ.xml")])
