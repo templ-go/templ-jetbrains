@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [0.0.18] - 2025-06-04
+
 ### Added
 
 - feat: support -no-preload and -gopls-remote flags (#51) @prathshenoy
@@ -90,7 +92,8 @@
 - Changelog tracking
 - Syntax Highlights from textmate
 
-[Unreleased]: https://github.com/templ-go/templ-jetbrains/compare/v0.0.17...HEAD
+[Unreleased]: https://github.com/templ-go/templ-jetbrains/compare/v0.0.18...HEAD
+[0.0.18]: https://github.com/templ-go/templ-jetbrains/compare/v0.0.17...v0.0.18
 [0.0.17]: https://github.com/templ-go/templ-jetbrains/compare/v0.0.16...v0.0.17
 [0.0.16]: https://github.com/templ-go/templ-jetbrains/compare/v0.0.15...v0.0.16
 [0.0.15]: https://github.com/templ-go/templ-jetbrains/compare/v0.0.14...v0.0.15
