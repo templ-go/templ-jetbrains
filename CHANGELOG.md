@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- feat: support -no-preload and -gopls-remote flags (#51) @prathshenoy
+
 ## [0.0.17] - 2025-02-18
 
 ### Added
