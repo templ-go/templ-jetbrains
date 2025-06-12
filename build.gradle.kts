@@ -82,7 +82,6 @@ dependencies {
         create(providers.gradleProperty("platformType"), providers.gradleProperty("platformVersion"))
 
 
-        plugins(properties("platformPlugins").map { it.split(',') })
         bundledPlugins(properties("platformBundledPlugins").map { it.split(',') })
         pluginVerifier()
     }
