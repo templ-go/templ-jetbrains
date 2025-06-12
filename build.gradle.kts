@@ -69,7 +69,11 @@ intellijPlatform {
 }
 dependencies {
     intellijPlatform {
-        create(properties("platformType"), properties("platformVersion"))
+        intellijIdeaUltimate("2025.2", useInstaller = true)
+        ideaVersion {
+            sinceBuild = "252"
+        }
+
         plugins(properties("platformPlugins").map { it.split(',') })
         bundledPlugins(properties("platformBundledPlugins").map { it.split(',') })
     }
