@@ -8,7 +8,8 @@ fun properties(key: String) = providers.gradleProperty(key)
 plugins {
     id("java")
     alias(libs.plugins.kotlin) // Kotlin support
-    alias(libs.plugins.gradleIntelliJPlugin) // Gradle IntelliJ Plugin
+    id("org.jetbrains.intellij.platform") version "2.6.0" // Gradle IntelliJ Plugin
+    id("org.jetbrains.intellij.platform.migration") version "2.6.0"
     alias(libs.plugins.changelog) // Gradle Changelog Plugin
     alias(libs.plugins.qodana) // Gradle Qodana Plugin
     alias(libs.plugins.kover) // Gradle Kover Plugin
@@ -19,23 +20,27 @@ version = properties("pluginVersion").get()
 
 repositories {
     mavenCentral()
+    intellijPlatform {
+        defaultRepositories()
+    }
 }
 
 // Add Grammar Kit code generated sources to the main source set
 sourceSets["main"].java.srcDirs("src/main/gen")
 
-// Configure Gradle IntelliJ Plugin
-// Read more: https://plugins.jetbrains.com/docs/intellij/too[kkkkjkls-gradle-intellij-plugin.html
-intellij {
-    pluginName = properties("pluginName")
-    version = properties("platformVersion")
-    type = properties("platformType")
-    updateSinceUntilBuild.set(false)
 
-    // Plugin Dependencies. Uses `platformPlugins` property from the gradle.properties file.
-    plugins = properties("platformPlugins").map { it.split(',').map(String::trim).filter(String::isNotEmpty) }
+intellijPlatform {
+    pluginConfiguration {
+        name = properties("pluginName")
+    }
 }
-
+dependencies {
+    intellijPlatform {
+        create(properties("platformType"), properties("platformVersion"))
+        plugins(properties("platformPlugins").map { it.split(',') })
+        bundledPlugins(properties("platformBundledPlugins").map { it.split(',') })
+    }
+}
 changelog {
     groups.empty()
     repositoryUrl = properties("pluginRepositoryUrl")
