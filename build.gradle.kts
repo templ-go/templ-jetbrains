@@ -55,6 +55,10 @@ intellijPlatform {
                 )
             }
         }
+        ideaVersion {
+            sinceBuild = providers.gradleProperty("pluginSinceBuild")
+            untilBuild = providers.gradleProperty("pluginUntilBuild")
+        }
     }
     signing {
         certificateChain.set(System.getenv("CERTIFICATE_CHAIN"))
@@ -69,11 +73,12 @@ intellijPlatform {
 }
 dependencies {
     intellijPlatform {
-        intellijIdeaUltimate("2025.2", useInstaller = true)
+        create(providers.gradleProperty("platformType"), providers.gradleProperty("platformVersion"))
 
 
         plugins(properties("platformPlugins").map { it.split(',') })
         bundledPlugins(properties("platformBundledPlugins").map { it.split(',') })
+        pluginVerifier()
     }
 }
 changelog {
