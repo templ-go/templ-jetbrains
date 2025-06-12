@@ -32,6 +32,40 @@ sourceSets["main"].java.srcDirs("src/main/gen")
 intellijPlatform {
     pluginConfiguration {
         name = properties("pluginName")
+        description = providers.fileContents(layout.projectDirectory.file("README.md")).asText.map {
+            val start = "<!-- Plugin description -->"
+            val end = "<!-- Plugin description end -->"
+
+            with (it.lines()) {
+                if (!containsAll(listOf(start, end))) {
+                    throw GradleException("Plugin description section not found in README.md:\n$start ... $end")
+                }
+                subList(indexOf(start) + 1, indexOf(end)).joinToString("\n").let(::markdownToHTML)
+            }
+        }
+        val changelog = project.changelog // local variable for configuration cache compatibility
+        // Get the latest available change notes from the changelog file
+        changeNotes = properties("pluginVersion").map { pluginVersion ->
+            with(changelog) {
+                renderItem(
+                    (getOrNull(pluginVersion) ?: getUnreleased())
+                        .withHeader(false)
+                        .withEmptySections(false),
+                    Changelog.OutputType.HTML,
+                )
+            }
+        }
+    }
+    signing {
+        certificateChain.set(System.getenv("CERTIFICATE_CHAIN"))
+        privateKey.set(System.getenv("PRIVATE_KEY"))
+        password.set(System.getenv("PRIVATE_KEY_PASSWORD"))
+    }
+
+    publishing {
+        dependsOn("patchChangelog")
+        token.set(System.getenv("PUBLISH_TOKEN"))
+        channels = properties("pluginVersion").map { listOf(it.split('-').getOrElse(1) { "default" }.split('.').first()) }
     }
 }
 dependencies {
@@ -59,47 +93,6 @@ tasks {
     withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
         kotlinOptions.jvmTarget = "17"
     }
+g
 
-    patchPluginXml {
-        version = properties("pluginVersion")
-        sinceBuild = properties("pluginSinceBuild")
-
-        // Extract the <!-- Plugin description --> section from README.md and provide for the plugin's manifest
-        pluginDescription = providers.fileContents(layout.projectDirectory.file("README.md")).asText.map {
-            val start = "<!-- Plugin description -->"
-            val end = "<!-- Plugin description end -->"
-
-            with (it.lines()) {
-                if (!containsAll(listOf(start, end))) {
-                    throw GradleException("Plugin description section not found in README.md:\n$start ... $end")
-                }
-                subList(indexOf(start) + 1, indexOf(end)).joinToString("\n").let(::markdownToHTML)
-            }
-        }
-
-        val changelog = project.changelog // local variable for configuration cache compatibility
-        // Get the latest available change notes from the changelog file
-        changeNotes = properties("pluginVersion").map { pluginVersion ->
-            with(changelog) {
-                renderItem(
-                        (getOrNull(pluginVersion) ?: getUnreleased())
-                                .withHeader(false)
-                                .withEmptySections(false),
-                        Changelog.OutputType.HTML,
-                )
-            }
-        }
-    }
-
-    signPlugin {
-        certificateChain.set(System.getenv("CERTIFICATE_CHAIN"))
-        privateKey.set(System.getenv("PRIVATE_KEY"))
-        password.set(System.getenv("PRIVATE_KEY_PASSWORD"))
-    }
-
-    publishPlugin {
-        dependsOn("patchChangelog")
-        token.set(System.getenv("PUBLISH_TOKEN"))
-        channels = properties("pluginVersion").map { listOf(it.split('-').getOrElse(1) { "default" }.split('.').first()) }
-    }
 }
