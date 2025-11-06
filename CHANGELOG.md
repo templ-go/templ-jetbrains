@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [0.0.20] - 2025-11-06
+
 ### Added
 
 - Make plugin compatible with modern versions of the IJ platform (#55) @vietage
@@ -96,7 +98,8 @@
 - Changelog tracking
 - Syntax Highlights from textmate
 
-[Unreleased]: https://github.com/templ-go/templ-jetbrains/compare/v0.0.18...HEAD
+[Unreleased]: https://github.com/templ-go/templ-jetbrains/compare/v0.0.20...HEAD
+[0.0.20]: https://github.com/templ-go/templ-jetbrains/compare/v0.0.18...v0.0.20
 [0.0.18]: https://github.com/templ-go/templ-jetbrains/compare/v0.0.17...v0.0.18
 [0.0.17]: https://github.com/templ-go/templ-jetbrains/compare/v0.0.16...v0.0.17
 [0.0.16]: https://github.com/templ-go/templ-jetbrains/compare/v0.0.15...v0.0.16
