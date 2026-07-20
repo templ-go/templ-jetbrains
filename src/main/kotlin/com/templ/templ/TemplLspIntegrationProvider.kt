@@ -12,7 +12,7 @@ import java.io.File
 import java.nio.file.Files
 import java.nio.file.Paths
 
-class TemplLspServerSupportProvider : LspIntegrationProvider {
+class TemplLspIntegrationProvider : LspIntegrationProvider {
     override fun fileOpened(project: Project, file: VirtualFile, clientStarter: LspClientStarter) {
         val templConfigService = TemplSettings.getService(project)
         if (file.extension != "templ") return

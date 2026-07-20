@@ -92,7 +92,7 @@ private fun getBundlePath(): Path {
     }
 }
 
-fun getTextMateLanguageDescriptor(): TextMateLanguageDescriptor {
+private val cachedTextMateLanguageDescriptor: TextMateLanguageDescriptor by lazy {
     try {
         val plistReader = JsonOrXmlOrYamlPlistReader(JsonPlistReader(), XmlPlistReader(), null)
         val bundle = readTextMateBundle(
@@ -101,14 +101,16 @@ fun getTextMateLanguageDescriptor(): TextMateLanguageDescriptor {
             TextMateNioResourceReader(getBundlePath()),
         )
         val syntaxBuilder = TextMateSyntaxTableBuilder(TextMateConcurrentMapInterner())
-        for (grammar in bundle.readGrammars()) {
-            syntaxBuilder.addSyntax(grammar.plist.value)
+        for ((_, _, plist) in bundle.readGrammars()) {
+            syntaxBuilder.addSyntax(plist.value)
         }
-        return syntaxBuilder.build().getLanguageDescriptor("source.templ")
+        syntaxBuilder.build().getLanguageDescriptor("source.templ")
     } catch (ex: Exception) {
         throw RuntimeException(ex)
     }
 }
+
+fun getTextMateLanguageDescriptor(): TextMateLanguageDescriptor = cachedTextMateLanguageDescriptor
 
 class TemplHighlightingLexer : TextMateHighlightingLexer(
     getTextMateLanguageDescriptor(),
