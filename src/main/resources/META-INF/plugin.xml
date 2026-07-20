@@ -5,7 +5,7 @@
 
     <vendor url="https://templ.guide/">templ</vendor>
 
-    <idea-version since-build="232"/>
+    <idea-version since-build="262"/>
 
     <description>Support for the Templ Programming Language</description>
 
