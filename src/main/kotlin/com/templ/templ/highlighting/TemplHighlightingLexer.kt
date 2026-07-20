@@ -92,7 +92,7 @@ private fun getBundlePath(): Path {
     }
 }
 
-private val cachedTextMateLanguageDescriptor: TextMateLanguageDescriptor by lazy {
+private val textMateLanguageDescriptor: TextMateLanguageDescriptor by lazy {
     try {
         val plistReader = JsonOrXmlOrYamlPlistReader(JsonPlistReader(), XmlPlistReader(), null)
         val bundle = readTextMateBundle(
@@ -110,10 +110,8 @@ private val cachedTextMateLanguageDescriptor: TextMateLanguageDescriptor by lazy
     }
 }
 
-fun getTextMateLanguageDescriptor(): TextMateLanguageDescriptor = cachedTextMateLanguageDescriptor
-
 class TemplHighlightingLexer : TextMateHighlightingLexer(
-    getTextMateLanguageDescriptor(),
+    textMateLanguageDescriptor,
     TextMateSyntaxMatcherImpl(
         CaffeineCachingRegexProvider(RememberingLastMatchRegexFactory(JoniRegexFactory())),
         TextMateSelectorWeigherImpl().cachingSelectorWeigher(),
