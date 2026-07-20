@@ -1,18 +1,34 @@
 package com.templ.templ.highlighting
 
-import com.intellij.ide.plugins.PluginManagerCore
-import com.intellij.openapi.extensions.PluginId
-import com.intellij.util.containers.Interner
-import com.templ.templ.TemplFileType
-import org.jetbrains.plugins.textmate.language.TextMateLanguageDescriptor
-import org.jetbrains.plugins.textmate.language.syntax.TextMateSyntaxTable
-import org.jetbrains.plugins.textmate.language.syntax.lexer.TextMateHighlightingLexer
-import java.io.*
-import java.nio.file.Path
-import java.util.zip.ZipInputStream
+import com.intellij.openapi.application.PathManager
 import com.intellij.psi.tree.IElementType
+import com.intellij.textmate.joni.JoniRegexFactory
+import com.templ.templ.TemplFileType
+import org.jetbrains.plugins.textmate.language.TextMateConcurrentMapInterner
+import org.jetbrains.plugins.textmate.language.TextMateLanguageDescriptor
+import org.jetbrains.plugins.textmate.bundles.TextMateNioResourceReader
 import org.jetbrains.plugins.textmate.bundles.readTextMateBundle
+import org.jetbrains.plugins.textmate.language.syntax.TextMateSyntaxTableBuilder
+import org.jetbrains.plugins.textmate.language.syntax.lexer.TextMateHighlightingLexer
 import org.jetbrains.plugins.textmate.language.syntax.lexer.TextMateElementType
+import org.jetbrains.plugins.textmate.language.syntax.lexer.TextMateSyntaxMatcherImpl
+import org.jetbrains.plugins.textmate.language.syntax.lexer.caching as cachingSyntaxMatcher
+import org.jetbrains.plugins.textmate.language.syntax.selector.TextMateSelectorWeigherImpl
+import org.jetbrains.plugins.textmate.language.syntax.selector.caching as cachingSelectorWeigher
+import org.jetbrains.plugins.textmate.plist.JsonOrXmlOrYamlPlistReader
+import org.jetbrains.plugins.textmate.plist.JsonPlistReader
+import org.jetbrains.plugins.textmate.plist.XmlPlistReader
+import org.jetbrains.plugins.textmate.regex.CaffeineCachingRegexProvider
+import org.jetbrains.plugins.textmate.regex.RememberingLastMatchRegexFactory
+import java.io.BufferedOutputStream
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
+import java.io.UncheckedIOException
+import java.nio.file.Path
+import java.security.MessageDigest
+import java.util.HexFormat
+import java.util.zip.ZipInputStream
 
 
 private fun deleteFile(file: File) {
@@ -24,6 +40,7 @@ private fun deleteFile(file: File) {
     }
     file.delete()
 }
+
 @Throws(IOException::class)
 private fun extract(zip: ZipInputStream, target: File) {
     try {
@@ -50,39 +67,57 @@ private fun extract(zip: ZipInputStream, target: File) {
         zip.close()
     }
 }
+
 private fun getBundlePath(): Path {
     try {
-        val plugin = PluginManagerCore.getPlugin(PluginId.getId("com.templ.templ"))
-        val version = plugin?.version ?: "devel"
-        val bundleDirectory = File(plugin?.pluginPath.toString() + "/bundles/" + version)
+        val resource = TemplFileType::class.java.classLoader.getResource("tm-bundle.zip")
+            ?: error("TextMate bundle resource not found")
+        val bundleHash = resource.openStream().use { input ->
+            val digest = MessageDigest.getInstance("SHA-256").digest(input.readAllBytes())
+            HexFormat.of().formatHex(digest)
+        }
+        val bundleDirectory = PathManager.getSystemDir()
+            .resolve("templ")
+            .resolve("textmate")
+            .resolve(bundleHash)
+            .toFile()
         if (!bundleDirectory.exists()) {
-            deleteFile(bundleDirectory.getParentFile())
+            deleteFile(bundleDirectory.parentFile)
             bundleDirectory.mkdirs()
-            val resource = TemplFileType::class.java.classLoader.getResourceAsStream("tm-bundle.zip")
-
-            extract(ZipInputStream(resource!!), bundleDirectory)
+            extract(ZipInputStream(resource.openStream()), bundleDirectory)
         }
         return Path.of(bundleDirectory.path)
     } catch (ex: IOException) {
         throw UncheckedIOException(ex)
     }
 }
+
 fun getTextMateLanguageDescriptor(): TextMateLanguageDescriptor {
     try {
-        val bundle = readTextMateBundle(getBundlePath())
-        val syntax = TextMateSyntaxTable()
-        val interner = Interner.createWeakInterner<CharSequence>()
-        val grammars = bundle.readGrammars()
-        for (g in grammars) {
-            syntax.loadSyntax(g.plist.value, interner)
+        val plistReader = JsonOrXmlOrYamlPlistReader(JsonPlistReader(), XmlPlistReader(), null)
+        val bundle = readTextMateBundle(
+            "templ",
+            plistReader,
+            TextMateNioResourceReader(getBundlePath()),
+        )
+        val syntaxBuilder = TextMateSyntaxTableBuilder(TextMateConcurrentMapInterner())
+        for (grammar in bundle.readGrammars()) {
+            syntaxBuilder.addSyntax(grammar.plist.value)
         }
-        return TextMateLanguageDescriptor("source.templ", syntax.getSyntax("source.templ"))
+        return syntaxBuilder.build().getLanguageDescriptor("source.templ")
     } catch (ex: Exception) {
         throw RuntimeException(ex)
     }
 }
 
-class TemplHighlightingLexer : TextMateHighlightingLexer(getTextMateLanguageDescriptor(), 20000) {
+class TemplHighlightingLexer : TextMateHighlightingLexer(
+    getTextMateLanguageDescriptor(),
+    TextMateSyntaxMatcherImpl(
+        CaffeineCachingRegexProvider(RememberingLastMatchRegexFactory(JoniRegexFactory())),
+        TextMateSelectorWeigherImpl().cachingSelectorWeigher(),
+    ).cachingSyntaxMatcher(),
+    20000,
+) {
     override fun getTokenType(): IElementType? {
         val tt = super.getTokenType() ?: return null
         return TemplElementType((tt as TextMateElementType).scope)

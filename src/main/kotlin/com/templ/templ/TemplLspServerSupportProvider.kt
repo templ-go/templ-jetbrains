@@ -5,26 +5,25 @@ import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.configurations.PathEnvironmentVariableUtil
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.platform.lsp.api.LspServerSupportProvider
-import com.intellij.platform.lsp.api.LspServerSupportProvider.LspServerStarter
-import com.intellij.platform.lsp.api.ProjectWideLspServerDescriptor
+import com.intellij.platform.lsp.api.LspIntegrationProvider
+import com.intellij.platform.lsp.api.LspIntegrationProvider.LspClientStarter
+import com.intellij.platform.lsp.api.ProjectWideLspClientDescriptor
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Paths
 
-class TemplLspServerSupportProvider : LspServerSupportProvider {
-    override fun fileOpened(project: Project, file: VirtualFile, serverStarter: LspServerStarter) {
-
+class TemplLspServerSupportProvider : LspIntegrationProvider {
+    override fun fileOpened(project: Project, file: VirtualFile, clientStarter: LspClientStarter) {
         val templConfigService = TemplSettings.getService(project)
         if (file.extension != "templ") return
         val executable = File(templConfigService.getTemplLspPath())
         if (!executable.exists()) return
-        serverStarter.ensureServerStarted(TemplLspServerDescriptor(project, executable))
+        clientStarter.ensureClientStarted(TemplLspClientDescriptor(project, executable))
     }
 }
 
-private class TemplLspServerDescriptor(project: Project, val executable: File) :
-    ProjectWideLspServerDescriptor(project, "templ") {
+private class TemplLspClientDescriptor(project: Project, val executable: File) :
+    ProjectWideLspClientDescriptor(project, "templ") {
     override fun isSupportedFile(file: VirtualFile) = file.extension == "templ"
     override fun createCommandLine(): GeneralCommandLine {
         val cmd = GeneralCommandLine(executable.absolutePath, "lsp")
