@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Fixed
+
+- Make plugin compatible with GoLand 2026.2 (#62) @nikitakuchur
+
 ## [0.0.20] - 2025-11-06
 
 ### Added
