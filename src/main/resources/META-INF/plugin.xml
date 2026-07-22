@@ -5,7 +5,7 @@
 
     <vendor url="https://templ.guide/">templ</vendor>
 
-    <idea-version since-build="232"/>
+    <idea-version since-build="262"/>
 
     <description>Support for the Templ Programming Language</description>
 
@@ -27,7 +27,7 @@
         <projectService serviceImplementation="com.templ.templ.TemplSettings"/>
         <projectConfigurable groupId="tools" instance="com.templ.templ.TemplConfigurable"/>
         <treeStructureProvider implementation="com.templ.templ.treestructure.TemplTreeStructureProvider"/>
-        <platform.lsp.serverSupportProvider implementation="com.templ.templ.TemplLspServerSupportProvider"/>
+        <platform.lsp.integrationProvider implementation="com.templ.templ.TemplLspIntegrationProvider"/>
         <spellchecker.support language="templ" implementationClass="com.intellij.spellchecker.tokenizer.SpellcheckingStrategy" />
         <spellchecker.bundledDictionaryProvider implementation="com.templ.templ.spellchecker.TemplBundledDictionaryProvider"/>
         <formattingService implementation="com.templ.templ.TemplFormatter"/>

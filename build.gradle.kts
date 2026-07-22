@@ -1,5 +1,6 @@
 import org.jetbrains.changelog.Changelog
 import org.jetbrains.changelog.markdownToHTML
+import org.jetbrains.intellij.platform.gradle.TestFrameworkType
 
 fun properties(key: String) = providers.gradleProperty(key)
 
@@ -74,11 +75,19 @@ intellijPlatform {
     }
 }
 dependencies {
+    testImplementation("junit:junit:4.13.2")
+
     intellijPlatform {
-        create(providers.gradleProperty("platformType"), providers.gradleProperty("platformVersion"))
+        create(
+            providers.gradleProperty("platformType"),
+            providers.gradleProperty("platformVersion")
+        )
 
+        bundledPlugins(
+            properties("platformBundledPlugins").map { it.split(',') }
+        )
 
-        bundledPlugins(properties("platformBundledPlugins").map { it.split(',') })
+        testFramework(TestFrameworkType.Platform)
     }
 }
 changelog {
@@ -93,12 +102,13 @@ tasks {
     }
     // Set the JVM compatibility versions
     withType<JavaCompile> {
-        sourceCompatibility = "17"
-        targetCompatibility = "17"
+        sourceCompatibility = "21"
+        targetCompatibility = "21"
     }
-    withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-        kotlinOptions.jvmTarget = "17"
+    withType<org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile> {
+        compilerOptions {
+            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21)
+        }
     }
-
 
 }
