@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [0.0.21] - 2026-07-24
+
 ### Fixed
 
 - Make plugin compatible with GoLand 2026.2 (#62) @nikitakuchur
@@ -102,7 +104,8 @@
 - Changelog tracking
 - Syntax Highlights from textmate
 
-[Unreleased]: https://github.com/templ-go/templ-jetbrains/compare/v0.0.20...HEAD
+[Unreleased]: https://github.com/templ-go/templ-jetbrains/compare/v0.0.21...HEAD
+[0.0.21]: https://github.com/templ-go/templ-jetbrains/compare/v0.0.20...v0.0.21
 [0.0.20]: https://github.com/templ-go/templ-jetbrains/compare/v0.0.18...v0.0.20
 [0.0.18]: https://github.com/templ-go/templ-jetbrains/compare/v0.0.17...v0.0.18
 [0.0.17]: https://github.com/templ-go/templ-jetbrains/compare/v0.0.16...v0.0.17
