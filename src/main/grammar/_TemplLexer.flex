@@ -84,6 +84,8 @@ OPTIONAL_WHITE_SPACE=\s*
 %state IN_GO_RAW_STRING
 %state IN_HTML_COMMENT
 %state IN_HTML_TAG_OPENER
+%state IN_SCRIPT_TAG_OPENER
+%state IN_SCRIPT
 
 %%
 
@@ -187,7 +189,7 @@ OPTIONAL_WHITE_SPACE=\s*
     }
 }
 
-<IN_TEMPL_DECLARATION_BODY, IN_HTML_TAG_OPENER> {
+<IN_TEMPL_DECLARATION_BODY, IN_HTML_TAG_OPENER, IN_SCRIPT_TAG_OPENER> {
     ^ {OPTIONAL_WHITE_SPACE} "if" ~"{" $ {
         return GO_IF_START_FRAGMENT;
     }
@@ -215,12 +217,36 @@ OPTIONAL_WHITE_SPACE=\s*
     }
 }
 
+<IN_SCRIPT> {
+    "</script>" {
+          yyPopState();
+          return HTML_FRAGMENT;
+      }
+      "{{" {
+          yypushback(2); // IN_EXPR handles brace nesting
+          yyPushState(IN_EXPR);
+      }
+      [^] {
+          return HTML_FRAGMENT;
+      }
+}
+
 <IN_HTML_TAG_OPENER> {
-    ">" {
+ ">" {
         yyPopState();
         yypushback(1); // So that we can detect component imports "@" straight after ">".
     }
+}
 
+<IN_SCRIPT_TAG_OPENER> {
+">" {
+        yyPopState();
+        yyPushState(IN_SCRIPT);
+        yypushback(1); // So that we can detect component imports "@" straight after ">".
+    }
+}
+
+<IN_HTML_TAG_OPENER, IN_SCRIPT_TAG_OPENER> {
     "=\"" ~"\"" {
         // Skip over attribute value so that we don't detect keywords in it.
         return HTML_FRAGMENT;
@@ -242,6 +268,11 @@ OPTIONAL_WHITE_SPACE=\s*
         yyPushState(IN_HTML_COMMENT);
         return HTML_FRAGMENT;
     }
+
+    "<script" {
+          yyPushState(IN_SCRIPT_TAG_OPENER);
+          return HTML_FRAGMENT;
+      }
 
     "<" {
         yyPushState(IN_HTML_TAG_OPENER);
