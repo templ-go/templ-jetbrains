@@ -32,17 +32,19 @@ class TemplHighlighter(lexer: TemplHighlightingLexer) : SyntaxHighlighterBase() 
             if (scope.startsWith("punctuation.definition.string")) return STRING
             if (scope.startsWith("entity.name.import")) return STRING
 
+            if (scope.startsWith("entity.name.tag")) return arrayOf(DefaultLanguageHighlighterColors.MARKUP_TAG)
+            if (scope.startsWith("punctuation.definition.tag")) return arrayOf(DefaultLanguageHighlighterColors.MARKUP_TAG)
+            if (scope.startsWith("entity.name.function")) return arrayOf(DefaultLanguageHighlighterColors.FUNCTION_DECLARATION)
+            if (scope.startsWith("entity.other.attribute-name")) return arrayOf(DefaultLanguageHighlighterColors.MARKUP_ATTRIBUTE)
+            if (scope.startsWith("support.type.property-name")) return arrayOf(DefaultLanguageHighlighterColors.MARKUP_ATTRIBUTE)
 
-            if (scope.startsWith("entity.name.tag")) return arrayOf(DefaultLanguageHighlighterColors.METADATA)
-            if (scope.startsWith("punctuation.definition.tag")) return arrayOf(DefaultLanguageHighlighterColors.METADATA)
-            if (scope.startsWith("entity.other.attribute-name")) return arrayOf(DefaultLanguageHighlighterColors.IDENTIFIER)
+            if (scope.startsWith("import-expression")) return arrayOf(DefaultLanguageHighlighterColors.FUNCTION_CALL)
 
-
-            if (scope.startsWith("support.type.property-name")) return arrayOf(DefaultLanguageHighlighterColors.IDENTIFIER)
             return pack(null)
         }
         return pack(null)
     }
+
     private val KEYWORD = arrayOf(DefaultLanguageHighlighterColors.KEYWORD)
     private val STRING = arrayOf(DefaultLanguageHighlighterColors.STRING)
     private val COMMENT = arrayOf(DefaultLanguageHighlighterColors.LINE_COMMENT)
