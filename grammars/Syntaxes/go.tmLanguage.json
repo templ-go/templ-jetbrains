@@ -295,6 +295,11 @@
         }
       }
     },
+    "functions": {
+      "comment": "Bare function calls, not builtin, not declaration, not member access",
+      "match": "\\b([a-zA-Z_][a-zA-Z0-9_]*)\\b(?=\\()",
+      "name": "entity.name.function.go"
+    },
     "import_statement": {
       "begin": "(\\bimport)(?:\\s)+",
       "end": "(?!\\G)",
